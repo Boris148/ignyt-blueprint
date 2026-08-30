@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IGNYT Your Wellness — The IGNYT Blueprint</title>
+<meta name="description" content="triGLP & IGNYT — patented Norwegian bioactive peptides designed to support your body's own metabolic signaling.">
+<link rel="icon" href="assets/drop.svg" type="image/svg+xml">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0b0b0d;--paper:#ffffff;--orange:#f05a1e;--mut:#8f8f96;--body:#3a3a40;--line:rgba(11,11,13,.09)}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Helvetica Neue',Helvetica,-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:var(--paper);color:var(--ink)}
+.serif{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400}
+.orange{color:var(--orange)}
+nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav .lg{color:var(--ink)} nav .lg svg{height:22px;display:block}
+nav .links{display:flex;gap:26px;align-items:center}
+nav a{color:var(--body);text-decoration:none;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+nav a:hover{color:var(--ink)}
+nav a.cta{color:var(--orange)}
+.wrap{max-width:1020px;margin:0 auto;padding:0 24px}
+.hero{padding:84px 0 30px;text-align:center}
+.k{font-size:13px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:var(--orange)}
+h1{margin-top:18px;font-size:clamp(38px,5.6vw,64px);font-weight:200;letter-spacing:-1.5px;line-height:1.06}
+h1 b{font-weight:600}
+.sub{margin:20px auto 0;max-width:640px;font-size:clamp(16px,2vw,20px);font-weight:300;color:var(--body);line-height:1.55}
+.heroimg{margin:52px auto 0;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(11,11,13,.18)}
+.heroimg img{width:100%;display:block}
+section{padding:88px 0 0}
+h2{font-size:clamp(28px,3.6vw,42px);font-weight:200;letter-spacing:-.8px;line-height:1.12}
+h2 b{font-weight:600}
+.lede{margin-top:16px;max-width:680px;font-size:17px;font-weight:300;color:var(--body);line-height:1.6}
+.vid{margin-top:36px;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0b0b0d;box-shadow:0 24px 60px rgba(11,11,13,.16)}
+.vid iframe{width:100%;height:100%;border:0;display:block}
+.pills{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;max-width:760px}
+@media(max-width:640px){.pills{grid-template-columns:1fr}}
+.pill{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:300;color:var(--ink)}
+.pill .d{width:9px;height:9px;border-radius:50%;background:var(--orange);flex:0 0 9px}
+.cards{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:760px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-top:4px solid var(--orange);border-radius:16px;background:#fdfcfa;padding:30px 26px}
+.card .n{font-family:Georgia,serif;font-style:italic;font-size:15px;color:var(--orange);font-weight:400}
+.card h3{margin-top:8px;font-size:26px;font-weight:600;letter-spacing:-.3px}
+.card p{margin-top:12px;font-size:15px;font-weight:300;color:var(--body);line-height:1.55}
+.note{margin-top:26px;border-left:3px solid var(--orange);padding-left:18px;font-size:14px;color:var(--mut);line-height:1.6;max-width:680px}
+.prod{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:820px){.prod{grid-template-columns:1fr}}
+.pcard{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fdfcfa;display:flex;flex-direction:column}
+.pcard .im{aspect-ratio:4/3;overflow:hidden;background:#0b0b0d}
+.pcard .im img{width:100%;height:100%;object-fit:cover;display:block}
+.pcard .tx{padding:30px 28px 34px}
+.pcard .t{font-size:28px;font-weight:600;letter-spacing:-.4px}
+.pcard .t span{font-weight:200}
+.pcard .tl{margin-top:6px;font-family:Georgia,serif;font-style:italic;font-size:17px;color:var(--orange)}
+.pcard ul{margin-top:16px;list-style:none}
+.pcard li{padding:9px 0;border-top:1px solid var(--line);font-size:15px;font-weight:300;color:var(--body);line-height:1.5}
+.pcard li b{color:var(--ink);font-weight:600}
+.faq{margin-top:18px;font-size:14px;color:var(--mut);line-height:1.6}
+.studies{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.studies{grid-template-columns:1fr}}
+.study{display:block;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:#fff;transition:transform .3s,box-shadow .3s}
+.study:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(11,11,13,.1)}
+.study .j{font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--orange)}
+.study .t{margin-top:8px;font-size:15px;font-weight:400;color:var(--ink);line-height:1.45}
+.study .a{margin-top:10px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--mut)}
+.badges{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}
+.badge{border:1px solid var(--line);border-radius:100px;padding:12px 24px;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--ink);background:#fdfcfa}
+.bnote{margin-top:18px;font-size:13px;color:var(--mut);max-width:640px;line-height:1.6}
+.cta2{margin:96px 0 0;background:var(--ink);border-radius:22px;padding:56px 40px;text-align:center;color:#f6f4ef}
+.cta2 h2{color:#f6f4ef}
+.cta2 p{margin-top:14px;color:#b9b6ae;font-weight:300;font-size:16px}
+.cta2 a{display:inline-block;margin-top:26px;background:var(--orange);color:#fff;text-decoration:none;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:16px 34px;border-radius:100px}
+footer{margin-top:90px;border-top:1px solid var(--line);padding:40px 24px 48px;text-align:center}
+footer .fda{max-width:760px;margin:0 auto;font-size:12px;color:var(--mut);line-height:1.6}
+footer .wm{margin-top:22px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mut)}
+footer .wm b{color:var(--orange);font-weight:700}
+.fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.fade.in{opacity:1;transform:none}
+</style></head><body>
+<nav>
+  <a class="lg" href="index.html"><svg viewBox="0 0 248 64"><text x="0" y="47" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="300" font-size="40" letter-spacing="14" fill="currentColor">IGNYT</text><g transform="translate(196,4)"><path d="M20.5 0 C26.5 9.5 35.5 17.5 35.5 31 A15.5 15.5 0 0 1 4.5 31 C4.5 17.5 14.5 9.5 20.5 0 Z" fill="#f05a1e"/><text x="20" y="38" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#ffffff">5</text></g></svg></a>
+  <div class="links">
+    <a href="#products">Products</a>
+    <a href="#science">Science</a>
+    <a class="cta" href="life.html">IGNYT Your Life &rarr;</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="k fade">IGNYT Your Wellness</div>
+    <h1 class="fade">Support the body you<br><span class="serif orange">want to live in.</span></h1>
+    <div class="sub fade">triGLP&trade; and IGNYT&trade; are built on patented Norwegian salmon-derived bioactive peptides &mdash; designed to work with your body&rsquo;s own metabolic signaling.</div>
+    <div class="heroimg fade"><img src="assets/family.jpg" alt="triGLP and IGNYT products"></div>
+  </div>
+
+  <section>
+    <div class="k fade">Watch</div>
+    <h2 class="fade">The products, <b>explained.</b></h2>
+    <div class="vid fade"><iframe src="https://www.youtube.com/embed/iXAEznHr3jc?rel=0&modestbranding=1&playsinline=1" title="IGNYT product overview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </section>
+
+  <section>
+    <div class="k fade">What They're Designed To Support</div>
+    <h2 class="fade">Your body&rsquo;s <b>own signaling</b> &mdash; <span class="serif orange">supported, not replaced.</span></h2>
+    <div class="lede fade">triGLP and IGNYT are positioned around supporting the body&rsquo;s existing GLP-1, GIP, and GLP-2 pathways &mdash; rather than replacing those pathways with synthetic hormones. These pathways are involved in areas such as:</div>
+    <div class="pills fade">
+      <div class="pill"><div class="d"></div>Appetite and satiety signaling</div>
+      <div class="pill"><div class="d"></div>Glucose and insulin-related signaling</div>
+      <div class="pill"><div class="d"></div>Nutrient use and energy metabolism</div>
+      <div class="pill"><div class="d"></div>Gut integrity and nutrient absorption</div>
+    </div>
+  </section>
+
+  <section id="pathways">
+    <div class="k fade">The Mechanism</div>
+    <h2 class="fade">Why the <b>3-pathway story</b> matters.</h2>
+    <div class="cards fade">
+      <div class="card"><div class="n">Pathway 01</div><h3>GLP-1</h3><p>Associated with appetite regulation, satiety, and glucose metabolism.</p></div>
+      <div class="card"><div class="n">Pathway 02</div><h3>GIP</h3><p>Associated with nutrient signaling, insulin response, and energy metabolism.</p></div>
+      <div class="card"><div class="n">Pathway 03</div><h3>GLP-2</h3><p>Associated with intestinal integrity and nutrient absorption.</p></div>
+    </div>
+    <div class="note fade">ORYGN&rsquo;s salmon-derived peptides are described as supporting these existing signaling pathways. The strength of evidence differs by pathway &mdash; some findings come from human studies, others from laboratory or preclinical research.</div>
+  </section>
+
+  <section id="products">
+    <div class="k fade">The Products</div>
+    <h2 class="fade">Two products. <b>One mission.</b></h2>
+    <div class="prod">
+      <div class="pcard fade">
+        <div class="im"><img src="assets/triglp.jpg" alt="triGLP bottle"></div>
+        <div class="tx">
+          <div class="t">triGLP<span>&trade;</span></div>
+          <div class="tl">The power of the drop &mdash; 3 pathways in one drop.</div>
+          <ul>
+            <li><b>Simple liquid formula:</b> Norwegian salmon-derived bioactive peptides, organic ginger root, organic lemon peel, and water.</li>
+            <li>Simple liquid-delivery format &mdash; <b>no traditional carrier oils or alcohol.</b></li>
+            <li><b>How it&rsquo;s taken:</b> a small-volume liquid dose, commonly described as held under the tongue for 30&ndash;60 seconds.</li>
+          </ul>
+          <div class="faq">Product education varies slightly between materials &mdash; always follow the most current ORYGN product directions.</div>
+        </div>
+      </div>
+      <div class="pcard fade">
+        <div class="im"><img src="assets/pouch.jpg" alt="IGNYT Metabolic Booster pouch and stick packs"></div>
+        <div class="tx">
+          <div class="t">IGNYT<span>&trade;</span></div>
+          <div class="tl">Metabolic booster &mdash; burn fat, preserve muscle, ignite results.</div>
+          <ul>
+            <li><b>30 daily sachets</b>, 6.15 g each &mdash; mixes instantly, take it anywhere.</li>
+            <li><b>4000 mg</b> salmon protein hydrolysate (ProGo&reg;) + 200 mg beet root powder &middot; 15 calories.</li>
+            <li><b>Suggested use:</b> mix one packet into 8 oz of water and shake well. 1&ndash;2 servings daily.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="science">
+    <div class="k fade">Science &amp; Data</div>
+    <h2 class="fade">Backed by <b>published research.</b></h2>
+    <div class="lede fade">Peer-reviewed studies on the salmon-derived bioactive peptides behind triGLP and IGNYT.</div>
+    <div class="studies fade">
+      <a class="study" href="https://www.mdpi.com/1660-3397/22/11/490" target="_blank" rel="noopener">
+        <div class="j">Marine Drugs &middot; 2024</div>
+        <div class="t">In vitro activation of GLP-1 and GIP receptors &amp; pancreatic islet cell protection by salmon-derived bioactive peptides</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+      <a class="study" href="https://www.mdpi.com/1660-3397/22/4/151" target="_blank" rel="noopener">
+        <div class="j">Marine Drugs &middot; 2024</div>
+        <div class="t">Glucoregulatory properties of a salmon protein hydrolysate: DPP-IV inhibition and direct glucose uptake in vitro</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+      <a class="study" href="https://www.mdpi.com/2227-9059/14/8/1663" target="_blank" rel="noopener">
+        <div class="j">Biomedicines &middot; 2026</div>
+        <div class="t">Pilot study of salmon protein hydrolysate (ProGo&reg;) supplementation: hematologic, integumentary and metabolic health</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+      <a class="study" href="https://www.ffhdj.com/index.php/ffhd/article/view/1491" target="_blank" rel="noopener">
+        <div class="j">Functional Foods in Health &amp; Disease &middot; 2024</div>
+        <div class="t">18-week salmon protein hydrolysate supplementation: metabolic inflammation, well-being, and cosmetic outcomes</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+      <a class="study" href="https://www.longdom.org/open-access/a-placebocontrolled-study-of-the-impact-of-dietary-salmon-protein-hydrolysate-supplementation-in-increasing-ferritin-and-34643.html" target="_blank" rel="noopener">
+        <div class="j">J. Nutrition &amp; Food Sciences &middot; 2015</div>
+        <div class="t">Placebo-controlled study: salmon protein hydrolysate supplementation, ferritin and hemoglobin in iron-deficient subjects</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+      <a class="study" href="https://www.mdpi.com/2218-273X/12/9/1287" target="_blank" rel="noopener">
+        <div class="j">Biomolecules &middot; 2022</div>
+        <div class="t">Soluble protein hydrolysate ameliorates gastrointestinal inflammation and injury in preclinical colitis model</div>
+        <div class="a">Read the study &rarr;</div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="k fade">Quality &amp; Manufacturing</div>
+    <h2 class="fade">Standards behind <b>every batch.</b></h2>
+    <div class="badges fade">
+      <div class="badge">GMP</div>
+      <div class="badge">HACCP</div>
+      <div class="badge">Non-GMO</div>
+      <div class="badge">Kosher</div>
+      <div class="badge">Halal</div>
+    </div>
+    <div class="bnote fade">Quality and manufacturing credentials associated with the ingredient and manufacturing platform.</div>
+  </section>
+
+  <div class="cta2 fade">
+    <h2>Curious about the <b>business side?</b></h2>
+    <p>It&rsquo;s as simple as 1, 2, 5.</p>
+    <a href="life.html">IGNYT Your Life &rarr;</a>
+  </div>
+</div>
+
+<footer>
+  <div class="fda">These statements have not been evaluated by the Food and Drug Administration. These products are not intended to diagnose, treat, cure, or prevent any disease.</div>
+  <div class="wm"><b>ORYGN</b> &nbsp;&middot;&nbsp; IGNYT 5 &nbsp;&middot;&nbsp; The IGNYT Blueprint</div>
+</footer>
+
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+</script>
+</body></html>
