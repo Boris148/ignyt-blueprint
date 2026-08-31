@@ -74,6 +74,46 @@ footer{margin-top:90px;border-top:1px solid var(--line);padding:40px 24px 48px;t
 footer .fda{max-width:760px;margin:0 auto;font-size:12px;color:var(--mut);line-height:1.6}
 footer .wm{margin-top:22px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mut)}
 footer .wm b{color:var(--orange);font-weight:700}
+.claims{margin-top:34px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 22px;max-width:960px}
+@media(max-width:820px){.claims{grid-template-columns:1fr}}
+.claim{display:flex;align-items:flex-start;gap:12px;font-size:14.5px;font-weight:300;color:var(--ink);line-height:1.45;padding:8px 0}
+.claim .c{width:20px;height:20px;border-radius:50%;background:var(--orange);flex:0 0 20px;position:relative;margin-top:1px}
+.claim .c::after{content:'';position:absolute;left:5.5px;top:5px;width:8px;height:4.5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
+.lbl{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:820px){.lbl{grid-template-columns:1fr}}
+.lcard{border:1px solid var(--line);border-radius:18px;background:#fdfcfa;padding:30px 28px}
+.lcard .lt{font-size:22px;font-weight:600}
+.lcard .ls{margin-top:2px;font-family:Georgia,serif;font-style:italic;font-size:14px;color:var(--orange)}
+.lcard table{margin-top:18px;width:100%;border-collapse:collapse}
+.lcard th{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);text-align:left;padding:8px 0;border-bottom:2px solid var(--ink);font-weight:700}
+.lcard td{padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;font-weight:300;color:var(--body)}
+.lcard td b{color:var(--ink);font-weight:600}
+.lcard td:last-child{text-align:right}
+.lcard .oth{margin-top:14px;font-size:13px;color:var(--mut);line-height:1.6}
+.proto{margin-top:36px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:960px){.proto{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.proto{grid-template-columns:1fr}}
+.pr{border:1px solid var(--line);border-top:3px solid var(--orange);border-radius:14px;background:#fff;padding:20px 18px}
+.pr .n{font-family:Georgia,serif;font-style:italic;font-size:14px;color:var(--orange)}
+.pr h4{margin-top:6px;font-size:18px;font-weight:600}
+.pr .g{margin-top:3px;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-weight:700}
+.pr p{margin-top:10px;font-size:14px;font-weight:300;color:var(--body);line-height:1.5}
+.pr p b{color:var(--ink);font-weight:600}
+.tips{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;max-width:820px}
+@media(max-width:640px){.tips{grid-template-columns:1fr}}
+.faqs{margin-top:34px;max-width:820px}
+.faqs details{border-top:1px solid var(--line);padding:6px 0}
+.faqs details:last-child{border-bottom:1px solid var(--line)}
+.faqs summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-size:17px;font-weight:500}
+.faqs summary::-webkit-details-marker{display:none}
+.faqs summary:after{content:'+';font-size:24px;font-weight:200;color:var(--orange);transition:transform .25s}
+.faqs details[open] summary:after{transform:rotate(45deg)}
+.faqs .a{padding:0 0 18px;font-size:15px;font-weight:300;color:var(--body);line-height:1.65;max-width:720px}
+.tst{margin-top:96px;border:1px solid var(--line);border-radius:22px;background:#fdfcfa;padding:52px 40px;text-align:center}
+.tst h2{justify-content:center}
+.tst p{margin-top:14px;color:var(--body);font-weight:300;font-size:16px}
+.tst a{display:inline-block;margin-top:26px;background:var(--orange);color:#fff;text-decoration:none;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:16px 34px;border-radius:100px}
+.tst .dv{margin-top:16px;font-size:12px;color:var(--mut)}
 .fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
 .fade.in{opacity:1;transform:none}
 </style></head><body>
@@ -110,6 +150,23 @@ footer .wm b{color:var(--orange);font-weight:700}
       <div class="pill"><div class="d"></div>Nutrient use and energy metabolism</div>
       <div class="pill"><div class="d"></div>Gut integrity and nutrient absorption</div>
     </div>
+    <div class="lede fade" style="margin-top:44px"><b style="font-weight:600;color:var(--ink)">13 FDA structure&#8209;function claims.</b> The ProGo&reg; ingredient platform behind triGLP and IGNYT carries thirteen FDA structure/function claims:</div>
+    <div class="claims fade">
+      <div class="claim"><div class="c"></div>Supports healthy ferritin and hemoglobin levels</div>
+      <div class="claim"><div class="c"></div>Helps maintain iron-rich blood</div>
+      <div class="claim"><div class="c"></div>Promotes energy utilization</div>
+      <div class="claim"><div class="c"></div>Supports red blood cell production</div>
+      <div class="claim"><div class="c"></div>Supports gastrointestinal and immune system health</div>
+      <div class="claim"><div class="c"></div>Assists in iron absorption from your daily diet</div>
+      <div class="claim"><div class="c"></div>Helps with dry skin</div>
+      <div class="claim"><div class="c"></div>Reduces wrinkles and promotes skin smoothness</div>
+      <div class="claim"><div class="c"></div>Helps maintain the skin barrier</div>
+      <div class="claim"><div class="c"></div>Supports skin health and appearance</div>
+      <div class="claim"><div class="c"></div>Reduces occasional fatigue and feelings of occasional tiredness</div>
+      <div class="claim"><div class="c"></div>Reduces oxidative stress caused by free radicals</div>
+      <div class="claim"><div class="c"></div>Acts as an antioxidant</div>
+    </div>
+    <div class="note fade">Structure/function claims describe what a nutrient or ingredient is intended to support &mdash; they are not claims to diagnose, treat, cure, or prevent any disease.</div>
   </section>
 
   <section id="pathways">
@@ -152,6 +209,71 @@ footer .wm b{color:var(--orange);font-weight:700}
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="labels">
+    <div class="k fade">The Labels</div>
+    <h2 class="fade">Exactly what&rsquo;s <b>inside.</b></h2>
+    <div class="lede fade">People always ask to see the label &mdash; here it is.</div>
+    <div class="lbl">
+      <div class="lcard fade">
+        <div class="lt">triGLP&trade;</div>
+        <div class="ls">Liquid drops &middot; Net 9 mL (0.30 fl oz)</div>
+        <table>
+          <tr><th>Ingredients</th><th></th></tr>
+          <tr><td><b>Norwegian Salmon Protein Hydrolysate</b> (bioactive peptides and free amino acids)</td><td></td></tr>
+          <tr><td>Deionized Water</td><td></td></tr>
+          <tr><td>Organic Lemon Peel Extract</td><td></td></tr>
+          <tr><td>Organic Ginger Root Extract</td><td></td></tr>
+        </table>
+        <div class="oth">A simple liquid-delivery format &mdash; no traditional carrier oils, no alcohol. Derived from Atlantic salmon (contains fish).</div>
+      </div>
+      <div class="lcard fade">
+        <div class="lt">IGNYT&trade;</div>
+        <div class="ls">Powder sachets &middot; 30 servings per container</div>
+        <table>
+          <tr><th>Supplement Facts &middot; 1 sachet (6.15 g)</th><th>Amount</th></tr>
+          <tr><td>Calories</td><td><b>15</b></td></tr>
+          <tr><td><b>Salmon Protein Hydrolysate (ProGo&reg;)</b></td><td><b>4000 mg&dagger;</b></td></tr>
+          <tr><td><b>Beet Root Powder</b></td><td><b>200 mg&dagger;</b></td></tr>
+        </table>
+        <div class="oth">&dagger;Daily Value not established.<br>Other ingredients: Citric Acid, Natural Cranapple Flavoring, Reb&nbsp;A.<br>Derived from Atlantic salmon (contains fish).</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="k fade">How To Take Them</div>
+    <h2 class="fade">How do I take <b>IGNYT &amp; triGLP?</b></h2>
+    <div class="lede fade">Five simple protocols &mdash; pick the one that fits your goal.</div>
+    <div class="proto fade">
+      <div class="pr"><div class="n">01</div><h4>IGNYT</h4><div class="g">Fat Loss &middot; 2 packs / mo</div><p><b>2 sticks</b> per day</p></div>
+      <div class="pr"><div class="n">02</div><h4>triGLP</h4><div class="g">Fat Loss &middot; 2 bottles / mo</div><p><b>0.25 mL</b> twice daily, or <b>0.50 mL</b> once daily</p></div>
+      <div class="pr"><div class="n">03</div><h4>Combo</h4><div class="g">Fat Loss &middot; 1 pack + 1 bottle</div><p><b>1 stick + 0.25 mL</b> per day</p></div>
+      <div class="pr"><div class="n">04</div><h4>Enhanced</h4><div class="g">Step it up</div><p>Add <b>1&ndash;2 sticks</b> or <b>0.25&ndash;0.50 mL</b> triGLP per day</p></div>
+      <div class="pr"><div class="n">05</div><h4>Wellness</h4><div class="g">Maintenance</div><p><b>1 stick</b> or <b>0.25 mL</b> triGLP per day</p></div>
+    </div>
+    <div class="tips fade">
+      <div class="pill"><div class="d"></div>triGLP: shake well, hold under the tongue 30&ndash;60 seconds</div>
+      <div class="pill"><div class="d"></div>IGNYT: mix with 8&ndash;16 oz of water, to taste</div>
+      <div class="pill"><div class="d"></div>Avoid food 30 minutes before and after for best absorption</div>
+      <div class="pill"><div class="d"></div>Consistency is key &mdash; follow your protocol daily</div>
+    </div>
+    <div class="note fade">Product education varies slightly between materials &mdash; always follow the most current ORYGN product directions.</div>
+  </section>
+
+  <section id="faq">
+    <div class="k fade">FAQs</div>
+    <h2 class="fade">Questions, <b>answered.</b></h2>
+    <div class="faqs fade">
+      <details><summary>Are these injections?</summary><div class="a">No. triGLP is a small-volume liquid drop and IGNYT is a powder you mix into water. There are no injections and no prescriptions &mdash; both are designed to work with your body&rsquo;s own metabolic signaling.</div></details>
+      <details><summary>What is ProGo&reg;?</summary><div class="a">ProGo&reg; is the patented Norwegian salmon protein hydrolysate behind both products &mdash; bioactive peptides produced through gentle enzymatic hydrolysis of Atlantic salmon, backed by more than a decade of research, $50M+ in scientific R&amp;D, and multiple published studies.</div></details>
+      <details><summary>Can I take triGLP and IGNYT together?</summary><div class="a">Yes &mdash; the Combo protocol is 1 IGNYT stick plus 0.25 mL of triGLP per day. See the protocols above for the full options.</div></details>
+      <details><summary>Do they replace GLP-1 medications?</summary><div class="a">No. These are dietary supplements, not medications, and they are not intended to diagnose, treat, cure, or prevent any disease. They&rsquo;re positioned around supporting your body&rsquo;s existing GLP-1, GIP, and GLP-2 pathways &mdash; not replacing them with synthetic hormones. If you take medication, talk with your healthcare provider.</div></details>
+      <details><summary>How soon do people notice a difference?</summary><div class="a">Published clinical research on the ingredient measured outcomes over 6&ndash;8 week periods. Individual results vary &mdash; consistency with a daily protocol is what the research reflects.</div></details>
+      <details><summary>What about allergies?</summary><div class="a">Both products are derived from Atlantic salmon, so they contain fish. If you have a fish allergy, are pregnant or nursing, or have a medical condition, consult your healthcare provider before use.</div></details>
+      <details><summary>Where are they made?</summary><div class="a">The ingredient and manufacturing platform is associated with GMP, HACCP, Non-GMO, Kosher, and Halal quality credentials &mdash; see the standards section below.</div></details>
     </div>
   </section>
 
@@ -210,6 +332,13 @@ footer .wm b{color:var(--orange);font-weight:700}
     <h2>Curious about the <b>business side?</b></h2>
     <p>It&rsquo;s as simple as 1, 2, 5.</p>
     <a href="life.html">IGNYT Your Life &rarr;</a>
+  </div>
+
+  <div class="tst fade">
+    <h2>Want to see <b>testimonials?</b></h2>
+    <p>Real stories from the triGLP &amp; IGNYT community &mdash; in their own words.</p>
+    <a href="https://www.facebook.com/share/g/1Dbez1NkGi/" target="_blank" rel="noopener">Visit the Facebook Testimonial Group &rarr;</a>
+    <div class="dv">Testimonials reflect individual experiences. Individual results vary &mdash; they are not a guarantee of results.</div>
   </div>
 </div>
 
