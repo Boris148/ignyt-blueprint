@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IGNYT 5 Blueprint — Countdown Timer</title>
+<meta name="description" content="Branded countdown timer for IGNYT 5 Blueprint events.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0b0b0d;--bone:#f6f4ef;--orange:#f05a1e;--mut:#8b837b}
+html,body{height:100%;background:var(--ink);overflow:hidden}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--bone);
+ -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;
+ justify-content:center;position:relative;cursor:default}
+.bloom{position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);width:150vmin;height:110vmin;
+ pointer-events:none;background:radial-gradient(ellipse at center,
+ rgba(240,90,30,.26) 0%,rgba(240,90,30,.10) 34%,rgba(240,90,30,.03) 54%,rgba(240,90,30,0) 72%)}
+.vig{position:fixed;inset:0;pointer-events:none;
+ background:radial-gradient(ellipse 120vmin 85vmin at 50% 50%,rgba(0,0,0,0) 38%,rgba(0,0,0,.72) 100%)}
+.logo{position:fixed;top:4.2vh;left:50%;transform:translateX(-50%);width:min(230px,34vw);
+ color:var(--bone);opacity:.96;z-index:6}
+.logo svg{width:100%;height:auto;display:block}
+.brand{position:fixed;bottom:11.5vh;left:50%;transform:translateX(-50%);font-size:clamp(11px,1.35vw,17px);
+ letter-spacing:.42em;text-transform:uppercase;font-weight:700;color:var(--mut);white-space:nowrap;z-index:3}
+
+.stage{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;
+ width:min(62vh,88vw);height:min(62vh,88vw)}
+.ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-linecap:round}
+.trk{stroke:rgba(246,244,239,.11);stroke-width:2.3}
+.bar{stroke:var(--orange);stroke-width:2.6;transition:stroke-dashoffset .35s linear}
+.mid{text-align:center;z-index:2}
+#time{font-size:min(19vh,26vw);font-weight:700;letter-spacing:-.045em;line-height:1;
+ font-variant-numeric:tabular-nums}
+#lab{margin-top:2.4vh;font-size:clamp(10px,1.25vw,16px);letter-spacing:.42em;text-transform:uppercase;
+ font-weight:800;color:var(--orange)}
+
+.end{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;
+ justify-content:center;text-align:center;padding:4vw;opacity:0;transition:opacity .9s ease;
+ background:radial-gradient(ellipse 120vmin 85vmin at 50% 50%,rgba(240,90,30,.20) 0%,
+ rgba(240,90,30,.06) 38%,rgba(240,90,30,0) 64%),#0b0b0d}
+.end.on{display:flex;opacity:1}
+.end .a{font-size:clamp(26px,5.6vw,92px);font-weight:700;letter-spacing:-.02em;color:var(--bone)}
+.end .b{margin-top:.15em;font-size:clamp(36px,9vw,148px);font-weight:800;letter-spacing:-.035em;
+ color:var(--orange);line-height:1}
+.end .r{margin-top:4.5vh;width:min(300px,38vw);height:4px;background:var(--orange)}
+
+.panel{position:fixed;bottom:0;left:0;right:0;z-index:8;display:flex;gap:10px;flex-wrap:wrap;
+ align-items:center;justify-content:center;padding:16px 18px 20px;
+ background:linear-gradient(180deg,rgba(11,11,13,0),rgba(11,11,13,.93) 42%);
+ transition:opacity .45s ease,transform .45s ease}
+.panel.hide{opacity:0;transform:translateY(14px);pointer-events:none}
+.btn{background:rgba(246,244,239,.09);color:var(--bone);border:1px solid rgba(246,244,239,.16);
+ border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;letter-spacing:.06em;
+ text-transform:uppercase;cursor:pointer;transition:.18s;font-family:inherit}
+.btn:hover{background:rgba(246,244,239,.17)}
+.btn.pri{background:var(--orange);border-color:var(--orange);color:#fff;padding:10px 26px}
+.btn.pri:hover{filter:brightness(1.1)}
+.btn.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.mins{width:78px;background:rgba(246,244,239,.09);border:1px solid rgba(246,244,239,.16);
+ border-radius:999px;padding:10px 14px;color:var(--bone);font-size:14px;font-weight:700;
+ text-align:center;font-family:inherit}
+.mins:focus{outline:2px solid var(--orange);outline-offset:1px}
+.sep{width:1px;height:26px;background:rgba(246,244,239,.16);margin:0 4px}
+.hint{position:fixed;top:14px;right:16px;z-index:8;font-size:11px;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--mut);transition:opacity .45s}
+.hint.hide{opacity:0}
+@media(max-width:640px){.panel{gap:7px;padding:12px 10px 16px}.btn{padding:9px 13px;font-size:12px}
+ .btn.pri{padding:9px 20px}.sep{display:none}}
+</style></head>
+<body>
+<div class="bloom"></div><div class="vig"></div>
+
+<div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 64">
+ <text x="0" y="47" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="300"
+  font-size="40" letter-spacing="14" fill="currentColor">IGNYT</text>
+ <g transform="translate(196,4)">
+  <path d="M20.5 0 C26.5 9.5 35.5 17.5 35.5 31 A15.5 15.5 0 0 1 4.5 31 C4.5 17.5 14.5 9.5 20.5 0 Z" fill="#f05a1e"/>
+  <text x="20" y="38" text-anchor="middle" font-family="Georgia, serif" font-style="italic"
+   font-size="19" fill="#ffffff">5</text>
+ </g></svg></div>
+
+<div class="stage">
+ <svg class="ring" viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="47"/>
+  <circle class="bar" id="bar" cx="50" cy="50" r="47" stroke-dasharray="295.3" stroke-dashoffset="0"/></svg>
+ <div class="mid"><div id="time">3:00</div><div id="lab">Starting Soon</div></div>
+</div>
+
+<div class="brand">The IGNYT 5 Blueprint</div>
+
+<div class="end" id="end">
+ <div class="a">IT&rsquo;S TIME TO</div><div class="b">IGNYT YOUR LIFE.</div><div class="r"></div>
+</div>
+
+<div class="hint" id="hint">Space start &middot; R reset &middot; F full screen</div>
+
+<div class="panel" id="panel">
+ <button class="btn" data-m="1">1 min</button>
+ <button class="btn" data-m="3">3 min</button>
+ <button class="btn" data-m="5">5 min</button>
+ <button class="btn" data-m="10">10 min</button>
+ <button class="btn" data-m="15">15 min</button>
+ <input class="mins" id="mins" type="number" min="1" max="180" step="1" value="3" aria-label="Minutes">
+ <span class="sep"></span>
+ <button class="btn pri" id="go">Start</button>
+ <button class="btn" id="reset">Reset</button>
+ <span class="sep"></span>
+ <button class="btn on" id="music">Music</button>
+ <button class="btn" id="loop">Loop</button>
+ <button class="btn" id="full">Full screen</button>
+</div>
+
+<audio id="aud" loop preload="auto" src="assets/countdown-bed.mp3"></audio>
+
+<script>
+const CIRC=2*Math.PI*47;
+const $=i=>document.getElementById(i);
+const bar=$('bar'), tEl=$('time'), lab=$('lab'), end=$('end'),
+      panel=$('panel'), hint=$('hint'), aud=$('aud'), mins=$('mins');
+let total=180, left=180, tick=null, running=false,
+    musicOn=true, loopOn=false, idle=null, endHold=null;
+
+bar.style.strokeDasharray=CIRC;
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+
+function paint(){
+  tEl.textContent=fmt(Math.max(0,left));
+  bar.style.strokeDashoffset=CIRC*(1-Math.max(0,left)/total);
+}
+function setMinutes(m){
+  m=Math.max(1,Math.min(180,Math.round(m)||1));
+  mins.value=m; total=m*60; left=total; paint();
+}
+function showPanel(){
+  panel.classList.remove('hide'); hint.classList.remove('hide');
+  clearTimeout(idle);
+  if(running) idle=setTimeout(()=>{panel.classList.add('hide');hint.classList.add('hide');},2600);
+}
+function finish(){
+  clearInterval(tick); running=false; $('go').textContent='Start';
+  left=0; paint(); end.classList.add('on');
+  if(musicOn){ let v=aud.volume; const fade=setInterval(()=>{ v=Math.max(0,v-0.05);
+    aud.volume=v; if(v<=0){clearInterval(fade);aud.pause();aud.volume=1;} },140); }
+  showPanel();
+  if(loopOn) endHold=setTimeout(()=>{ end.classList.remove('on'); setMinutes(+mins.value); start(); },9000);
+}
+function start(){
+  if(running) return;
+  clearTimeout(endHold); end.classList.remove('on');
+  if(left<=0) left=total;
+  running=true; $('go').textContent='Pause'; paint();
+  if(musicOn){ aud.volume=1; aud.play().catch(()=>{}); }
+  tick=setInterval(()=>{ left--; paint(); if(left<=0) finish(); },1000);
+  showPanel();
+}
+function pause(){ clearInterval(tick); running=false; $('go').textContent='Start'; aud.pause(); showPanel(); }
+function reset(){ clearInterval(tick); clearTimeout(endHold); running=false; $('go').textContent='Start';
+  end.classList.remove('on'); aud.pause(); aud.currentTime=0; setMinutes(+mins.value); showPanel(); }
+
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ reset(); setMinutes(+b.dataset.m); });
+mins.oninput=()=>{ if(!running) setMinutes(+mins.value); };
+$('go').onclick=()=>running?pause():start();
+$('reset').onclick=reset;
+$('music').onclick=e=>{ musicOn=!musicOn; e.target.classList.toggle('on',musicOn);
+  if(!musicOn) aud.pause(); else if(running){aud.volume=1;aud.play().catch(()=>{});} };
+$('loop').onclick=e=>{ loopOn=!loopOn; e.target.classList.toggle('on',loopOn); };
+$('full').onclick=()=>{ document.fullscreenElement?document.exitFullscreen()
+  :document.documentElement.requestFullscreen().catch(()=>{}); };
+
+addEventListener('keydown',e=>{
+  if(e.target===mins) return;
+  const k=e.key.toLowerCase();
+  if(k===' '){e.preventDefault(); running?pause():start();}
+  if(k==='r') reset();
+  if(k==='f') $('full').click();
+});
+['mousemove','touchstart','click'].forEach(ev=>addEventListener(ev,showPanel,{passive:true}));
+setMinutes(3);
+</script>
+</body></html>
