@@ -36,7 +36,64 @@ footer{padding:26px;text-align:center;font-size:11px;letter-spacing:3px;text-tra
 footer b{color:var(--orange);font-weight:700}
 .fade{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
 .fade.in{opacity:1;transform:none}
+
+/* ---------- vault entry ---------- */
+body.locked{overflow:hidden}
+#gate{position:fixed;inset:0;z-index:999;background:#0b0b0d;color:#f6f4ef;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;
+ text-align:center;transition:opacity .85s ease,transform .85s cubic-bezier(.3,.7,.2,1)}
+#gate.open{opacity:0;transform:scale(1.06);pointer-events:none}
+#gate .bloom{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:150vmin;height:110vmin;pointer-events:none;background:radial-gradient(ellipse at center,
+ rgba(240,90,30,.24) 0%,rgba(240,90,30,.08) 36%,rgba(240,90,30,0) 68%)}
+#gate .in{position:relative;width:min(560px,100%)}
+#gate .mk{width:52px;margin:0 auto;display:block}
+#gate .kk{margin-top:22px;font-size:11px;letter-spacing:6px;text-transform:uppercase;
+ font-weight:700;color:#8b837b}
+#gate h2{margin-top:20px;font-size:clamp(30px,5.4vw,52px);font-weight:200;letter-spacing:-1.2px;
+ line-height:1.08}
+#gate h2 b{font-weight:600}
+#gate .sub{margin-top:16px;font-size:clamp(15px,1.8vw,18px);font-weight:300;color:#b9b6ae;line-height:1.55}
+#gate form{margin-top:34px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#gate input{flex:1;min-width:220px;max-width:320px;background:rgba(246,244,239,.07);
+ border:1px solid rgba(246,244,239,.2);border-radius:999px;padding:16px 24px;color:#f6f4ef;
+ font-size:17px;font-family:inherit;font-weight:500;letter-spacing:1px;text-align:center}
+#gate input::placeholder{color:#6f6961;letter-spacing:3px;font-size:14px;text-transform:uppercase}
+#gate input:focus{outline:none;border-color:var(--orange);background:rgba(246,244,239,.11)}
+#gate button{background:var(--orange);color:#fff;border:0;border-radius:999px;padding:16px 34px;
+ font-size:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;
+ font-family:inherit;transition:filter .2s}
+#gate button:hover{filter:brightness(1.1)}
+#gate .err{margin-top:18px;font-size:14px;color:var(--orange);font-weight:600;opacity:0;
+ transition:opacity .3s;min-height:20px}
+#gate .err.on{opacity:1}
+#gate .hint{margin-top:30px;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#8b837b;
+ line-height:1.6}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}
+ 40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+#gate .shake{animation:shk .42s}
 </style></head><body>
+<div id="gate">
+  <div class="bloom"></div>
+  <div class="in" id="gbox">
+    <svg class="mk" viewBox="0 0 62 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/>
+      <text x="31" y="58" text-anchor="middle" fill="#ffffff" font-family="Georgia,serif"
+        font-style="italic" font-size="30">5</text></svg>
+    <div class="kk">The IGNYT Blueprint</div>
+    <h2>This one&rsquo;s by <b>invitation.</b></h2>
+    <div class="sub">Enter your access code to open the Blueprint.</div>
+    <form id="gform" autocomplete="off">
+      <input id="gcode" type="text" placeholder="Access code" aria-label="Access code"
+        autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button type="submit">Enter</button>
+    </form>
+    <div class="err" id="gerr">That&rsquo;s not it &mdash; check with the person who invited you.</div>
+    <div class="hint">Don&rsquo;t have a code?<br>Get back with the person that invited you
+      to the IGNYT Blueprint.</div>
+  </div>
+</div>
+
 <div class="top"><svg viewBox="0 0 248 64"><text x="0" y="47" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="300" font-size="40" letter-spacing="14" fill="currentColor">IGNYT</text><g transform="translate(196,4)"><path d="M20.5 0 C26.5 9.5 35.5 17.5 35.5 31 A15.5 15.5 0 0 1 4.5 31 C4.5 17.5 14.5 9.5 20.5 0 Z" fill="#f05a1e"/><text x="20" y="38" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#ffffff">5</text></g></svg></div>
 <main>
   <h1 class="fade">The <b>IGNYT</b> <span class="serif orange">Blueprint.</span></h1>
@@ -59,6 +116,33 @@ footer b{color:var(--orange);font-weight:700}
 </main>
 <footer><b>ORYGN</b> &nbsp;&middot;&nbsp; IGNYT 5</footer>
 <script>
+
+(function(){
+  var KEY='ignyt_blueprint_access', CODE='blueprint';
+  var gate=document.getElementById('gate'), box=document.getElementById('gbox'),
+      form=document.getElementById('gform'), inp=document.getElementById('gcode'),
+      err=document.getElementById('gerr');
+  function open_(instant){
+    try{localStorage.setItem(KEY,'1')}catch(e){}
+    document.body.classList.remove('locked');
+    if(instant){ gate.remove(); return; }
+    gate.classList.add('open');
+    setTimeout(function(){ gate.remove(); },900);
+  }
+  var qs=new URLSearchParams(location.search);
+  var viaUrl=(qs.get('code')||qs.get('access')||'').trim().toLowerCase();
+  var already=false; try{ already=localStorage.getItem(KEY)==='1'; }catch(e){}
+  if(already || viaUrl===CODE){ open_(true); return; }
+  document.body.classList.add('locked');
+  setTimeout(function(){ inp.focus(); },350);
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(inp.value.trim().toLowerCase()===CODE){ err.classList.remove('on'); open_(false); }
+    else{ err.classList.add('on'); box.classList.remove('shake');
+          void box.offsetWidth; box.classList.add('shake'); inp.select(); }
+  });
+})();
+
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.15});
 document.querySelectorAll('.fade').forEach((el,i)=>{el.style.transitionDelay=(i*90)+'ms';io.observe(el)});
 </script>
