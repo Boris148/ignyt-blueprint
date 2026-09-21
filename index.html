@@ -84,9 +84,9 @@ body.locked{overflow:hidden}
  border-radius:3px;overflow:hidden}
 #tick .bar i{display:block;height:100%;width:0;background:var(--orange);border-radius:3px;
  transition:width 1.6s cubic-bezier(.2,.7,.2,1)}
-#tick .n{margin-top:18px;font-size:clamp(40px,6.4vw,62px);font-weight:800;letter-spacing:-2px;
+#tick .n{margin-top:14px;font-size:clamp(40px,6.4vw,62px);font-weight:800;letter-spacing:-2px;
  line-height:1;font-variant-numeric:tabular-nums;color:#f6f4ef}
-#tick .lb{margin-top:10px;font-size:11px;letter-spacing:5px;text-transform:uppercase;
+#tick .lb{margin-top:20px;font-size:11px;letter-spacing:5px;text-transform:uppercase;
  font-weight:800;color:#8b837b}
 #tick .gl{margin-top:8px;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#6f6961}
 #tick .gl b{color:var(--orange);font-style:normal;font-weight:700}
@@ -116,8 +116,8 @@ body.locked{overflow:hidden}
       to the IGNYT Blueprint.</div>
     <div id="tick">
       <div class="bar"><i id="tbar"></i></div>
+      <div class="lb">The Blueprint has now served</div>
       <div class="n" id="tnum">0</div>
-      <div class="lb">Blueprints opened</div>
       <div class="gl">Next milestone &middot; <b id="tgoal">1,000</b></div>
     </div>
 
@@ -144,8 +144,8 @@ body.locked{overflow:hidden}
     </a>
   </div>
   <div id="live"><span class="dot"></span>
-    <span class="t"><b id="lnum">0</b> Blueprints opened &nbsp;<i>&middot; next milestone</i>
-    <b id="lgoal">1,000</b></span></div>
+    <span class="t">The Blueprint has now served <b id="lnum">0</b>
+    &nbsp;<i>&middot; next milestone</i> <b id="lgoal">1,000</b></span></div>
 </main>
 <footer><b>ORYGN</b> &nbsp;&middot;&nbsp; IGNYT 5</footer>
 <script>
@@ -179,7 +179,7 @@ body.locked{overflow:hidden}
 })();
 
 (function(){
-  var API='https://abacus.jasoncameron.dev', NS='ignythub-live', K='opened',
+  var API='https://abacus.jasoncameron.dev', NS='ignythub-live', K='served',
       CKEY='ignyt_blueprint_counted';
   var tick=document.getElementById('tick'), num=document.getElementById('tnum'),
       bar=document.getElementById('tbar'), goalEl=document.getElementById('tgoal');
@@ -217,7 +217,7 @@ body.locked{overflow:hidden}
 })();
 
 (function(){
-  var API='https://abacus.jasoncameron.dev', NS='ignythub-live', K='opened';
+  var API='https://abacus.jasoncameron.dev', NS='ignythub-live', K='served';
   var STEPS=[1000,5000,10000,25000,50000,100000];
   fetch(API+'/get/'+NS+'/'+K).then(function(r){return r.json()}).then(function(d){
     var v=(d&&typeof d.value==='number')?d.value:0;
