@@ -44,7 +44,7 @@ footer{border-top:1px solid rgba(11,11,13,.1);padding:24px;text-align:center;fon
     look in promotions or spam and drag it across so you don't miss the reminder.</div>
   <div class="when"><div class="d" id="when-day">Wednesday &middot; 7:30 PM CST</div>
     <div class="t">Live on Zoom &middot; 40 minutes</div></div>
-  <div class="vid"><video id="ajv" controls playsinline preload="auto" poster="assets/video/aj-intro-poster.jpg"><source src="assets/video/aj-intro-v2.mp4" type="video/mp4"></video><div class="vcap">A quick word from AJ &mdash; 1 min</div></div>
+  <div class="vid"><video id="ajv" controls playsinline preload="auto" poster="assets/video/aj-intro-poster.jpg"><source src="assets/video/aj-intro-v2.mp4?r=2#t=0" type="video/mp4"></video><div class="vcap">A quick word from AJ &mdash; 1 min</div></div>
   <div class="plain"><b>So you know exactly what this is.</b> AJ builds a team in network marketing, with ORYGN. Wednesday is a training on how teams duplicate — it's genuinely useful whatever you build. If it lands and you want to look at building alongside us, we'll talk about that afterwards. No surprises, no pretending it's something else.</div>
   <div class="steps">
     <div class="r"><div class="n">1</div><div class="x"><b>Put it in your calendar now.</b>
@@ -62,9 +62,16 @@ if (typeof fbq === 'function') fbq('track', 'CompleteRegistration');
 (function () {
   var v = document.getElementById('ajv');
   if (!v) return;
-  var toStart = function () { if (v.currentTime > 0.05) v.currentTime = 0; };
-  v.addEventListener('loadedmetadata', toStart);
-  v.addEventListener('play', toStart, { once: true });
+  var pinned = false;
+  var toStart = function () {
+    if (!pinned && v.currentTime > 0.05) { v.currentTime = 0; }
+  };
+  ['loadedmetadata', 'loadeddata', 'canplay', 'playing'].forEach(function (e) {
+    v.addEventListener(e, toStart);
+  });
+  // once the viewer deliberately scrubs, stop forcing them back
+  v.addEventListener('seeking', function () { if (v.currentTime > 0.5) pinned = true; });
+  v.load();
 })();
 </script>
 </body></html>
