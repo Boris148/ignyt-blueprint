@@ -44,7 +44,7 @@ footer{border-top:1px solid rgba(11,11,13,.1);padding:24px;text-align:center;fon
     look in promotions or spam and drag it across so you don't miss the reminder.</div>
   <div class="when"><div class="d" id="when-day">Wednesday &middot; 7:30 PM CST</div>
     <div class="t">Live on Zoom &middot; 40 minutes</div></div>
-  <div class="vid"><video controls playsinline preload="metadata" poster="assets/video/aj-intro-poster.jpg"><source src="assets/video/aj-intro.mp4" type="video/mp4"></video><div class="vcap">A quick word from AJ &mdash; 1 min</div></div>
+  <div class="vid"><video id="ajv" controls playsinline preload="auto" poster="assets/video/aj-intro-poster.jpg"><source src="assets/video/aj-intro-v2.mp4" type="video/mp4"></video><div class="vcap">A quick word from AJ &mdash; 1 min</div></div>
   <div class="plain"><b>So you know exactly what this is.</b> AJ builds a team in network marketing, with ORYGN. Wednesday is a training on how teams duplicate — it's genuinely useful whatever you build. If it lands and you want to look at building alongside us, we'll talk about that afterwards. No surprises, no pretending it's something else.</div>
   <div class="steps">
     <div class="r"><div class="n">1</div><div class="x"><b>Put it in your calendar now.</b>
@@ -57,5 +57,14 @@ footer{border-top:1px solid rgba(11,11,13,.1);padding:24px;text-align:center;fon
 </main>
 <div class="legal">AJ&rsquo;s results are his own and are not typical. Most people who join a direct sales company earn little or no income. Nothing here is a guarantee of earnings or results &mdash; what anyone achieves depends on their own effort, skill and leadership.</div>
 <footer>IGNYT 5 Blueprint</footer>
-<script>if (typeof fbq === 'function') fbq('track', 'CompleteRegistration');</script>
+<script>
+if (typeof fbq === 'function') fbq('track', 'CompleteRegistration');
+(function () {
+  var v = document.getElementById('ajv');
+  if (!v) return;
+  var toStart = function () { if (v.currentTime > 0.05) v.currentTime = 0; };
+  v.addEventListener('loadedmetadata', toStart);
+  v.addEventListener('play', toStart, { once: true });
+})();
+</script>
 </body></html>
