@@ -64,8 +64,38 @@ nav a.cta{color:var(--orange)}
 /* video — stays directly under the hero, same as today */
 .watch{padding:110px 0 0}
 .watch .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
-.vid{margin-top:40px;aspect-ratio:16/9;overflow:hidden;background:var(--ink);box-shadow:0 40px 90px rgba(11,11,13,.22),0 6px 16px rgba(11,11,13,.08);border-radius:6px}
-.vid iframe{width:100%;height:100%;border:0;display:block}
+.vid{position:relative;container-type:inline-size;margin-top:40px;aspect-ratio:16/9;overflow:hidden;background:var(--ink);box-shadow:0 40px 90px rgba(11,11,13,.22),0 6px 16px rgba(11,11,13,.08);border-radius:6px}
+.vid iframe,.vid #ytp{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+/* branded cover */
+.vc{position:absolute;inset:0;z-index:3;cursor:pointer;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;padding:0 6cqw;gap:3cqw;color:var(--bone);
+ background:radial-gradient(60% 90% at 78% 50%,rgba(240,90,30,.34) 0%,rgba(240,90,30,.08) 40%,rgba(11,11,13,0) 70%),var(--ink);transition:opacity .5s}
+.vc:after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.014) 0 2px,transparent 2px 6px);pointer-events:none}
+.vc .kk{font-size:1.15cqw;letter-spacing:.45cqw;text-transform:uppercase;font-weight:700;color:var(--orange);display:flex;align-items:center;gap:.8cqw}
+.vc .kk svg{height:2.2cqw}
+.vc h3{margin-top:1.6cqw;font-size:5.6cqw;font-weight:200;letter-spacing:-.18cqw;line-height:1}
+.vc h3 b{font-weight:600}
+.vc h3 .serif{display:block;margin-top:.6cqw;color:var(--orange);letter-spacing:-.05cqw}
+.vc .sb{margin-top:2cqw;font-size:1.6cqw;font-weight:300;color:#b9b6ae;line-height:1.5;max-width:34cqw}
+.vc .pl{margin-top:3cqw;display:inline-flex;align-items:center;gap:1.2cqw;font-size:1.25cqw;letter-spacing:.3cqw;text-transform:uppercase;font-weight:700}
+.vc .pb{width:6cqw;height:6cqw;border-radius:50%;background:var(--orange);display:grid;place-items:center;box-shadow:0 0 0 0 rgba(240,90,30,.5);animation:pulse 2.4s infinite;transition:transform .3s}
+.vc:hover .pb{transform:scale(1.08)}
+.vc .pb:after{content:'';margin-left:.5cqw;border-left:1.9cqw solid #fff;border-top:1.15cqw solid transparent;border-bottom:1.15cqw solid transparent}
+.vc .por{justify-self:center;text-align:center}
+.vc .por img{width:27cqw;height:27cqw;border-radius:50%;display:block;box-shadow:0 3cqw 6cqw rgba(0,0,0,.45),0 .6cqw 1.2cqw rgba(0,0,0,.3)}
+.vc .nm{margin-top:2cqw;font-size:1.7cqw;font-weight:600}
+.vc .rl{margin-top:.4cqw;font-size:1.05cqw;letter-spacing:.3cqw;text-transform:uppercase;color:var(--mut);font-weight:700}
+/* end card */
+.ve{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 8cqw;color:var(--bone);
+ background:radial-gradient(60% 80% at 50% 45%,rgba(240,90,30,.32) 0%,rgba(11,11,13,0) 70%),var(--ink)}
+.ve.on{display:flex}
+.ve svg.fl{height:6cqw}
+.ve .kk{margin-top:2cqw;font-size:1.2cqw;letter-spacing:.45cqw;text-transform:uppercase;font-weight:700;color:var(--orange)}
+.ve h3{margin-top:1.4cqw;font-size:4.6cqw;font-weight:200;letter-spacing:-.15cqw;line-height:1.08}
+.ve h3 b{font-weight:600}
+.ve h3 .serif{color:var(--orange)}
+.ve button{margin-top:3cqw;background:none;border:1px solid rgba(246,244,239,.3);color:var(--bone);border-radius:100px;padding:1.2cqw 2.6cqw;font:700 1.15cqw 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.3cqw;text-transform:uppercase;cursor:pointer}
+.ve button:hover{border-color:var(--orange);color:var(--orange)}
+@media(max-width:640px){.vc{grid-template-columns:1fr 0.62fr;padding:0 5cqw}.vc .kk{font-size:2.2cqw}.vc h3{font-size:7cqw}.vc .sb{display:none}.vc .pl{font-size:2.4cqw}.vc .pb{width:10cqw;height:10cqw}.vc .pb:after{border-left-width:3cqw;border-top-width:1.8cqw;border-bottom-width:1.8cqw}.vc .por img{width:32cqw;height:32cqw}.vc .nm{font-size:2.8cqw}.vc .rl{display:none}.ve h3{font-size:6.6cqw}.ve .kk{font-size:2.2cqw}.ve button{font-size:2.4cqw;padding:2cqw 4cqw}}
 
 /* pillars */
 .pillars{padding:130px 0 0}
@@ -240,7 +270,7 @@ footer .wm b{color:var(--orange);font-weight:700}
       <h1 class="fade">Burn fat.<br><b>Preserve muscle.</b><br><span class="serif orange">IGNYT results.</span></h1>
       <div class="sub fade">One sachet. Eight ounces of water. 4,000&nbsp;mg of patented Norwegian bioactive peptides &mdash; designed to work <em>with</em> your body&rsquo;s own metabolic signaling.</div>
       <div class="btns fade">
-        <a class="btn o" href="#watch">Watch the story</a>
+        <a class="btn o" href="#watch">Watch with Dr. Jeremy</a>
         <a class="btn g" href="#ritual">How it works</a>
       </div>
     </div>
@@ -259,9 +289,26 @@ footer .wm b{color:var(--orange);font-weight:700}
 <section class="watch" id="watch">
   <div class="wrap">
     <div class="hd">
-      <div><div class="k fade">Watch</div><h2 class="fade" style="margin-top:14px">IGNYT, <b>explained.</b></h2></div>
+      <div><div class="k fade">Watch</div><h2 class="fade" style="margin-top:14px">The new IGNYT research, <b>explained.</b></h2></div>
     </div>
-    <div class="vid fade"><iframe src="https://www.youtube.com/embed/iXAEznHr3jc?rel=0&modestbranding=1&playsinline=1" title="IGNYT product overview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+    <div class="vid fade" id="vid">
+      <div id="ytp"></div>
+      <div class="vc" id="vcover" role="button" tabindex="0" aria-label="Play: IGNYT Your Wellness with Dr. Jeremy">
+        <div>
+          <div class="kk"><svg viewBox="0 0 41 48" class=""><path d="M20.5 0 C26.5 9.5 35.5 17.5 35.5 31 A15.5 15.5 0 0 1 4.5 31 C4.5 17.5 14.5 9.5 20.5 0 Z" fill="#f05a1e"/><text x="20" y="38" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#ffffff">5</text></svg>IGNYT Your Wellness</div>
+          <h3>IGNYT Your <b>Wellness</b><span class="serif">with Dr. Jeremy.</span></h3>
+          <div class="sb">Disrupting the GLP conversation &mdash; and the new research behind IGNYT.</div>
+          <div class="pl"><span class="pb"></span>Watch now</div>
+        </div>
+        <div class="por"><img src="assets/ignyt/drj.webp" alt="Dr. Jeremy Thornton"><div class="nm">Dr. Jeremy Thornton</div><div class="rl">Chiropractor &middot; Internist</div></div>
+      </div>
+      <div class="ve" id="vend">
+        <svg viewBox="0 0 41 48" class="fl"><path d="M20.5 0 C26.5 9.5 35.5 17.5 35.5 31 A15.5 15.5 0 0 1 4.5 31 C4.5 17.5 14.5 9.5 20.5 0 Z" fill="#f05a1e"/><text x="20" y="38" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#ffffff">5</text></svg>
+        <div class="kk">Thanks for watching</div>
+        <h3>Get back with the person who<br><b>invited you</b> <span class="serif">to the IGNYT Hub.</span></h3>
+        <button type="button" id="vreplay">&#8635; Watch again</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -481,5 +528,22 @@ footer .wm b{color:var(--orange);font-weight:700}
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});
 document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+// Branded video: custom cover, no related videos, custom end card
+(function(){
+  var VID='E1KL04Qk_BM',player,ready=false,wantPlay=false;
+  var cover=document.getElementById('vcover'),endc=document.getElementById('vend');
+  window.onYouTubeIframeAPIReady=function(){
+    player=new YT.Player('ytp',{videoId:VID,host:'https://www.youtube-nocookie.com',
+      playerVars:{rel:0,modestbranding:1,playsinline:1,iv_load_policy:3,controls:1,fs:1},
+      events:{onReady:function(){ready=true;if(wantPlay)player.playVideo();},
+        onStateChange:function(e){if(e.data===YT.PlayerState.ENDED){endc.classList.add('on');}}}});
+  };
+  var t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t);
+  function start(){cover.style.opacity=0;setTimeout(function(){cover.style.display='none'},450);wantPlay=true;if(ready)player.playVideo();}
+  cover.addEventListener('click',start);
+  cover.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();start();}});
+  document.getElementById('vreplay').addEventListener('click',function(){endc.classList.remove('on');player.seekTo(0);player.playVideo();});
+})();
 </script>
 </body></html>
