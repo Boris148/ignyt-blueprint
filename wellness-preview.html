@@ -132,15 +132,58 @@ nav a.cta{color:var(--orange)}
 .claim{break-inside:avoid;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:300;color:var(--ink);line-height:1.45;display:flex;gap:12px}
 .claim:before{content:'';flex:0 0 6px;height:6px;border-radius:50%;background:var(--orange);margin-top:8px}
 .studies{margin-top:90px;border-top:1px solid var(--ink)}
-.study{display:grid;grid-template-columns:220px 1fr 40px;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:padding .3s}
+.study{display:grid;grid-template-columns:220px 1fr auto;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:padding .3s}
 .study:hover{padding-left:12px}
 .study .j{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--orange)}
 .study .t{font-size:17px;font-weight:300;line-height:1.45}
 .study .a{font-size:22px;color:var(--orange);text-align:right}
-@media(max-width:720px){.study{grid-template-columns:1fr;gap:6px}.study .a{display:none}}
+@media(max-width:720px){.study{grid-template-columns:1fr;gap:8px}.study .go{justify-self:start;margin-top:6px}}
 .badges{margin-top:70px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 34px}
 .badges .bl{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-right:6px}
 .badge{font-size:15px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:var(--ink)}
+
+/* inflammation + aging */
+.ia{margin-top:70px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:860px){.ia{grid-template-columns:1fr}}
+.iap{position:relative;overflow:hidden;padding:46px 42px 40px;color:var(--bone);background:radial-gradient(80% 90% at 85% 10%,rgba(240,90,30,.28) 0%,rgba(11,11,13,0) 60%),var(--ink)}
+.iap.b{background:radial-gradient(80% 90% at 85% 10%,rgba(240,90,30,.20) 0%,rgba(20,20,22,0) 60%),#17140f}
+.iap .k{display:block}
+.iap h3{margin-top:14px;font-size:clamp(28px,3vw,38px);font-weight:200;letter-spacing:-.8px;line-height:1.08}
+.iap h3 b{font-weight:600}
+.iap .ld{margin-top:12px;font-size:15.5px;font-weight:300;color:#b9b6ae;line-height:1.6;max-width:460px}
+.mk{margin-top:30px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--dline)}
+.mk>div{padding:22px 14px 0 0}
+.mk>div+div{padding-left:18px;border-left:1px solid var(--dline)}
+.mk .v{font-size:clamp(30px,3.4vw,44px);font-weight:200;letter-spacing:-1.4px;color:#fff;line-height:1}
+.mk .v em{font-style:normal;color:var(--orange);font-weight:600}
+.mk .l{margin-top:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);font-weight:700;line-height:1.5}
+.iap ul{margin-top:24px;list-style:none}
+.iap li{padding:11px 0;border-top:1px solid var(--dline);font-size:15px;font-weight:300;color:#d8d5ce;display:flex;gap:12px}
+.iap li:before{content:'';flex:0 0 6px;height:6px;border-radius:50%;background:var(--orange);margin-top:8px}
+.iap .src{margin-top:22px;font-size:12px;color:var(--mut);line-height:1.6}
+.iap .src a{color:var(--orange);text-decoration:none;font-weight:600}
+
+/* study cue */
+.scue{margin-top:70px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.scue h3{font-size:26px;font-weight:600;letter-spacing:-.4px}
+.tap{display:inline-flex;align-items:center;gap:10px;background:rgba(240,90,30,.1);color:var(--orange);border-radius:100px;padding:10px 18px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.tap .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,90,30,.55)}70%{box-shadow:0 0 0 11px rgba(240,90,30,0)}100%{box-shadow:0 0 0 0 rgba(240,90,30,0)}}
+.study .go{justify-self:end;white-space:nowrap;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--orange);border:1px solid rgba(240,90,30,.45);border-radius:100px;padding:9px 16px;transition:background .25s,color .25s}
+.study:hover .go{background:var(--orange);color:#fff}
+.study:hover .t{color:var(--orange)}
+
+/* certifications */
+.cert{margin-top:140px;padding:120px 0;background:var(--bone)}
+.cert .top{display:grid;grid-template-columns:auto 1fr;gap:70px;align-items:center}
+@media(max-width:860px){.cert .top{grid-template-columns:1fr;gap:36px;justify-items:start}}
+.cert .hero-seal svg{width:260px;height:260px;display:block;filter:drop-shadow(0 24px 40px rgba(240,90,30,.28))}
+.seals{margin-top:70px;display:grid;grid-template-columns:repeat(4,1fr);gap:40px 20px;border-top:1px solid var(--line);padding-top:56px}
+@media(max-width:860px){.seals{grid-template-columns:repeat(2,1fr)}}
+.seal{text-align:center}
+.seal svg{width:128px;height:128px;display:block;margin:0 auto}
+.seal .n{margin-top:16px;font-size:14px;font-weight:600;letter-spacing:.2px}
+.seal .d{margin-top:4px;font-size:12.5px;font-weight:300;color:var(--body);line-height:1.5;max-width:200px;margin-left:auto;margin-right:auto}
 
 /* faq */
 .faq{padding:130px 0 0}
@@ -185,6 +228,7 @@ footer .wm b{color:var(--orange);font-weight:700}
     <a href="#ritual">The Ritual</a>
     <a href="#inside">Inside</a>
     <a href="#science">Science</a>
+    <a href="#certified">Certified</a>
     <a class="cta" href="life.html">IGNYT Your Life &rarr;</a>
   </div>
 </nav>
@@ -225,11 +269,45 @@ footer .wm b{color:var(--orange);font-weight:700}
   <div class="wrap">
     <div class="k fade">What It&rsquo;s Designed To Support</div>
     <h2 class="fade" style="margin-top:14px">Your body&rsquo;s own signaling &mdash;<br><span class="serif orange">supported, not replaced.</span></h2>
-    <div class="lede fade">IGNYT is positioned around the body&rsquo;s existing GLP-1, GIP and GLP-2 pathways &mdash; not synthetic hormones. Three outcomes, printed right on the pouch.</div>
+    <div class="lede fade">IGNYT is positioned around the body&rsquo;s existing GLP-1, GIP and GLP-2 pathways &mdash; not synthetic hormones. Three outcomes printed right on the pouch &mdash; plus two the research keeps pointing to.</div>
     <div class="pg fade">
       <div class="pl"><div class="n">01</div><h3>Appetite Control</h3><p>Designed to support the body&rsquo;s own appetite and satiety signaling.</p></div>
       <div class="pl"><div class="n">02</div><h3>Muscle Preservation</h3><p>4,000&nbsp;mg of bioactive peptides and free amino acids in every sachet.</p></div>
       <div class="pl"><div class="n">03</div><h3>Gut Health</h3><p>Supports gastrointestinal health and nutrient absorption.</p></div>
+    </div>
+    <div class="ia">
+      <div class="iap fade">
+        <span class="k">04 &middot; Inflammation</span>
+        <h3>What the research found on <b>inflammatory markers.</b></h3>
+        <div class="ld">Short-term inflammation is part of the body&rsquo;s normal response. The research behind IGNYT looks at what happens to inflammatory activity that stays elevated over time.</div>
+        <div class="mk">
+          <div><div class="v"><em>TNF</em>&darr;</div><div class="l">Reported reduction &middot; healthy adults, 8 wks</div></div>
+          <div><div class="v"><em>IL-6</em>&darr;</div><div class="l">Reported reduction &middot; healthy adults, 8 wks</div></div>
+          <div><div class="v">&minus;15%</div><div class="l">IL-6 in overweight subjects &middot; 6 wks</div></div>
+        </div>
+        <ul>
+          <li>Reported alongside changes in zonulin, a marker linked to gut barrier integrity</li>
+          <li>Supports gastrointestinal and immune system health</li>
+          <li>Reduces oxidative stress caused by free radicals</li>
+        </ul>
+        <div class="src">Reported findings from studies on the ProGo&reg; ingredient &mdash; not a claim about what IGNYT does for any individual. <a href="#science">See the studies &darr;</a></div>
+      </div>
+      <div class="iap b fade">
+        <span class="k">05 &middot; Healthy Aging</span>
+        <h3>Support how you look, feel and <b>perform as you age.</b></h3>
+        <div class="ld">An 18-week clinical trial in healthy adults measured energy, oxidative stress and cosmetic outcomes &mdash; the visible side of aging well.</div>
+        <div class="mk">
+          <div><div class="v">+10%</div><div class="l">Perceived energy levels</div></div>
+          <div><div class="v">&minus;9%</div><div class="l">Oxidative stress</div></div>
+          <div><div class="v">23.7%</div><div class="l">Improvement in cosmetic outcomes</div></div>
+        </div>
+        <ul>
+          <li>Reduces wrinkles and promotes skin smoothness</li>
+          <li>Helps maintain the skin barrier &middot; helps with dry skin</li>
+          <li>Acts as an antioxidant &middot; reduces occasional fatigue</li>
+        </ul>
+        <div class="src">Bjerknes et al., <i>Functional Foods in Health &amp; Disease</i>, 2024. Individual results vary. <a href="https://www.ffhdj.com/index.php/ffhd/article/view/1491" target="_blank" rel="noopener">Read the study &#8599;</a></div>
+      </div>
     </div>
     <div class="fine fade">The strength of evidence differs by pathway &mdash; some findings come from human studies, others from laboratory or preclinical research.</div>
   </div>
@@ -309,16 +387,58 @@ footer .wm b{color:var(--orange);font-weight:700}
     </div>
     <div class="fine fade">Structure/function claims describe what an ingredient is intended to support &mdash; not claims to diagnose, treat, cure, or prevent any disease. Health Canada statements are associated with ProGo&reg;/Hofseth BioCare and do not mean finished ORYGN products are approved to treat disease.</div>
 
-    <div class="studies fade">
-      <a class="study" href="https://www.mdpi.com/1660-3397/22/11/490" target="_blank" rel="noopener"><div class="j">Marine Drugs &middot; 2024</div><div class="t">In vitro activation of GLP-1 and GIP receptors &amp; pancreatic islet cell protection by salmon-derived bioactive peptides</div><div class="a">&rarr;</div></a>
-      <a class="study" href="https://www.mdpi.com/1660-3397/22/4/151" target="_blank" rel="noopener"><div class="j">Marine Drugs &middot; 2024</div><div class="t">Glucoregulatory properties of a salmon protein hydrolysate: DPP-IV inhibition and direct glucose uptake in vitro</div><div class="a">&rarr;</div></a>
-      <a class="study" href="https://www.mdpi.com/2227-9059/14/8/1663" target="_blank" rel="noopener"><div class="j">Biomedicines &middot; 2026</div><div class="t">Pilot study of ProGo&reg; supplementation: hematologic, integumentary and metabolic health</div><div class="a">&rarr;</div></a>
-      <a class="study" href="https://www.ffhdj.com/index.php/ffhd/article/view/1491" target="_blank" rel="noopener"><div class="j">Functional Foods in Health &amp; Disease &middot; 2024</div><div class="t">18-week salmon protein hydrolysate supplementation: metabolic inflammation, well-being, and cosmetic outcomes</div><div class="a">&rarr;</div></a>
-      <a class="study" href="https://www.longdom.org/open-access/a-placebocontrolled-study-of-the-impact-of-dietary-salmon-protein-hydrolysate-supplementation-in-increasing-ferritin-and-34643.html" target="_blank" rel="noopener"><div class="j">J. Nutrition &amp; Food Sci. &middot; 2015</div><div class="t">Placebo-controlled study: ferritin and hemoglobin in iron-deficient subjects</div><div class="a">&rarr;</div></a>
-      <a class="study" href="https://www.mdpi.com/2218-273X/12/9/1287" target="_blank" rel="noopener"><div class="j">Biomolecules &middot; 2022</div><div class="t">Soluble protein hydrolysate and gastrointestinal inflammation in a preclinical model</div><div class="a">&rarr;</div></a>
+    <div class="scue fade"><h3>Read the research yourself.</h3><span class="tap"><span class="dot"></span>Tap any study to open the full paper</span></div>
+    <div class="studies fade" style="margin-top:22px">
+      <a class="study" href="https://www.mdpi.com/1660-3397/22/11/490" target="_blank" rel="noopener"><div class="j">Marine Drugs &middot; 2024</div><div class="t">In vitro activation of GLP-1 and GIP receptors &amp; pancreatic islet cell protection by salmon-derived bioactive peptides</div><span class="go">Read study &#8599;</span></a>
+      <a class="study" href="https://www.mdpi.com/1660-3397/22/4/151" target="_blank" rel="noopener"><div class="j">Marine Drugs &middot; 2024</div><div class="t">Glucoregulatory properties of a salmon protein hydrolysate: DPP-IV inhibition and direct glucose uptake in vitro</div><span class="go">Read study &#8599;</span></a>
+      <a class="study" href="https://www.mdpi.com/2227-9059/14/8/1663" target="_blank" rel="noopener"><div class="j">Biomedicines &middot; 2026</div><div class="t">Pilot study of ProGo&reg; supplementation: hematologic, integumentary and metabolic health</div><span class="go">Read study &#8599;</span></a>
+      <a class="study" href="https://www.ffhdj.com/index.php/ffhd/article/view/1491" target="_blank" rel="noopener"><div class="j">Functional Foods in Health &amp; Disease &middot; 2024</div><div class="t">18-week salmon protein hydrolysate supplementation: metabolic inflammation, well-being, and cosmetic outcomes</div><span class="go">Read study &#8599;</span></a>
+      <a class="study" href="https://www.longdom.org/open-access/a-placebocontrolled-study-of-the-impact-of-dietary-salmon-protein-hydrolysate-supplementation-in-increasing-ferritin-and-34643.html" target="_blank" rel="noopener"><div class="j">J. Nutrition &amp; Food Sci. &middot; 2015</div><div class="t">Placebo-controlled study: ferritin and hemoglobin in iron-deficient subjects</div><span class="go">Read study &#8599;</span></a>
+      <a class="study" href="https://www.mdpi.com/2218-273X/12/9/1287" target="_blank" rel="noopener"><div class="j">Biomolecules &middot; 2022</div><div class="t">Soluble protein hydrolysate and gastrointestinal inflammation in a preclinical model</div><span class="go">Read study &#8599;</span></a>
     </div>
 
-    <div class="badges fade"><span class="bl">Quality standards</span><span class="badge">GMP</span><span class="badge">HACCP</span><span class="badge">Non-GMO</span><span class="badge">Kosher</span><span class="badge">Halal</span></div>
+  </div>
+</section>
+
+<section class="cert" id="certified">
+  <div class="wrap">
+    <div class="top">
+      <div class="hero-seal fade"><svg viewBox="0 0 200 200" aria-label="HALAL CERTIFIED &#183; 100% HALAL &#183; HALAL CERTIFIED &#183; "><defs><path id="r15445" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#f05a1e" /><circle cx="100" cy="100" r="92" fill="none" stroke="#fff" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#fff" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#fff"><textPath href="#r15445" startOffset="0" textLength="458" lengthAdjust="spacing">HALAL CERTIFIED &#183; 100% HALAL &#183; HALAL CERTIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Geeza Pro,Arial" font-weight="700" font-size="30" fill="#fff" letter-spacing="0">&#1581;&#1604;&#1575;&#1604;</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#fff">HALAL</text></svg></div>
+      <div>
+        <div class="k fade">Certified &middot; Tested &middot; Trusted</div>
+        <h2 class="fade" style="margin-top:14px">Halal certified.<br><span class="serif orange">Made for every table.</span></h2>
+        <div class="lede fade">IGNYT is Halal and Kosher certified, Non-GMO, and made in an FDA-registered, cGMP facility &mdash; so families of every faith and background can take it with confidence.</div>
+      </div>
+    </div>
+    <div class="seals fade"><div class="seal"><svg viewBox="0 0 200 200" aria-label="HALAL CERTIFIED &#183; 100% HALAL &#183; HALAL CERTIFIED &#183; "><defs><path id="r15445" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r15445" startOffset="0" textLength="458" lengthAdjust="spacing">HALAL CERTIFIED &#183; 100% HALAL &#183; HALAL CERTIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Geeza Pro,Arial" font-weight="700" font-size="30" fill="#f05a1e" letter-spacing="0">&#1581;&#1604;&#1575;&#1604;</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">HALAL</text></svg><div class="n">Halal Certified</div><div class="d">Permissible under Islamic dietary law.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="KOSHER CERTIFIED &#183; KOSHER CERTIFIED &#183; KOSHER CERTIFIED &#183; "><defs><path id="r50590" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r50590" startOffset="0" textLength="458" lengthAdjust="spacing">KOSHER CERTIFIED &#183; KOSHER CERTIFIED &#183; KOSHER CERTIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="56" fill="#f05a1e" letter-spacing="1">K</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">KOSHER</text></svg><div class="n">Kosher Certified</div><div class="d">Meets Jewish dietary standards.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="NON-GMO VERIFIED &#183; NON-GMO VERIFIED &#183; "><defs><path id="r7202" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r7202" startOffset="0" textLength="458" lengthAdjust="spacing">NON-GMO VERIFIED &#183; NON-GMO VERIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="42" fill="#f05a1e" letter-spacing="1">NON</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">GMO</text></svg><div class="n">Non-GMO</div><div class="d">No genetically modified ingredients.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="FDA-REGISTERED FACILITY &#183; FDA-REGISTERED FACILITY &#183; "><defs><path id="r4350" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r4350" startOffset="0" textLength="458" lengthAdjust="spacing">FDA-REGISTERED FACILITY &#183; FDA-REGISTERED FACILITY &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="42" fill="#f05a1e" letter-spacing="1">FDA</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">REGISTERED</text></svg><div class="n">FDA-Registered Facility</div><div class="d">Made in a registered U.S. facility.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="GOOD MANUFACTURING PRACTICE &#183; CERTIFIED &#183; "><defs><path id="r90529" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r90529" startOffset="0" textLength="458" lengthAdjust="spacing">GOOD MANUFACTURING PRACTICE &#183; CERTIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="34" fill="#f05a1e" letter-spacing="1">cGMP</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">CERTIFIED</text></svg><div class="n">cGMP</div><div class="d">Current Good Manufacturing Practice.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="FOOD SAFETY SYSTEM &#183; FOOD SAFETY SYSTEM &#183; "><defs><path id="r80287" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r80287" startOffset="0" textLength="458" lengthAdjust="spacing">FOOD SAFETY SYSTEM &#183; FOOD SAFETY SYSTEM &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="28" fill="#f05a1e" letter-spacing="1">HACCP</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">CERTIFIED</text></svg><div class="n">HACCP</div><div class="d">Hazard analysis &amp; critical control points.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="BSE &amp; TSE CERTIFIED &#183; BSE &amp; TSE CERTIFIED &#183; "><defs><path id="r48854" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r48854" startOffset="0" textLength="458" lengthAdjust="spacing">BSE &amp; TSE CERTIFIED &#183; BSE &amp; TSE CERTIFIED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="42" fill="#f05a1e" letter-spacing="1">BSE</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">TSE FREE</text></svg><div class="n">BSE &amp; TSE Certified</div><div class="d">Certified free of BSE/TSE agents.</div></div><div class="seal"><svg viewBox="0 0 200 200" aria-label="THIRD-PARTY TESTED &#183; THIRD-PARTY TESTED &#183; "><defs><path id="r83374" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+<circle cx="100" cy="100" r="96" fill="#fff" /><circle cx="100" cy="100" r="92" fill="none" stroke="#0b0b0d" stroke-width="1.2"/><circle cx="100" cy="100" r="58" fill="none" stroke="#0b0b0d" stroke-width="1" opacity=".5"/>
+<text font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="12.5" letter-spacing="0" fill="#0b0b0d"><textPath href="#r83374" startOffset="0" textLength="458" lengthAdjust="spacing">THIRD-PARTY TESTED &#183; THIRD-PARTY TESTED &#183; </textPath></text>
+<text x="100" y="104" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="600" font-size="42" fill="#f05a1e" letter-spacing="1">3rd</text><text x="100" y="130" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="700" font-size="11" letter-spacing="3" fill="#0b0b0d">PARTY TESTED</text></svg><div class="n">Third-Party Tested</div><div class="d">Independently verified, batch by batch.</div></div></div>
+    <div class="fine fade">Quality and manufacturing credentials as shown on the official IGNYT product sheet. Certifications reflect manufacturing and sourcing standards, not clinical effectiveness.</div>
   </div>
 </section>
 
