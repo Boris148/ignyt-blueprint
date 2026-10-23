@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>IGNYT 5 Launch Worksheet</title>
+<link rel="icon" href="../assets/drop.svg" type="image/svg+xml">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0b0b0d;--bone:#f6f4ef;--or:#f05a1e;--mut:#8f8f96;--body:#3a3a40;--ln:#e3dfd8;--soft:#faf8f5}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Helvetica Neue',Helvetica,-apple-system,BlinkMacSystemFont,Arial,sans-serif;color:var(--ink);
+ background:radial-gradient(ellipse 90% 60% at 20% 0%,#fff 0%,#fbfaf7 50%,#f3f0ea 100%) fixed;-webkit-font-smoothing:antialiased}
+.bar{height:6px;background:var(--or)}
+.wrap{max-width:780px;margin:0 auto;padding:40px 22px 120px}
+.sf{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;color:var(--or)}
+header .mk{display:flex;align-items:center;gap:10px}
+header .mk svg{width:22px;height:28px}
+header .mk span{font-size:12px;letter-spacing:4px;font-weight:700;text-transform:uppercase;color:var(--or)}
+header h1{margin-top:18px;font-size:44px;line-height:1.05;font-weight:200;letter-spacing:-.5px}
+header h1 b{font-weight:700}
+header p{margin-top:14px;font-size:17px;line-height:1.55;color:var(--body);font-weight:300}
+header .tag{margin-top:14px;font-family:Georgia,serif;font-style:italic;font-size:16px;color:var(--mut)}
+.prog{margin-top:26px;display:flex;gap:6px}
+.prog div{flex:1;height:4px;background:var(--ln)}
+.prog div.on{background:var(--or)}
+.progl{margin-top:8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);font-weight:700}
+
+section{margin-top:44px;border-top:2px solid var(--or);padding-top:20px}
+.k{font-size:11px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--or)}
+h2{margin-top:8px;font-size:28px;font-weight:200;letter-spacing:-.3px;line-height:1.15}
+h2 b{font-weight:700}
+.note{margin-top:8px;font-size:14px;color:var(--mut);line-height:1.5}
+.grid{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.grid .full{grid-column:1/-1}
+label.f{display:block}
+label.f span{display:block;font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+label.f span i{color:var(--or);font-style:normal}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=url],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);
+ background:#fff;border:1px solid #d6d2ca;border-radius:0;padding:12px 12px;outline:none;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(240,90,30,.12)}
+input.bad{border-color:#d33}
+.cks{margin-top:14px;display:flex;flex-direction:column;gap:2px}
+.ck{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln);font-size:16px;font-weight:600;cursor:pointer}
+.ck small{margin-left:auto;font-weight:400;color:var(--mut);font-size:14px}
+.ck input{width:20px;height:20px;accent-color:var(--or);flex:0 0 20px}
+.chips{margin-top:8px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{flex:1;min-width:0;border:1px solid var(--ink);background:#fff;padding:12px 10px;text-align:center;cursor:pointer;font-weight:700;font-size:18px;user-select:none}
+.chip small{display:block;font-size:10px;letter-spacing:2px;color:var(--mut);margin-top:2px;font-weight:700}
+.chip.on{background:var(--or);border-color:var(--or);color:#fff}.chip.on small{color:rgba(255,255,255,.85)}
+.warn{margin-top:8px;font-size:13px;color:#c0392b;display:none}
+
+/* 50 list */
+.key{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 16px}
+.key div{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.key b{font-family:Georgia,serif;font-style:italic;color:var(--or);font-size:18px;letter-spacing:0;margin-right:3px}
+.list{margin-top:16px;border-top:1px solid var(--ln)}
+.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln)}
+.row .n{flex:0 0 26px;font-weight:800;color:var(--or);font-size:13px;text-align:right}
+.row input{flex:1;padding:9px 10px;font-size:15px}
+.row .tr{display:flex;gap:4px}
+.row .tr button{width:30px;height:34px;border:1px solid #cfcac1;background:#fff;font-family:Georgia,serif;font-style:italic;font-size:16px;color:var(--mut);cursor:pointer}
+.row .tr button.on{background:var(--or);border-color:var(--or);color:#fff}
+.row .st{flex:0 0 34px;text-align:center;font-weight:800;font-size:14px}
+.row .st:after{content:'★';color:var(--or);font-size:11px;margin-left:1px}
+.row.top{background:linear-gradient(90deg,rgba(240,90,30,.08),rgba(240,90,30,0))}
+.more{margin-top:14px;background:none;border:1px solid var(--ink);padding:12px 18px;font:inherit;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;width:100%}
+
+/* tracker */
+.tk{margin-top:16px}
+.tkr{border-bottom:1px solid var(--ln);padding:14px 0}
+.tkr .h{display:flex;align-items:center;gap:10px}
+.tkr .h .rk{font-family:Georgia,serif;font-style:italic;color:var(--or);font-size:20px;width:26px}
+.tkr .h .nm{font-weight:700;font-size:17px;flex:1}
+.tkr .h .ss{font-size:13px;color:var(--mut)}
+.tkr .c{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;padding-left:36px}
+.tg{border:1px solid #cfcac1;background:#fff;padding:8px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--body)}
+.tg.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tg.y.on{background:var(--or);border-color:var(--or)}
+.tkr .lk{margin-top:8px;padding-left:36px}
+.tkr .lk input{font-size:14px;padding:9px 10px}
+.empty{margin-top:14px;padding:18px;background:var(--soft);border:1px dashed #d6d2ca;color:var(--mut);font-size:14px;text-align:center}
+
+/* script */
+.script{margin-top:16px;border-left:4px solid var(--or);padding:6px 0 6px 18px;font-family:Georgia,serif;font-size:19px;line-height:1.6}
+.script em{font-style:normal;color:var(--or);font-weight:700;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:17px}
+.btn{margin-top:14px;display:inline-block;background:var(--ink);color:#fff;border:0;padding:12px 18px;font:inherit;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+.btn.o{background:var(--or)}
+.q{margin-top:16px;background:var(--ink);color:var(--bone);padding:22px;font-family:Georgia,serif;font-style:italic;font-size:21px;line-height:1.45}
+.q b{color:var(--or);font-weight:400}
+
+/* checklist */
+.five{margin-top:14px}
+.five .r{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--ln);font-weight:700;font-size:16px}
+.five .r i{font-family:Georgia,serif;color:var(--or);font-weight:400;font-size:20px;width:18px}
+.five .r .bx{width:22px;height:22px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.five .r.done .bx{background:var(--or);border-color:var(--or)}
+.five .r span{margin-left:auto;font-weight:400;font-size:13px;color:var(--mut)}
+
+.submit{margin-top:44px;background:var(--ink);color:var(--bone);padding:28px 24px}
+.submit h2{color:var(--bone)}
+.submit p{margin-top:10px;color:#c9c5be;font-size:15px;line-height:1.55}
+.submit .btn{background:var(--or);font-size:15px;padding:16px 22px;margin-right:10px}
+.submit .btn.g{background:transparent;border:1px solid #6d6862;color:var(--bone)}
+.msg{margin-top:16px;font-size:15px;line-height:1.5;display:none}
+.msg.ok{display:block;color:#9be29b}.msg.err{display:block;color:#ff9a7a}
+.hp{position:absolute;left:-9999px}
+footer{margin-top:40px;text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mut)}
+footer b{color:var(--or)}
+.saved{position:fixed;right:16px;bottom:16px;background:var(--ink);color:#fff;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 12px;opacity:0;transition:opacity .3s}
+.saved.show{opacity:.9}
+@media(max-width:600px){
+ header h1{font-size:34px}
+ .grid{grid-template-columns:1fr}
+ .row{flex-wrap:wrap}
+ .row input{flex:1 1 calc(100% - 80px)}
+ .row .tr{margin-left:36px}
+ .row .tr button{width:34px}
+ .chip{font-size:16px;padding:12px 4px}
+ .tg{padding:8px 10px}
+}
+/* print = full worksheet incl. all 50 names, never sent anywhere */
+@media print{
+ body{background:#fff}
+ .bar,.prog,.progl,.more,.btn,.submit,.saved,footer{display:none!important}
+ .wrap{padding:0;max-width:none}
+ section{break-inside:avoid-page;margin-top:22px}
+ .row{padding:3px 0}.row input{border:0;padding:2px}
+ .list .row.hide{display:flex!important}
+}
+.row.hide{display:none}
+</style>
+</head><body>
+<div class="bar"></div>
+<div class="wrap">
+
+<header>
+ <div class="mk"><svg viewBox="0 0 62 80"><path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/><text x="31" y="58" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-style="italic" font-size="30">5</text></svg><span>The IGNYT 5 Blueprint</span></div>
+ <h1>IGNYT 5 <b>Launch</b><br><span class="sf">Worksheet.</span></h1>
+ <p>Five steps. Everyone starts here. Fill it in as you watch &mdash; your progress saves on this device automatically. When you&rsquo;re done, hit <b>Submit</b> and we&rsquo;ll email you your copy.</p>
+ <div class="tag">&ldquo;Keep it simple. We&rsquo;re collecting decisions, not convincing people.&rdquo;</div>
+ <div class="prog" id="prog"><div></div><div></div><div></div><div></div><div></div></div>
+ <div class="progl" id="progl">0 of 5 steps complete</div>
+</header>
+
+<section>
+ <div class="k">Start here</div>
+ <h2>About <b>you.</b></h2>
+ <div class="grid">
+  <label class="f"><span>First name <i>*</i></span><input type="text" id="first" autocomplete="given-name"></label>
+  <label class="f"><span>Last name <i>*</i></span><input type="text" id="last" autocomplete="family-name"></label>
+  <label class="f"><span>Email <i>*</i></span><input type="email" id="email" autocomplete="email"></label>
+  <label class="f"><span>Phone</span><input type="tel" id="phone" autocomplete="tel"></label>
+  <label class="f"><span>Sponsor first name <i>*</i></span><input type="text" id="sponsorFirst"></label>
+  <label class="f"><span>Sponsor last name <i>*</i></span><input type="text" id="sponsorLast"></label>
+  <label class="f full"><span>My support line</span><input type="text" id="supportLine" placeholder="Who&rsquo;s helping you launch"></label>
+ </div>
+</section>
+
+<section>
+ <div class="k">Step 1 &middot; Launch</div>
+ <h2>Set your <b>launch date.</b></h2>
+ <div class="grid"><label class="f"><span>My launch date</span><input type="date" id="launchDate"></label></div>
+ <div class="note" style="margin-top:22px">Review IGNYTHub.com &mdash; check each one off when you&rsquo;ve walked through it.</div>
+ <div class="cks">
+  <label class="ck"><input type="checkbox" id="hubWellness">IGNYT Your Wellness</label>
+  <label class="ck"><input type="checkbox" id="hubLife">IGNYT Your Life</label>
+ </div>
+</section>
+
+<section>
+ <div class="k">Step 2 &middot; IGNYT 50 List</div>
+ <h2>Write it. Rank it. <b>Start inviting.</b></h2>
+ <div class="note">Write all 50 first. Then tap a letter for every trait the person has &mdash; most stars = your first 10. <b>Your 50 names stay on this device</b>; only your top 10 are submitted.</div>
+ <div class="key"><div><b>N</b>Network</div><div><b>C</b>Credibility</div><div><b>D</b>Desire</div><div><b>A</b>Accountable</div><div><b>R</b>Resourceful</div><div><b>T</b>Teachable</div></div>
+ <div class="list" id="list"></div>
+ <button class="more" id="more" type="button">Show all 50</button>
+</section>
+
+<section>
+ <div class="k">Step 3 &middot; Grand Opening (Zoom)</div>
+ <h2>Schedule your <b>Grand Opening.</b></h2>
+ <div class="grid">
+  <label class="f"><span>Wednesday date</span><input type="date" id="goDate"></label>
+  <label class="f"><span>Presenting with me</span><input type="text" id="presenter" placeholder="Your support line"></label>
+ </div>
+ <div class="warn" id="wedWarn">Heads up &mdash; that date isn&rsquo;t a Wednesday.</div>
+ <div class="note" style="margin-top:16px">Pick a time (Central). Coordinate with your support line before you lock it in.</div>
+ <div class="chips" id="goTime">
+  <div class="chip" data-v="6:30 PM">6:30 PM<small>CENTRAL</small></div>
+  <div class="chip" data-v="7:30 PM">7:30 PM<small>CENTRAL</small></div>
+  <div class="chip" data-v="8:30 PM">8:30 PM<small>CENTRAL</small></div>
+ </div>
+ <div class="grid"><label class="f full"><span>Zoom link</span><input type="url" id="zoom" placeholder="https://zoom.us/j/..."></label></div>
+
+ <div class="note" style="margin-top:24px">Your invitation &mdash; send it <b>individually</b>, never as a group text.</div>
+ <div class="script" id="script"></div>
+ <button class="btn" id="copy" type="button">Copy invitation</button>
+
+ <div class="note" style="margin-top:26px">Your first 10 &mdash; ranked by stars. Track every invitation.</div>
+ <div class="tk" id="tk"></div>
+</section>
+
+<section>
+ <div class="k">Step 4 &middot; Follow up</div>
+ <h2>One question. <b>Every guest.</b></h2>
+ <div class="q">&ldquo;What did you like <b>most</b> about what you saw?&rdquo;</div>
+ <div class="note">Write their answer under their name in your tracker above.</div>
+</section>
+
+<section>
+ <div class="k">Step 5 &middot; Enroll &amp; Launch</div>
+ <h2>Help them start. <b>Then repeat.</b></h2>
+ <div class="grid">
+  <label class="f"><span>Customer</span><input type="text" id="cust1"></label>
+  <label class="f"><span>Customer</span><input type="text" id="cust2"></label>
+  <label class="f"><span>New partner</span><input type="text" id="part1"></label>
+  <label class="f"><span>New partner</span><input type="text" id="part2"></label>
+ </div>
+ <div class="note">New partners start this same worksheet.</div>
+</section>
+
+<section>
+ <div class="k">Stay plugged in</div>
+ <h2>Our <b>weekly events.</b></h2>
+ <div class="cks">
+  <label class="ck"><input type="checkbox" id="evMon">Mon &middot; ORYGN Overview<small>7:00 PM CT</small></label>
+  <label class="ck"><input type="checkbox" id="evThu">Thu &middot; IGNYT Your Life<small>7:30 PM CT</small></label>
+  <label class="ck"><input type="checkbox" id="evSat">Sat &middot; IGNYT 5 Family Huddle<small>9:59 AM CT</small></label>
+ </div>
+ <div class="grid"><label class="f"><span>My first Family Huddle</span><input type="date" id="firstHuddle"></label></div>
+</section>
+
+<section>
+ <div class="k">Your checklist</div>
+ <h2>The IGNYT 5 <b>Blueprint.</b></h2>
+ <div class="five" id="five"></div>
+</section>
+
+<div class="submit">
+ <div class="k">Done?</div>
+ <h2>Submit your <b>worksheet.</b></h2>
+ <p>We&rsquo;ll email your copy to you and keep it on file with your sponsor. You can come back and submit again any time &mdash; it updates your record.</p>
+ <input class="hp" id="website" tabindex="-1" autocomplete="off">
+ <button class="btn" id="send" type="button">Submit &amp; email me</button><button class="btn g" id="print" type="button">Print full worksheet</button>
+ <div class="msg" id="msg"></div>
+</div>
+
+<footer><b>ORYGN</b> &middot; IGNYT 5 &middot; Let&rsquo;s IGNYT</footer>
+</div>
+<div class="saved" id="saved">Saved</div>
+
+<script>
+// Google Apps Script web-app URL (deployed from IGNYT5Hub@gmail.com). Empty = not connected yet.
+var ENDPOINT = '';
+var KEY = 'ignyt5_launch_ws_v1', T = 'NCDART';
+var FIELDS = ['first','last','email','phone','sponsorFirst','sponsorLast','supportLine','launchDate','goDate','presenter','zoom','firstHuddle','cust1','cust2','part1','part2'];
+var CHECKS = ['hubWellness','hubLife','evMon','evThu','evSat'];
+var S = load();
+function load(){ try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && s.v===1) return s; }catch(e){}
+ return {v:1, id:(crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(16).slice(2)), f:{}, c:{}, goTime:'', list:Array.from({length:50},function(){return {n:'',t:''};}), trk:{}, showAll:false}; }
+var st; function save(){ localStorage.setItem(KEY, JSON.stringify(S)); var el=document.getElementById('saved'); el.classList.add('show'); clearTimeout(st); st=setTimeout(function(){el.classList.remove('show');},900); }
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+FIELDS.forEach(function(k){ var el=$(k); el.value = S.f[k]||''; el.addEventListener('input',function(){ S.f[k]=el.value; el.classList.remove('bad'); save(); refresh(); }); });
+CHECKS.forEach(function(k){ var el=$(k); el.checked = !!S.c[k]; el.addEventListener('change',function(){ S.c[k]=el.checked; save(); refresh(); }); });
+document.querySelectorAll('#goTime .chip').forEach(function(ch){ ch.addEventListener('click',function(){ S.goTime = S.goTime===ch.dataset.v ? '' : ch.dataset.v; save(); refresh(); }); });
+
+// 50 list
+var list = $('list');
+S.list.forEach(function(r,i){
+ var row = document.createElement('div'); row.className='row'; row.dataset.i=i;
+ row.innerHTML = '<div class="n">'+(i+1)+'</div><input type="text" placeholder="Name"><div class="tr">'+T.split('').map(function(l){return '<button type="button" data-l="'+l+'" title="'+l+'">'+l+'</button>';}).join('')+'</div><div class="st">0</div>';
+ var inp=row.querySelector('input'); inp.value=r.n;
+ inp.addEventListener('input',function(){ r.n=inp.value; save(); refresh(); });
+ row.querySelectorAll('.tr button').forEach(function(b){ b.addEventListener('click',function(){ var l=b.dataset.l; r.t = r.t.indexOf(l)>=0 ? r.t.replace(l,'') : r.t+l; save(); refresh(); }); });
+ list.appendChild(row);
+});
+$('more').addEventListener('click',function(){ S.showAll=!S.showAll; save(); refresh(); });
+
+function top10(){
+ return S.list.map(function(r,i){return {i:i,n:r.n.trim(),s:r.t.length,t:T.split('').filter(function(l){return r.t.indexOf(l)>=0;}).join('')};})
+  .filter(function(r){return r.n;}).sort(function(a,b){return b.s-a.s || a.i-b.i;}).slice(0,10);
+}
+function trk(name){ var k=name.toLowerCase(); return S.trk[k] || (S.trk[k]={sent:false,resp:'',came:false,liked:''}); }
+
+function renderTracker(tp){
+ var tk=$('tk');
+ if(!tp.length){ tk.innerHTML='<div class="empty">Write and rank your IGNYT 50 List above &mdash; your top 10 show up here.</div>'; return; }
+ var focus = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.lk : null;
+ tk.innerHTML = tp.map(function(p,j){ var t=trk(p.n);
+  return '<div class="tkr" data-k="'+esc(p.n.toLowerCase())+'"><div class="h"><div class="rk">'+(j+1)+'</div><div class="nm">'+esc(p.n)+'</div><div class="ss">'+p.s+'&#9733;</div></div>'+
+   '<div class="c"><button type="button" class="tg'+(t.sent?' on':'')+'" data-a="sent">Sent</button>'+
+   ['Yes','Maybe','Not now'].map(function(r){return '<button type="button" class="tg'+(r==='Yes'?' y':'')+(t.resp===r?' on':'')+'" data-a="resp" data-v="'+r+'">'+r+'</button>';}).join('')+
+   '<button type="button" class="tg y'+(t.came?' on':'')+'" data-a="came">Came</button></div>'+
+   '<div class="lk"><input type="text" data-lk="'+esc(p.n.toLowerCase())+'" placeholder="What did they like most?" value="'+esc(t.liked)+'"></div></div>';
+ }).join('');
+ tk.querySelectorAll('.tkr').forEach(function(row){ var t=S.trk[row.dataset.k];
+  row.querySelectorAll('.tg').forEach(function(b){ b.addEventListener('click',function(){ var a=b.dataset.a; if(a==='resp') t.resp = t.resp===b.dataset.v ? '' : b.dataset.v; else t[a]=!t[a]; save(); refresh(); }); });
+  var li=row.querySelector('.lk input'); li.addEventListener('input',function(){ t.liked=li.value; save(); refresh(false); });
+ });
+ if(focus){ var el=tk.querySelector('[data-lk="'+focus.replace(/"/g,'\\"')+'"]'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length);} }
+}
+
+function goDay(){ if(!S.f.goDate) return ''; var d=new Date(S.f.goDate+'T12:00:00'); return d.toLocaleDateString('en-US',{weekday:'long'}); }
+function inviteText(){ return 'Hey! I’m excited to launch my new business and would love for you to join my private Grand Opening on Zoom this '+(goDay()||'[day]')+' at '+(S.goTime||'[time]')+' '+(S.goTime?'Central':'[timezone]')+'. Come hear what I’m building and celebrate this exciting new chapter with me!'; }
+
+function steps(tp){
+ var any = function(arr){ return arr.some(function(k){ return (S.f[k]||'').trim(); }); };
+ return [
+  ['Launch','Date set', !!S.f.launchDate],
+  ['IGNYT 50 List','Ranked & inviting', tp.length>=10 && tp.some(function(p){return trk(p.n).sent;})],
+  ['Grand Opening','Wednesday booked', !!(S.f.goDate && S.goTime)],
+  ['Follow Up','Every guest', tp.some(function(p){return (trk(p.n).liked||'').trim();})],
+  ['Enroll & Launch','Same 5 steps', any(['cust1','cust2','part1','part2'])]
+ ];
+}
+
+function refresh(redrawTracker){
+ var tp = top10(), topIdx = tp.map(function(p){return p.i;});
+ // list
+ var lastFilled = S.list.reduce(function(m,r,i){ return r.n.trim()? i : m; }, -1);
+ var shown = S.showAll ? 50 : Math.max(10, Math.min(50, lastFilled+3));
+ list.querySelectorAll('.row').forEach(function(row){ var i=+row.dataset.i, r=S.list[i];
+  row.classList.toggle('hide', i>=shown); row.classList.toggle('top', topIdx.indexOf(i)>=0);
+  row.querySelector('.st').textContent = r.t.length;
+  row.querySelectorAll('.tr button').forEach(function(b){ b.classList.toggle('on', r.t.indexOf(b.dataset.l)>=0); });
+ });
+ $('more').textContent = S.showAll ? 'Show fewer' : 'Show all 50';
+ $('more').style.display = shown>=50 && !S.showAll ? 'none' : '';
+ // time chips + wednesday check
+ document.querySelectorAll('#goTime .chip').forEach(function(ch){ ch.classList.toggle('on', ch.dataset.v===S.goTime); });
+ $('wedWarn').style.display = S.f.goDate && goDay()!=='Wednesday' ? 'block' : 'none';
+ // script
+ $('script').innerHTML = '&ldquo;'+esc(inviteText()).replace(/\[(day|time|timezone)\]/g,'<em>[$1]</em>').replace(new RegExp('(this )('+(goDay()||'@@')+')'),'$1<em>$2</em>').replace(new RegExp('(at )('+(S.goTime||'@@').replace(':','\\:')+' Central)'),'$1<em>$2</em>')+'&rdquo;';
+ if(redrawTracker!==false) renderTracker(tp);
+ // checklist + progress
+ var sp = steps(tp), done = sp.filter(function(s){return s[2];}).length;
+ $('five').innerHTML = sp.map(function(s,i){ return '<div class="r'+(s[2]?' done':'')+'"><div class="bx">'+(s[2]?'&#10003;':'')+'</div><i>'+(i+1)+'</i>'+esc(s[0])+'<span>'+esc(s[1])+'</span></div>'; }).join('');
+ document.querySelectorAll('#prog div').forEach(function(d,i){ d.classList.toggle('on', i<done); });
+ $('progl').textContent = done+' of 5 steps complete';
+}
+refresh();
+
+$('copy').addEventListener('click',function(){ var t=inviteText(), b=$('copy');
+ (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ b.textContent='Copied ✓'; },function(){ prompt('Copy your invitation:', t); })
+ .then(function(){ setTimeout(function(){ b.textContent='Copy invitation'; },1600); });
+});
+$('print').addEventListener('click',function(){ S.showAll=true; refresh(); setTimeout(function(){ window.print(); },100); });
+
+function payload(){
+ var tp = top10(), sp = steps(tp);
+ return {
+  id:S.id, first:S.f.first||'', last:S.f.last||'', email:S.f.email||'', phone:S.f.phone||'',
+  sponsorFirst:S.f.sponsorFirst||'', sponsorLast:S.f.sponsorLast||'', supportLine:S.f.supportLine||'',
+  launchDate:S.f.launchDate||'', hubWellness:!!S.c.hubWellness, hubLife:!!S.c.hubLife,
+  goDate:S.f.goDate||'', goDay:goDay(), goTime:S.goTime||'', presenter:S.f.presenter||'', zoom:S.f.zoom||'',
+  evMon:!!S.c.evMon, evThu:!!S.c.evThu, evSat:!!S.c.evSat, firstHuddle:S.f.firstHuddle||'',
+  namesWritten: S.list.filter(function(r){return r.n.trim();}).length,
+  top10: tp.map(function(p,j){ var t=trk(p.n); return {rank:j+1,name:p.n,stars:p.s,traits:p.t,sent:t.sent,response:t.resp,came:t.came,liked:t.liked}; }),
+  customers:[S.f.cust1||'',S.f.cust2||''].filter(Boolean), partners:[S.f.part1||'',S.f.part2||''].filter(Boolean),
+  steps: sp.map(function(s){return s[2];}), invitation: inviteText(), website: $('website').value
+ };
+}
+$('send').addEventListener('click',function(){
+ var msg=$('msg'), btn=$('send'); msg.className='msg';
+ var req=['first','last','email','sponsorFirst','sponsorLast'], bad=req.filter(function(k){ return !(S.f[k]||'').trim(); });
+ if(S.f.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.f.email.trim())) bad.push('email');
+ bad.forEach(function(k){ $(k).classList.add('bad'); });
+ if(bad.length){ msg.className='msg err'; msg.textContent='Please fill in your name, email and your sponsor’s first and last name at the top.'; $(bad[0]).scrollIntoView({behavior:'smooth',block:'center'}); return; }
+ if(!ENDPOINT){ msg.className='msg err'; msg.textContent='Submissions aren’t switched on yet — your worksheet is saved on this device. Use “Print full worksheet” for a copy.'; return; }
+ btn.disabled=true; btn.textContent='Sending…';
+ fetch(ENDPOINT,{method:'POST',body:JSON.stringify(payload())}).then(function(r){ return r.json(); }).then(function(j){
+  if(!j.ok) throw new Error(j.error||'failed');
+  msg.className='msg ok'; msg.textContent='Done! Your worksheet is on file and a copy is on its way to '+S.f.email.trim()+'. Let’s IGNYT.';
+ }).catch(function(){ msg.className='msg err'; msg.textContent='That didn’t go through. Check your connection and try again — nothing on this page was lost.'; })
+ .then(function(){ btn.disabled=false; btn.textContent='Submit & email me'; });
+});
+</script>
+</body></html>
