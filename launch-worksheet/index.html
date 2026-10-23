@@ -161,7 +161,7 @@ footer b{color:var(--or)}
  <div class="k">Step 1 &middot; Launch</div>
  <h2>Set your <b>launch date.</b></h2>
  <div class="grid"><label class="f"><span>My launch date</span><input type="date" id="launchDate"></label></div>
- <div class="note" style="margin-top:22px">Review IGNYTHub.com &mdash; check each one off when you&rsquo;ve walked through it.</div>
+ <div class="note" style="margin-top:22px">Then walk through <b>IGNYTHub.com</b> and check each one off.</div>
  <div class="cks">
   <label class="ck"><input type="checkbox" id="hubWellness">IGNYT Your Wellness</label>
   <label class="ck"><input type="checkbox" id="hubLife">IGNYT Your Life</label>
@@ -170,8 +170,8 @@ footer b{color:var(--or)}
 
 <section>
  <div class="k">Step 2 &middot; IGNYT 50 List</div>
- <h2>Write it. Rank it. <b>Start inviting.</b></h2>
- <div class="note">Write all 50 first. Then tap a letter for every trait the person has &mdash; most stars = your first 10. <b>Your 50 names stay on this device</b>; only your top 10 are submitted.</div>
+ <h2>Write it. <b>Rank it.</b></h2>
+ <div class="note">Write 50 names. Tap a letter for every trait they have &mdash; <b>most stars = your top 10.</b> Your 50 names stay on this device; only your top 10 are submitted.</div>
  <div class="key"><div><b>N</b>Network</div><div><b>C</b>Credibility</div><div><b>D</b>Desire</div><div><b>A</b>Accountable</div><div><b>R</b>Resourceful</div><div><b>T</b>Teachable</div></div>
  <div class="list" id="list"></div>
  <button class="more" id="more" type="button">Show all 50</button>
@@ -179,13 +179,13 @@ footer b{color:var(--or)}
 
 <section>
  <div class="k">Step 3 &middot; Grand Opening (Zoom)</div>
- <h2>Schedule your <b>Grand Opening.</b></h2>
+ <h2>Pick your <b>Wednesday.</b></h2>
  <div class="grid">
   <label class="f"><span>Wednesday date</span><input type="date" id="goDate"></label>
   <label class="f"><span>Presenting with me</span><input type="text" id="presenter" placeholder="Your support line"></label>
  </div>
  <div class="warn" id="wedWarn">Heads up &mdash; that date isn&rsquo;t a Wednesday.</div>
- <div class="note" style="margin-top:16px">Pick a time (Central). Coordinate with your support line before you lock it in.</div>
+ <div class="note" style="margin-top:16px">Pick a time (Central). Coordinate with your support line before you lock it in &mdash; you invite, they help present.</div>
  <div class="chips" id="goTime">
   <div class="chip" data-v="6:30 PM">6:30 PM<small>CENTRAL</small></div>
   <div class="chip" data-v="7:30 PM">7:30 PM<small>CENTRAL</small></div>
@@ -193,11 +193,11 @@ footer b{color:var(--or)}
  </div>
  <div class="grid"><label class="f full"><span>Zoom link</span><input type="url" id="zoom" placeholder="https://zoom.us/j/..."></label></div>
 
- <div class="note" style="margin-top:24px">Your invitation &mdash; send it <b>individually</b>, never as a group text.</div>
+ <div class="k" style="margin-top:34px">The invitation</div><div class="note">Copy it and send it to your top 10 <b>one at a time</b> &mdash; never a group text.</div>
  <div class="script" id="script"></div>
  <button class="btn" id="copy" type="button">Copy invitation</button>
 
- <div class="note" style="margin-top:26px">Your first 10 &mdash; ranked by stars. Track every invitation.</div>
+ <div class="k" style="margin-top:34px">Your first 10</div><div class="note">Ranked by stars. Track every reply.</div>
  <div class="tk" id="tk"></div>
 </section>
 
@@ -205,7 +205,7 @@ footer b{color:var(--or)}
  <div class="k">Step 4 &middot; Follow up</div>
  <h2>One question. <b>Every guest.</b></h2>
  <div class="q">&ldquo;What did you like <b>most</b> about what you saw?&rdquo;</div>
- <div class="note">Write their answer under their name in your tracker above.</div>
+ <div class="note">Write their answer under their name in &ldquo;Your first 10&rdquo; above.</div>
 </section>
 
 <section>
@@ -310,10 +310,10 @@ function steps(tp){
  var any = function(arr){ return arr.some(function(k){ return (S.f[k]||'').trim(); }); };
  return [
   ['Launch','Date set', !!S.f.launchDate],
-  ['IGNYT 50 List','Ranked & inviting', tp.length>=10 && tp.some(function(p){return trk(p.n).sent;})],
-  ['Grand Opening','Wednesday booked', !!(S.f.goDate && S.goTime)],
+  ['IGNYT 50 List','Top 10 ranked', tp.length>=10],
+  ['Grand Opening','Wednesday booked &middot; invites sent', !!(S.f.goDate && S.goTime) && tp.some(function(p){return trk(p.n).sent;})],
   ['Follow Up','Every guest', tp.some(function(p){return (trk(p.n).liked||'').trim();})],
-  ['Enroll & Launch','Same 5 steps', any(['cust1','cust2','part1','part2'])]
+  ['Enroll & Launch','Customers &amp; partners', any(['cust1','cust2','part1','part2'])]
  ];
 }
 
@@ -337,7 +337,7 @@ function refresh(redrawTracker){
  if(redrawTracker!==false) renderTracker(tp);
  // checklist + progress
  var sp = steps(tp), done = sp.filter(function(s){return s[2];}).length;
- $('five').innerHTML = sp.map(function(s,i){ return '<div class="r'+(s[2]?' done':'')+'"><div class="bx">'+(s[2]?'&#10003;':'')+'</div><i>'+(i+1)+'</i>'+esc(s[0])+'<span>'+esc(s[1])+'</span></div>'; }).join('');
+ $('five').innerHTML = sp.map(function(s,i){ return '<div class="r'+(s[2]?' done':'')+'"><div class="bx">'+(s[2]?'&#10003;':'')+'</div><i>'+(i+1)+'</i>'+esc(s[0])+'<span>'+s[1]+'</span></div>'; }).join('');
  document.querySelectorAll('#prog div').forEach(function(d,i){ d.classList.toggle('on', i<done); });
  $('progl').textContent = done+' of 5 steps complete';
 }
