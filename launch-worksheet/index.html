@@ -232,6 +232,7 @@ body.locked{overflow:hidden}
   <label class="f"><span>Sponsor first name <i>*</i></span><input type="text" id="sponsorFirst"></label>
   <label class="f"><span>Sponsor last name <i>*</i></span><input type="text" id="sponsorLast"></label>
   <label class="f full"><span>My support line</span><input type="text" id="supportLine" placeholder="Who&rsquo;s helping you launch"></label>
+  <label class="f full"><span>What is your why?</span><textarea id="why" rows="3" placeholder="Why are you doing this? Be specific."></textarea><div class="note">We need a clearly defined goal.</div></label>
  </div>
 </section>
 
@@ -332,7 +333,7 @@ body.locked{overflow:hidden}
 // Google Apps Script web-app URL (deployed from IGNYT5Hub@gmail.com). Empty = not connected yet.
 var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwL75B4cYc0mXJ7WMSwu0biaMFx7YBYoeyLGH8iSR_2pZZXdlysV4cYjwYZ6Hnpr6lrxQ/exec';
 var KEY = 'ignyt5_launch_ws_v1', T = 'NCDART';
-var FIELDS = ['first','last','email','phone','sponsorFirst','sponsorLast','supportLine','launchDate','goDate','presenter','zoom','firstHuddle','cust1','cust2','part1','part2'];
+var FIELDS = ['first','last','email','phone','sponsorFirst','sponsorLast','supportLine','why','launchDate','goDate','presenter','zoom','firstHuddle','cust1','cust2','part1','part2'];
 var CHECKS = ['hubWellness','hubLife','evMon','evThu','evSat'];
 var S = load();
 function load(){ try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && s.v===1) return s; }catch(e){}
@@ -431,7 +432,7 @@ function payload(){
  var tp = top10(), sp = steps(tp);
  return {
   id:S.id, first:S.f.first||'', last:S.f.last||'', email:S.f.email||'', phone:S.f.phone||'',
-  sponsorFirst:S.f.sponsorFirst||'', sponsorLast:S.f.sponsorLast||'', supportLine:S.f.supportLine||'',
+  sponsorFirst:S.f.sponsorFirst||'', sponsorLast:S.f.sponsorLast||'', supportLine:S.f.supportLine||'', why:S.f.why||'',
   launchDate:S.f.launchDate||'', hubWellness:!!S.c.hubWellness, hubLife:!!S.c.hubLife,
   goDate:S.f.goDate||'', goDay:goDay(), goTime:S.goTime||'', presenter:S.f.presenter||'', zoom:S.f.zoom||'',
   evMon:!!S.c.evMon, evThu:!!S.c.evThu, evSat:!!S.c.evSat, firstHuddle:S.f.firstHuddle||'',
