@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IGNYT 5">
+<title>IGNYT 5 · November Challenge</title>
+<meta property="og:title" content="IGNYT 5 · November Challenge — 5 a day to the Blueprint">
+<meta property="og:description" content="Get 5 people in front of the Blueprint every day. Track it, keep your streak, climb the leaderboard.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--ink:#0b0b0d;--card:#17171b;--card2:#202026;--line:#2c2c33;--orange:#f05a1e;--gold:#ffb23e;--txt:#f4f1ec;--mut:#9a958e;--ok:#3ecf8e}
+html,body{background:var(--ink);color:var(--txt);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;min-height:100%}
+body{background:radial-gradient(ellipse 120% 50% at 50% -10%,#3a1a0c 0%,#140c08 45%,#0b0b0d 75%) fixed;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+.wrap{max-width:520px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px 24px}
+.i{font-family:Georgia,serif;font-style:italic;font-weight:400;color:var(--orange)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:3.5px;font-weight:700;text-transform:uppercase;color:var(--orange)}
+.brand svg{width:22px;height:29px;flex:0 0 22px}
+.streak{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:800;font-size:15px;white-space:nowrap}
+.streak.hot{border-color:var(--orange);box-shadow:0 0 18px rgba(240,90,30,.35)}
+h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-top:18px} h1 b{font-weight:800}
+.sub{color:var(--mut);font-size:14px;margin-top:6px;line-height:1.4}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+.lbl{font-size:10.5px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
+.circles{display:flex;justify-content:space-between;gap:8px;margin:6px 0 4px}
+.c{flex:1;aspect-ratio:1;max-width:76px;border-radius:50%;border:3px dashed #4a4a52;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;transition:.25s}
+.c.f{border:3px solid var(--orange);background:radial-gradient(circle at 35% 30%,#ff8a4c,#f05a1e 60%,#b83c0c);box-shadow:0 4px 16px rgba(240,90,30,.4)}
+.c.f.p{border-color:var(--gold);background:radial-gradient(circle at 35% 30%,#ffd27a,#ffb23e 60%,#c47a10);color:#2a1700}
+.prog{text-align:center;color:var(--mut);font-size:14px;margin-top:10px} .prog b{color:var(--txt)}
+.done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--gold);font-weight:700;margin-top:4px}
+input,select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:var(--orange)}
+.f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
+.seg{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-top:10px}
+.seg button{flex:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:14px;padding:11px 6px;border-radius:9px;font-family:inherit}
+.seg button.on{background:var(--orange);color:#fff} .seg button.on.p{background:var(--gold);color:#2a1700}
+.btn{width:100%;border:0;border-radius:14px;background:var(--orange);color:#fff;font-weight:800;font-size:17px;padding:16px;margin-top:12px;font-family:inherit}
+.btn:disabled{opacity:.4} .btn.ghost{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600;font-size:15px}
+.err{color:#ff7a6b;font-size:14px;margin-top:10px;min-height:1px}
+.list .it{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .list .it:first-child{border-top:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--orange);flex:0 0 10px} .dot.p{background:var(--gold)}
+.it .nm{flex:1;font-weight:700} .it .k{font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:2px}
+.x{background:none;border:0;color:var(--mut);font-size:22px;padding:0 6px;font-family:inherit}
+.fu{border-top:1px solid var(--line);padding:14px 0} .fu:first-of-type{border-top:0;padding-top:4px}
+.fu .nm{font-weight:800;font-size:16px} .fu .k{font-size:12.5px;color:var(--mut);margin-top:2px}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap} .acts button{flex:1;min-width:70px;border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:10px;padding:10px 6px;font-size:13px;font-weight:700;font-family:inherit}
+.acts .a1{border-color:var(--orange);color:var(--orange)} .acts .a2{border-color:var(--gold);color:var(--gold)}
+.month{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.md{aspect-ratio:1;border-radius:7px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;color:#5d5d66;font-weight:700}
+.md.d{background:var(--orange);color:#fff} .md.t{outline:2px solid var(--orange);color:var(--txt)} .md.m{background:#1a1a1f;color:#3d3d44;text-decoration:line-through}
+.rk{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .rk:first-child{border-top:0}
+.rk .n{width:30px;text-align:center;font-weight:800;color:var(--mut);font-size:15px} .rk.top .n{color:var(--gold);font-size:20px}
+.rk .w{flex:1} .rk .w b{display:block;font-size:15.5px} .rk .w span{font-size:12px;color:var(--mut)}
+.rk .v{font-weight:800;font-size:18px;text-align:right} .rk .v small{display:block;font-size:10px;color:var(--mut);letter-spacing:1px;font-weight:700;text-transform:uppercase}
+.rk.me{background:linear-gradient(90deg,rgba(240,90,30,.16),transparent);border-radius:10px}
+.empty{color:var(--mut);font-size:14px;text-align:center;padding:16px 0;line-height:1.5}
+.wk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.wk div{background:var(--card2);border-radius:10px;padding:10px 6px;text-align:center} .wk b{display:block;font-size:20px;font-weight:800} .wk span{font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.wkh{display:flex;justify-content:space-between;align-items:baseline} .wkh .e{color:var(--gold);font-weight:800}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bd{background:var(--card2);border-radius:14px;padding:12px 6px;text-align:center;opacity:.35} .bd.on{opacity:1;border:1px solid var(--orange)}
+.bd .e{font-size:26px} .bd .t{font-size:11.5px;font-weight:700;margin-top:4px;line-height:1.25}
+.disc{font-size:11px;color:#6f6a64;line-height:1.4;margin-top:12px}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,11,13,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav .in{display:flex;max-width:520px;width:100%}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 12px;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:inherit;position:relative}
+nav button .e{display:block;font-size:22px;margin-bottom:3px;filter:grayscale(1);opacity:.6} nav button.on{color:var(--txt)} nav button.on .e{filter:none;opacity:1}
+nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--orange);color:#fff;border-radius:99px;font-size:10px;min-width:17px;height:17px;line-height:17px;padding:0 4px}
+.foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-120%);background:var(--card2);border:1px solid var(--orange);color:var(--txt);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;z-index:20;transition:.35s;max-width:90%;text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.tabs{display:flex;gap:6px;margin-top:16px} .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:11px 4px;font-weight:700;font-size:13px;font-family:inherit} .tabs button.on{border-color:var(--orange);color:var(--txt)}
+.conf{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
+.conf i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall 2.4s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.8}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <div class="brand"><svg viewBox="0 0 62 80"><path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/><text x="31" y="58" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-style="italic" font-size="30">5</text></svg>IGNYT 5 · Nov Challenge</div>
+    <div class="streak" id="streak" hidden></div>
+  </div>
+
+  <!-- AUTH -->
+  <section id="auth" hidden>
+    <h1><b>5 a day</b> to the <span class="i">Blueprint.</span></h1>
+    <p class="sub">Every day in November, get five people in front of the Blueprint at IGNYTHub.com. Keep your streak. Climb the board.</p>
+    <div class="tabs"><button id="tJoin" class="on">Join the challenge</button><button id="tIn">Sign in</button></div>
+    <form id="fJoin" class="card" autocomplete="on">
+      <div class="f"><label>Your name</label><input id="jName" autocomplete="name" required maxlength="60"></div>
+      <div class="f"><label>Your sponsor</label><input id="jSponsor" required maxlength="60"></div>
+      <div class="f"><label>Mobile number (this is how you sign in)</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="+1 210 555 0123" required></div>
+      <div class="f"><label>Choose a 4-digit PIN</label><input id="jPin" type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" autocomplete="new-password" required></div>
+      <div class="f"><label>Your time zone — your day resets at midnight here. <b style="color:var(--txt)">Locked after you join.</b></label><select id="jTz"></select></div>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--mut);line-height:1.4"><input id="jSms" type="checkbox" style="width:20px;height:20px;flex:0 0 20px;margin-top:1px"> Text me challenge reminders. Msg &amp; data rates may apply. Reply STOP to opt out.</label>
+      <button class="btn" type="submit">Join the challenge 🔥</button>
+      <div class="err" id="jErr"></div>
+    </form>
+    <form id="fIn" class="card" hidden>
+      <div class="f"><label>Mobile number</label><input id="iPhone" type="tel" autocomplete="tel" required></div>
+      <div class="f"><label>PIN</label><input id="iPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" required></div>
+      <button class="btn" type="submit">Sign in</button>
+      <div class="err" id="iErr"></div>
+    </form>
+  </section>
+
+  <!-- TODAY -->
+  <section id="vToday" hidden>
+    <h1 id="dayH"></h1>
+    <p class="sub" id="daySub"></p>
+    <div class="card">
+      <div class="lbl">Today's 5</div>
+      <div class="circles" id="circles"></div>
+      <div id="progress"></div>
+      <form id="fAdd">
+        <div class="f"><input id="aName" placeholder="Who did you send to the Blueprint?" maxlength="60" autocomplete="off"></div>
+        <div class="seg" id="aKind"><button type="button" data-k="customer">Customer</button><button type="button" data-k="partner" class="p">Brand Partner</button></div>
+        <button class="btn" id="aBtn" type="submit">Add to today</button>
+        <div class="err" id="aErr"></div>
+      </form>
+      <div class="list" id="todayList" style="margin-top:8px"></div>
+    </div>
+    <div class="card" id="fuCard" hidden><div class="lbl">Follow up today</div><div id="fuList"></div></div>
+    <div class="card"><div class="lbl">Your November</div><div class="month" id="month"></div>
+      <p class="sub" style="font-size:12px;margin-top:10px">Orange = hit your 5. Past days lock at midnight — no going back.</p></div>
+  </section>
+
+  <!-- BOARD -->
+  <section id="vBoard" hidden>
+    <h1><b>Leader</b><span class="i">board.</span></h1>
+    <p class="sub" id="players"></p>
+    <div class="tabs" id="bTabs"><button data-b="club" class="on">Today's 5/5 Club</button><button data-b="streaks">Streaks</button><button data-b="totals">Total</button></div>
+    <div class="card" id="board"></div>
+  </section>
+
+  <!-- WEEK -->
+  <section id="vWeek" hidden>
+    <h1><b>Your</b> <span class="i">tally.</span></h1>
+    <p class="sub">Your numbers only — nobody else sees your earnings.</p>
+    <div id="weeks"></div>
+    <div class="card"><div class="lbl">Badges</div><div class="badges" id="badges"></div></div>
+    <p class="disc">Earnings shown use $70 per 2-bag customer order (50% of $139.95) and $42.50 Fast Start per 2-bag Brand Partner enrollment (50% of 85 CV). No earnings are guaranteed. Results depend on individual effort, skill, and leadership. Figures are illustrative only and are not a promise of income.</p>
+  </section>
+
+  <!-- PEOPLE -->
+  <section id="vPeople" hidden>
+    <h1><b>Your</b> <span class="i">people.</span></h1>
+    <p class="sub">Everyone you've sent to the Blueprint. We'll remind you to follow up every 2 days until they decide.</p>
+    <div id="people"></div>
+  </section>
+
+  <div class="foot" id="foot" hidden><span id="tzNote"></span><a href="#" id="logout">Sign out</a></div>
+</div>
+
+<nav id="nav" hidden><div class="in">
+  <button data-v="Today" class="on"><span class="e">🔥</span>Today<span class="badge" id="fuBadge" hidden></span></button>
+  <button data-v="Board"><span class="e">🏆</span>Leaderboard</button>
+  <button data-v="Week"><span class="e">📊</span>My Tally</button>
+  <button data-v="People"><span class="e">👥</span>People</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://ignyt-challenge.hireboris.workers.dev/api';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tok = localStorage.getItem('ig5_tok'), me = null, kind = null, board = null, bTab = 'club', view = 'Today';
+
+async function api(path, body) {
+  const r = await fetch(API + path, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', ...(tok ? { Authorization: 'Bearer ' + tok } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({ error: 'Connection problem — try again' }));
+  if (r.status === 401 && path !== '/login') { signOut(); }
+  if (!r.ok) throw new Error(d.error || 'Something went wrong');
+  return d;
+}
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2600); }
+function confetti() { const c = document.createElement('div'); c.className = 'conf'; const col = ['#f05a1e', '#ffb23e', '#fff', '#ff8a4c'];
+  for (let i = 0; i < 70; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.background = col[i % 4]; p.style.animationDelay = Math.random() * .6 + 's'; p.style.animationDuration = 1.8 + Math.random() * 1.4 + 's'; c.appendChild(p); }
+  document.body.appendChild(c); setTimeout(() => c.remove(), 4000); }
+
+// ---- time zones: every IANA zone, sorted by UTC offset, popular ones first
+function tzOptions() {
+  const all = (Intl.supportedValuesOf ? Intl.supportedValuesOf('timeZone') : ['America/New_York','America/Chicago','America/Denver','America/Phoenix','America/Los_Angeles','America/Anchorage','Pacific/Honolulu','Asia/Kuala_Lumpur','Asia/Manila','Asia/Singapore','Europe/London','UTC']);
+  const now = new Date(), off = tz => { const p = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'longOffset' }).formatToParts(now).find(x => x.type === 'timeZoneName').value; const m = p.match(/GMT([+-])(\d\d):?(\d\d)?/); return m ? (m[1] === '-' ? -1 : 1) * (+m[2] * 60 + +(m[3] || 0)) : 0; };
+  const lab = tz => { const o = off(tz), s = o < 0 ? '−' : '+', a = Math.abs(o); return `(UTC${s}${String(Math.floor(a / 60)).padStart(2, '0')}:${String(a % 60).padStart(2, '0')}) ${tz.replace(/_/g, ' ').replace(/\//g, ' / ')}`; };
+  const POP = [['America/New_York', 'US Eastern'], ['America/Chicago', 'US Central'], ['America/Denver', 'US Mountain'], ['America/Phoenix', 'Arizona'], ['America/Los_Angeles', 'US Pacific'], ['America/Anchorage', 'Alaska'], ['Pacific/Honolulu', 'Hawaii'], ['America/Puerto_Rico', 'Puerto Rico'], ['America/Toronto', 'Canada Eastern'], ['America/Mexico_City', 'Mexico City'], ['Europe/London', 'United Kingdom'], ['Asia/Kuala_Lumpur', 'Malaysia'], ['Asia/Singapore', 'Singapore'], ['Asia/Manila', 'Philippines'], ['Asia/Jakarta', 'Indonesia (Jakarta)'], ['Australia/Sydney', 'Australia (Sydney)']];
+  const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  let h = '<optgroup label="Popular">' + POP.map(([z, n]) => `<option value="${z}">${n} — ${lab(z).split(' ')[0]}</option>`).join('') + '</optgroup>';
+  h += '<optgroup label="All time zones">' + all.map(z => [off(z), z]).sort((a, b) => a[0] - b[0] || a[1].localeCompare(b[1])).map(([, z]) => `<option value="${z}">${esc(lab(z))}</option>`).join('') + '</optgroup>';
+  $('jTz').innerHTML = h;
+  $('jTz').value = POP.some(p => p[0] === guess) ? guess : (all.includes(guess) ? guess : 'America/Chicago');
+}
+
+// ---- auth
+$('tJoin').onclick = () => { $('tJoin').classList.add('on'); $('tIn').classList.remove('on'); $('fJoin').hidden = false; $('fIn').hidden = true; };
+$('tIn').onclick = () => { $('tIn').classList.add('on'); $('tJoin').classList.remove('on'); $('fIn').hidden = false; $('fJoin').hidden = true; };
+$('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '';
+  try { const d = await api('/signup', { name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
+    tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); toast("You're in. Let's get your first 5 🔥"); } catch (x) { $('jErr').textContent = x.message; } };
+$('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
+  try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); } catch (x) { $('iErr').textContent = x.message; } };
+function signOut() { tok = null; me = null; localStorage.removeItem('ig5_tok'); show(); }
+$('logout').onclick = e => { e.preventDefault(); api('/logout', {}).catch(() => {}); signOut(); };
+
+// ---- add exposure
+$('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return; kind = b.dataset.k; [...$('aKind').children].forEach(x => x.classList.toggle('on', x === b)); };
+$('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = '';
+  if (!$('aName').value.trim()) return $('aErr').textContent = 'Enter their name';
+  if (!kind) return $('aErr').textContent = 'Customer or Brand Partner?';
+  $('aBtn').disabled = true;
+  try { const before = me.todayList.length; me = await api('/exposure', { prospect: $('aName').value, kind });
+    $('aName').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
+    if (before === me.perDay - 1) { confetti(); toast(`5/5! You're #${me.todayRank} in today's 5/5 Club 🔥`); board = null; } else toast(`${me.todayList.length} of 5 — keep going`);
+    render(); } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
+async function del(id) { if (!confirm('Remove this person from today?')) return; try { me = await api('/exposure/delete', { id }); board = null; render(); } catch (x) { toast(x.message); } }
+async function act(id, action) { try { me = await api('/prospect', { id, action });
+  toast({ followed: 'Nice — we\'ll remind you again in 2 days', customer: 'New customer! 🎉', partner: 'New Brand Partner! 🎉', notnow: 'Got it — moved to Not now', reopen: 'Back on your follow-up list' }[action]);
+  if (action === 'customer' || action === 'partner') confetti(); render(); } catch (x) { toast(x.message); } }
+
+// ---- views
+const fmt = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' });
+const short = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const dn = d => Math.round(Date.parse(d + 'T00:00:00Z') / 864e5);
+const KIND = { customer: 'Customer', partner: 'Brand Partner' };
+const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+
+function renderToday() {
+  const dayN = dn(me.today) - dn(me.start) + 1, inWin = me.today >= me.start && me.today <= me.end, n = me.todayList.length;
+  $('dayH').innerHTML = inWin ? `<b>Day ${dayN}</b> <span class="i">of 30.</span>` : (me.today < me.start ? '<b>Starts</b> <span class="i">Nov 1.</span>' : '<b>That\'s</b> <span class="i">a wrap.</span>');
+  $('daySub').textContent = fmt(me.today) + ' · Hi ' + me.user.name.split(' ')[0];
+  $('circles').innerHTML = [0, 1, 2, 3, 4].map(i => { const x = me.todayList[i]; return x ? `<div class="c f ${x.kind === 'partner' ? 'p' : ''}">${esc(x.prospect.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase())}</div>` : '<div class="c"></div>'; }).join('');
+  $('progress').innerHTML = n >= me.perDay ? `<div class="done"><div class="big">5/5 🔥</div><div class="t">${me.todayRank ? `#${me.todayRank} in today's 5/5 Club` : 'Day complete'}</div></div>` : `<div class="prog"><b>${n} of 5</b> — ${5 - n} to go today</div>`;
+  $('fAdd').hidden = n >= me.perDay || !inWin;
+  $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}</span></span><button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
+  $('fuCard').hidden = !me.due.length;
+  $('fuList').innerHTML = me.due.map(fuRow).join('');
+  let m = ''; for (let i = 0; i < 30; i++) { const d = new Date((dn(me.start) + i) * 864e5).toISOString().slice(0, 10), done = me.doneDays.includes(d);
+    m += `<div class="md ${done ? 'd' : d === me.today ? 't' : d < me.today ? 'm' : ''}">${i + 1}</div>`; }
+  $('month').innerHTML = m;
+}
+const fuRow = x => `<div class="fu"><div class="nm">Follow up with ${esc(x.prospect)}</div><div class="k">${KIND[x.kind]} · sent to the Blueprint ${short(x.day)}${x.last_touch !== x.day ? ' · last follow-up ' + short(x.last_touch) : ''}</div>
+  <div class="acts"><button class="a0" onclick="act('${x.id}','followed')">Followed up</button><button class="a1" onclick="act('${x.id}','customer')">Customer ✓</button><button class="a2" onclick="act('${x.id}','partner')">Partner ✓</button><button onclick="act('${x.id}','notnow')">Not now</button></div></div>`;
+
+async function renderBoard() {
+  if (!board) { $('board').innerHTML = '<div class="empty">Loading…</div>'; try { board = await api('/leaderboard'); } catch (x) { $('board').innerHTML = `<div class="empty">${esc(x.message)}</div>`; return; } }
+  $('players').textContent = `${board.players} ${board.players === 1 ? 'person' : 'people'} in the November challenge`;
+  const rows = board[bTab], isMe = r => me && r.name === me.user.name && r.sponsor === me.user.sponsor;
+  const val = r => bTab === 'club' ? `${new Date(r.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}<small>finished</small>` : bTab === 'streaks' ? `${r.streak} 🔥<small>day streak</small>` : `${r.total}<small>exposures</small>`;
+  $('board').innerHTML = rows.length ? rows.map((r, i) => `<div class="rk ${i < 3 ? 'top' : ''} ${isMe(r) ? 'me' : ''}"><div class="n">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</div><div class="w"><b>${esc(r.name)}</b><span>Sponsor: ${esc(r.sponsor)} · ${r.days} day${r.days === 1 ? '' : 's'} complete</span></div><div class="v">${val(r)}</div></div>`).join('')
+    : `<div class="empty">${bTab === 'club' ? 'Nobody has hit 5/5 yet today.<br>Be the first one on the board 🔥' : 'No one here yet — go get your 5.'}</div>`;
+}
+$('bTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; bTab = b.dataset.b; [...$('bTabs').children].forEach(x => x.classList.toggle('on', x === b)); renderBoard(); };
+
+const BADGES = [['first5', '🔥', 'First 5/5'], ['streak3', '⚡', '3-day streak'], ['streak7', '💪', '7-day streak'], ['streak14', '🚀', '14-day streak'], ['streak30', '👑', 'Perfect month'], ['week35', '🎯', '35 in a week'], ['total50', '⭐', '50 exposures'], ['total100', '🌟', '100 exposures'], ['total150', '🏆', '150 — goal hit'], ['firstCustomer', '🛍️', 'First customer'], ['firstPartner', '🤝', 'First Brand Partner']];
+function renderWeek() {
+  const T = me.weeks.reduce((a, w) => ({ e: a.e + w.exposures, c: a.c + w.customers, p: a.p + w.partners, m: a.m + w.earned }), { e: 0, c: 0, p: 0, m: 0 });
+  const rng = n => { const a = (n - 1) * 7 + 1, b = Math.min(n * 7, 30); return [a, b]; };
+  $('weeks').innerHTML = `<div class="card"><div class="wkh"><div class="lbl" style="margin:0">November</div><span class="e">${money(T.m)}</span></div>
+    <div class="wk" style="margin-top:10px"><div><b>${T.e}</b><span>of 150</span></div><div><b>${me.days}</b><span>days 5/5</span></div><div><b>${T.c}</b><span>customers</span></div><div><b>${T.p}</b><span>partners</span></div></div>
+    <p class="sub" style="font-size:12.5px;margin-top:10px">Close rate: <b style="color:var(--txt)">${T.e ? Math.round((T.c + T.p) / T.e * 100) : 0}%</b> · At 10% of 150 that's 15 people · 20% = 30 · 50% = 75</p></div>`
+    + me.weeks.map(w => { const [a, b] = rng(w.n), days = b - a + 1; if (me.today < me.start || dn(me.today) - dn(me.start) + 1 < a) return '';
+      return `<div class="card"><div class="wkh"><div class="lbl" style="margin:0">Week ${w.n} · Nov ${a}–${b}</div><span class="e">${money(w.earned)}</span></div>
+      <div class="wk" style="margin-top:10px"><div><b>${w.exposures}</b><span>of ${days * 5}</span></div><div><b>${w.days}</b><span>of ${days} days</span></div><div><b>${w.customers}</b><span>customers</span></div><div><b>${w.partners}</b><span>partners</span></div></div></div>`; }).reverse().join('');
+  $('badges').innerHTML = BADGES.map(([k, e, t]) => `<div class="bd ${me.badges.includes(k) ? 'on' : ''}"><div class="e">${e}</div><div class="t">${t}</div></div>`).join('');
+}
+function renderPeople() {
+  const G = [['open', 'Following up'], ['customer', 'Customers 🎉'], ['partner', 'Brand Partners 🤝'], ['notnow', 'Not now']];
+  if (!me.prospects.length) { $('people').innerHTML = '<div class="card"><div class="empty">Nobody yet. Add your first person on the Today tab.</div></div>'; return; }
+  $('people').innerHTML = G.map(([s, t]) => { const xs = me.prospects.filter(x => x.status === s); if (!xs.length) return '';
+    return `<div class="card"><div class="lbl">${t} · ${xs.length}</div>` + xs.map(x => s === 'open' ? fuRow(x).replace('Follow up with ', '')
+      : `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]} · sent ${short(x.day)}${x.outcome_day ? ' · ' + short(x.outcome_day) : ''}</span></span><button class="x" style="font-size:12px;font-weight:700" onclick="act('${x.id}','reopen')">Undo</button></div>`).join('') + '</div>'; }).join('');
+}
+function render() {
+  if (!me) return;
+  $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
+  $('fuBadge').hidden = !me.due.length; $('fuBadge').textContent = me.due.length;
+  $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
+  ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
+function show() {
+  const authed = !!me;
+  $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed;
+  ['Today', 'Board', 'Week', 'People'].forEach(v => $('v' + v).hidden = !authed || view !== v);
+  render();
+}
+async function load() { try { me = await api('/me'); } catch { me = null; } show(); }
+tzOptions();
+if (tok) load(); else show();
+document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
+</script>
+</body>
+</html>
