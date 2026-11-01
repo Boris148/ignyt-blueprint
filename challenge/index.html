@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0d">
+<meta name="theme-color" content="#faf7f3">
 <meta name="robots" content="noindex">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="IGNYT 5">
@@ -12,26 +12,26 @@
 <meta property="og:description" content="Get 5 people in front of the Blueprint every day. Track it, keep your streak, climb the leaderboard.">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--ink:#0b0b0d;--card:#17171b;--card2:#202026;--line:#2c2c33;--orange:#f05a1e;--gold:#ffb23e;--txt:#f4f1ec;--mut:#9a958e;--ok:#3ecf8e}
+:root{--ink:#faf7f3;--card:#ffffff;--card2:#f5f1eb;--line:#e8e2da;--orange:#f05a1e;--gold:#ffb23e;--goldt:#b86e00;--txt:#141416;--mut:#7d776f;--ok:#1f9d63}
 html,body{background:var(--ink);color:var(--txt);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;min-height:100%}
-body{background:radial-gradient(ellipse 120% 50% at 50% -10%,#3a1a0c 0%,#140c08 45%,#0b0b0d 75%) fixed;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+body{background:radial-gradient(ellipse 120% 45% at 50% -10%,#ffe3d1 0%,#fff3ea 40%,#faf7f3 75%) fixed;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 .wrap{max-width:520px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px 24px}
 .i{font-family:Georgia,serif;font-style:italic;font-weight:400;color:var(--orange)}
 .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .brand{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:3.5px;font-weight:700;text-transform:uppercase;color:var(--orange)}
 .brand svg{width:22px;height:29px;flex:0 0 22px}
 .streak{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:800;font-size:15px;white-space:nowrap}
-.streak.hot{border-color:var(--orange);box-shadow:0 0 18px rgba(240,90,30,.35)}
+.streak.hot{border-color:var(--orange);box-shadow:0 4px 14px rgba(240,90,30,.25)}
 h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-top:18px} h1 b{font-weight:800}
 .sub{color:var(--mut);font-size:14px;margin-top:6px;line-height:1.4}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 6px 24px rgba(60,40,20,.06)}
 .lbl{font-size:10.5px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
 .circles{display:flex;justify-content:space-between;gap:8px;margin:6px 0 4px}
-.c{flex:1;aspect-ratio:1;max-width:76px;border-radius:50%;border:3px dashed #4a4a52;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;transition:.25s}
-.c.f{border:3px solid var(--orange);background:radial-gradient(circle at 35% 30%,#ff8a4c,#f05a1e 60%,#b83c0c);box-shadow:0 4px 16px rgba(240,90,30,.4)}
+.c{flex:1;aspect-ratio:1;max-width:76px;border-radius:50%;border:3px dashed #d3cbc1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;transition:.25s}
+.c.f{border:3px solid var(--orange);background:radial-gradient(circle at 35% 30%,#ff8a4c,#f05a1e 60%,#b83c0c);box-shadow:0 4px 14px rgba(240,90,30,.3)}
 .c.f.p{border-color:var(--gold);background:radial-gradient(circle at 35% 30%,#ffd27a,#ffb23e 60%,#c47a10);color:#2a1700}
 .prog{text-align:center;color:var(--mut);font-size:14px;margin-top:10px} .prog b{color:var(--txt)}
-.done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--gold);font-weight:700;margin-top:4px}
+.done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--goldt);font-weight:700;margin-top:4px}
 input,select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
@@ -40,7 +40,7 @@ input:focus,select:focus{border-color:var(--orange)}
 .seg button.on{background:var(--orange);color:#fff} .seg button.on.p{background:var(--gold);color:#2a1700}
 .btn{width:100%;border:0;border-radius:14px;background:var(--orange);color:#fff;font-weight:800;font-size:17px;padding:16px;margin-top:12px;font-family:inherit}
 .btn:disabled{opacity:.4} .btn.ghost{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600;font-size:15px}
-.err{color:#ff7a6b;font-size:14px;margin-top:10px;min-height:1px}
+.err{color:#d43d1a;font-size:14px;margin-top:10px;min-height:1px}
 .list .it{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .list .it:first-child{border-top:0}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--orange);flex:0 0 10px} .dot.p{background:var(--gold)}
 .it .nm{flex:1;font-weight:700} .it .k{font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:2px}
@@ -48,28 +48,30 @@ input:focus,select:focus{border-color:var(--orange)}
 .fu{border-top:1px solid var(--line);padding:14px 0} .fu:first-of-type{border-top:0;padding-top:4px}
 .fu .nm{font-weight:800;font-size:16px} .fu .k{font-size:12.5px;color:var(--mut);margin-top:2px}
 .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap} .acts button{flex:1;min-width:70px;border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:10px;padding:10px 6px;font-size:13px;font-weight:700;font-family:inherit}
-.acts .a1{border-color:var(--orange);color:var(--orange)} .acts .a2{border-color:var(--gold);color:var(--gold)}
+.acts .a1{border-color:var(--orange);color:var(--orange)} .acts .a2{border-color:var(--gold);color:var(--goldt)}
 .month{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
-.md{aspect-ratio:1;border-radius:7px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;color:#5d5d66;font-weight:700}
-.md.d{background:var(--orange);color:#fff} .md.t{outline:2px solid var(--orange);color:var(--txt)} .md.m{background:#1a1a1f;color:#3d3d44;text-decoration:line-through}
+.md{aspect-ratio:1;border-radius:7px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;color:#9b948b;font-weight:700}
+.md.d{background:var(--orange);color:#fff} .md.t{outline:2px solid var(--orange);color:var(--txt)} .md.m{background:#ece7e0;color:#c4bcb2;text-decoration:line-through}
 .rk{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .rk:first-child{border-top:0}
-.rk .n{width:30px;text-align:center;font-weight:800;color:var(--mut);font-size:15px} .rk.top .n{color:var(--gold);font-size:20px}
+.rk .n{width:30px;text-align:center;font-weight:800;color:var(--mut);font-size:15px} .rk.top .n{color:var(--goldt);font-size:20px}
 .rk .w{flex:1} .rk .w b{display:block;font-size:15.5px} .rk .w span{font-size:12px;color:var(--mut)}
 .rk .v{font-weight:800;font-size:18px;text-align:right} .rk .v small{display:block;font-size:10px;color:var(--mut);letter-spacing:1px;font-weight:700;text-transform:uppercase}
-.rk.me{background:linear-gradient(90deg,rgba(240,90,30,.16),transparent);border-radius:10px}
+.rk.me{background:linear-gradient(90deg,rgba(240,90,30,.12),transparent);border-radius:10px}
 .empty{color:var(--mut);font-size:14px;text-align:center;padding:16px 0;line-height:1.5}
 .wk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
 .wk div{background:var(--card2);border-radius:10px;padding:10px 6px;text-align:center} .wk b{display:block;font-size:20px;font-weight:800} .wk span{font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;font-weight:700}
-.wkh{display:flex;justify-content:space-between;align-items:baseline} .wkh .e{color:var(--gold);font-weight:800}
+.wkh{display:flex;justify-content:space-between;align-items:baseline} .wkh .e{color:var(--goldt);font-weight:800}
 .badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.bd{background:var(--card2);border-radius:14px;padding:12px 6px;text-align:center;opacity:.35} .bd.on{opacity:1;border:1px solid var(--orange)}
+.bd{background:var(--card2);border-radius:14px;padding:12px 6px;text-align:center;opacity:.4;filter:grayscale(1)} .bd.on{opacity:1;filter:none;border:1px solid var(--orange);background:#fff4ec}
 .bd .e{font-size:26px} .bd .t{font-size:11.5px;font-weight:700;margin-top:4px;line-height:1.25}
-.disc{font-size:11px;color:#6f6a64;line-height:1.4;margin-top:12px}
-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,11,13,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.disc{font-size:11px;color:#9b948b;line-height:1.4;margin-top:12px}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
 nav .in{display:flex;max-width:520px;width:100%}
 nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 12px;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:inherit;position:relative}
 nav button .e{display:block;font-size:22px;margin-bottom:3px;filter:grayscale(1);opacity:.6} nav button.on{color:var(--txt)} nav button.on .e{filter:none;opacity:1}
 nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--orange);color:#fff;border-radius:99px;font-size:10px;min-width:17px;height:17px;line-height:17px;padding:0 4px}
+.lnk{background:none;border:0;color:var(--orange);font-weight:700;font-size:14px;margin-top:14px;font-family:inherit;text-decoration:underline}
+.note{background:#fff4ec;border:1px solid #ffd2b8}
 .foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-120%);background:var(--card2);border:1px solid var(--orange);color:var(--txt);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;z-index:20;transition:.35s;max-width:90%;text-align:center}
 .toast.on{transform:translateX(-50%) translateY(0)}
@@ -97,6 +99,7 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
       <div class="f"><label>Your sponsor</label><input id="jSponsor" required maxlength="60"></div>
       <div class="f"><label>Mobile number (this is how you sign in)</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="+1 210 555 0123" required></div>
       <div class="f"><label>Choose a 4-digit PIN</label><input id="jPin" type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" autocomplete="new-password" required></div>
+      <div class="f"><label>Secret word — used to reset your PIN if you forget it (your first car, your pet's name…)</label><input id="jWord" maxlength="40" autocomplete="off" required></div>
       <div class="f"><label>Your time zone — your day resets at midnight here. <b style="color:var(--txt)">Locked after you join.</b></label><select id="jTz"></select></div>
       <label style="display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--mut);line-height:1.4"><input id="jSms" type="checkbox" style="width:20px;height:20px;flex:0 0 20px;margin-top:1px"> Text me challenge reminders. Msg &amp; data rates may apply. Reply STOP to opt out.</label>
       <button class="btn" type="submit">Join the challenge 🔥</button>
@@ -107,11 +110,27 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
       <div class="f"><label>PIN</label><input id="iPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" required></div>
       <button class="btn" type="submit">Sign in</button>
       <div class="err" id="iErr"></div>
+      <button class="lnk" type="button" id="toForgot">Forgot your PIN?</button>
+    </form>
+    <form id="fForgot" class="card" hidden>
+      <div class="lbl">Reset your PIN</div>
+      <div class="f"><label>Mobile number</label><input id="rPhone" type="tel" autocomplete="tel" required></div>
+      <div class="f"><label>Your secret word</label><input id="rWord" autocomplete="off" required></div>
+      <div class="f"><label>New 4-digit PIN</label><input id="rPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" required></div>
+      <button class="btn" type="submit">Reset PIN &amp; sign in</button>
+      <div class="err" id="rErr"></div>
+      <button class="lnk" type="button" id="toIn">Back to sign in</button>
     </form>
   </section>
 
   <!-- TODAY -->
   <section id="vToday" hidden>
+    <div class="card note" id="recCard" hidden>
+      <div class="lbl">Protect your account</div>
+      <p class="sub" style="margin:0 0 4px">Set a secret word so you can reset your PIN yourself if you ever forget it.</p>
+      <form id="fRec"><div class="f"><input id="recWord" placeholder="Your secret word (e.g. first car)" maxlength="40" autocomplete="off"></div>
+      <button class="btn" type="submit">Save secret word</button><div class="err" id="recErr"></div></form>
+    </div>
     <h1 id="dayH"></h1>
     <p class="sub" id="daySub"></p>
     <div class="card">
@@ -198,10 +217,16 @@ function tzOptions() {
 }
 
 // ---- auth
-$('tJoin').onclick = () => { $('tJoin').classList.add('on'); $('tIn').classList.remove('on'); $('fJoin').hidden = false; $('fIn').hidden = true; };
-$('tIn').onclick = () => { $('tIn').classList.add('on'); $('tJoin').classList.remove('on'); $('fIn').hidden = false; $('fJoin').hidden = true; };
+$('tJoin').onclick = () => { $('tJoin').classList.add('on'); $('tIn').classList.remove('on'); $('fJoin').hidden = false; $('fIn').hidden = true; $('fForgot').hidden = true; };
+$('tIn').onclick = () => { $('tIn').classList.add('on'); $('tJoin').classList.remove('on'); $('fIn').hidden = false; $('fJoin').hidden = true; $('fForgot').hidden = true; };
+$('toForgot').onclick = () => { $('fIn').hidden = true; $('fForgot').hidden = false; $('rPhone').value = $('iPhone').value; };
+$('toIn').onclick = () => { $('fForgot').hidden = true; $('fIn').hidden = false; };
+$('fForgot').onsubmit = async e => { e.preventDefault(); $('rErr').textContent = '';
+  try { const d = await api('/reset', { phone: $('rPhone').value, word: $('rWord').value, pin: $('rPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); toast('PIN reset — you\'re signed in'); } catch (x) { $('rErr').textContent = x.message; } };
+$('fRec').onsubmit = async e => { e.preventDefault(); $('recErr').textContent = '';
+  try { me = await api('/recovery', { word: $('recWord').value }); toast('Secret word saved 🔒'); render(); } catch (x) { $('recErr').textContent = x.message; } };
 $('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '';
-  try { const d = await api('/signup', { name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
+  try { const d = await api('/signup', { name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, word: $('jWord').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
     tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); toast("You're in. Let's get your first 5 🔥"); } catch (x) { $('jErr').textContent = x.message; } };
 $('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
   try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); } catch (x) { $('iErr').textContent = x.message; } };
@@ -280,6 +305,7 @@ function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   $('fuBadge').hidden = !me.due.length; $('fuBadge').textContent = me.due.length;
+  $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();
 }
