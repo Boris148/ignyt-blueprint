@@ -7,6 +7,8 @@
 <meta name="robots" content="noindex">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="IGNYT 5">
+<link rel="manifest" href="/blueprint/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/blueprint/apple-touch-icon.png">
 <title>IGNYT 5 · The Blueprint</title>
 <meta property="og:title" content="IGNYT 5 · The Blueprint — 5 a day">
 <meta property="og:description" content="Get 5 people in front of the Blueprint every day. Track it, keep your streak, climb the leaderboard.">
@@ -85,6 +87,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .seen{color:var(--ok);font-weight:700} .unseen{color:var(--mut)} .wants{color:var(--orange);font-weight:700}
 .rq{border:1.5px solid var(--orange);background:#fff7f2}
 .fb{border:1.5px solid #1877f2;background:#f5f9ff}
+.nt{border:1.5px solid var(--orange);background:#fff7f2} .nt .lbl{color:var(--orange)} .nt h3{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-top:6px;line-height:1.2} .nt p{font-size:14px;color:var(--mut);margin-top:6px;line-height:1.45}
+.nt ol{font-size:14px;color:var(--txt);margin:8px 0 0 20px;line-height:1.6}
+.ntb{display:flex;gap:8px;margin-top:12px;align-items:center} .ntb button{flex:1;border:0;border-radius:12px;padding:13px 8px;font-weight:800;font-size:15px;font-family:inherit;background:var(--orange);color:#fff}
+.ntb select,.nset select{border:1px solid var(--line);border-radius:10px;padding:10px 8px;font-size:15px;font-family:inherit;background:#fff;color:var(--txt)}
+.nset{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--mut)} .nset b{color:var(--ok)} .nset button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:700;font-size:13px;font-family:inherit;color:var(--txt)}
 .fb .lbl{color:#1877f2} .fb h3{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-top:6px;line-height:1.2} .fb p{font-size:14px;color:var(--mut);margin-top:6px;line-height:1.4}
 .fbb{display:flex;gap:8px;margin-top:12px} .fbb a,.fbb button{flex:1;text-align:center;text-decoration:none;border-radius:12px;padding:13px 8px;font-weight:800;font-size:15px;font-family:inherit;border:0}
 .fbb a{background:#1877f2;color:#fff} .fbb button{background:#fff;border:1.5px solid #1877f2;color:#1877f2}
@@ -152,6 +159,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- TODAY -->
   <section id="vToday" hidden>
+    <div class="card nt" id="ntCard" hidden><div class="lbl">🔔 Turn on notifications</div><div id="ntBody"></div></div>
     <div class="card fb" id="fbCard" hidden><div class="lbl" id="fbK">Step 1 · Before your first send</div>
       <h3>Join the IGNYT Blueprint Facebook group</h3>
       <p>Trainings, wins, and what's working for the team. Join first, then send your first Blueprint.</p>
@@ -183,6 +191,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <p class="sub" style="font-size:12px;margin-top:8px">They're looking right now. A quick "what did you think?" text works best within the hour.</p></div>
     <div class="card gift" id="giftCard"><div class="lbl">🎁 Free product tracker</div><div class="row"><div class="dots" id="giftDots"></div><div class="t" id="giftT"></div></div></div>
     <div class="card" id="fuCard" hidden><div class="lbl">Follow up today</div><div id="fuList"></div></div>
+    <div class="card" id="ntSet" hidden><div class="lbl">🔔 Notifications</div><div class="nset"><b>On</b> · Daily reminder <select id="ntHour2"></select><button type="button" id="ntTest">Send a test</button><button type="button" id="ntOff">Turn off</button></div>
+      <p class="sub" style="font-size:12px;margin-top:8px">You also get a 👀 alert when someone opens your link, and a 7pm heads-up if you're under 5.</p></div>
     <div class="card"><div class="lbl">Your November</div><div class="month" id="month"></div>
       <p class="sub" style="font-size:12px;margin-top:10px">Orange = hit your 5. Past days lock at midnight — no going back.</p></div>
   </section>
@@ -286,7 +296,7 @@ $('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '
 $('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
   try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); } catch (x) { $('iErr').textContent = x.message; } };
 function signOut() { tok = null; me = null; localStorage.removeItem('ig5_tok'); show(); }
-$('logout').onclick = e => { e.preventDefault(); api('/logout', {}).catch(() => {}); signOut(); };
+$('logout').onclick = async e => { e.preventDefault(); const t = tok; if (PUSH.sub) { await api('/push/off', { endpoint: PUSH.sub.endpoint }).catch(() => {}); await PUSH.sub.unsubscribe().catch(() => {}); PUSH.sub = null; } tok = t; api('/logout', {}).catch(() => {}); signOut(); };
 
 // ---- add exposure
 $('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return; kind = b.dataset.k; [...$('aKind').children].forEach(x => x.classList.toggle('on', x === b)); };
@@ -352,6 +362,48 @@ function noticeSeen() { let known; try { known = JSON.parse(localStorage.getItem
   if (fresh.length) { fresh.sort((a, b) => b.seen_at - a.seen_at); const f = fresh[0].prospect.split(' ')[0];
     toast(fresh.length > 1 ? `👀 ${f} + ${fresh.length - 1} more opened your Blueprint link` : `👀 ${f} just opened your Blueprint link`); }
   try { localStorage.setItem('ig5_seen', JSON.stringify(seen.map(x => x.id))); } catch {} }
+// ---- Push notifications ----
+const PUSH = { sub: null, ready: false };
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const pushOK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const hourOpts = sel => [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(h => `<option value="${h}" ${h === (me?.user.remindHour ?? 9) ? 'selected' : ''}>${h % 12 || 12}:00 ${h < 12 ? 'AM' : 'PM'}</option>`).join('');
+const u8 = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+if (pushOK) navigator.serviceWorker.register('/blueprint/sw.js', { scope: '/blueprint/' }).then(r => r.pushManager.getSubscription()).then(s => { PUSH.sub = s; PUSH.ready = true; if (s && tok) api('/push/sub', s.toJSON()).catch(() => {}); if (me) renderPush(); }).catch(() => { PUSH.ready = true; });
+function renderPush() {
+  if (!me || !$('ntCard')) return;
+  const on = !!PUSH.sub && Notification.permission === 'granted';
+  $('ntSet').hidden = !on; if (on) $('ntHour2').innerHTML = hourOpts();
+  if (on || (pushOK && !PUSH.ready)) { $('ntCard').hidden = true; return; }
+  $('ntCard').hidden = false;
+  if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
+    <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen and tap <b>Turn on</b> here</li></ol>
+    <p style="font-size:12.5px">Already added it before today? Delete the old icon and add it again. Needs iOS 16.4 or newer.</p>`;
+  else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open ignythub.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
+  else if (Notification.permission === 'denied') $('ntBody').innerHTML = `<h3>Notifications are blocked</h3><p>${isIOS ? 'Open iPhone <b>Settings → Notifications → IGNYT 5</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'} Then come back here.</p>`;
+  else $('ntBody').innerHTML = `<h3>Never miss your 5</h3><p>A daily reminder at your time, a 👀 alert the moment someone opens your link, and a heads-up at 7pm if you're under 5.</p>
+    <div class="ntb"><select id="ntHour" aria-label="Reminder time">${hourOpts()}</select><button type="button" id="ntGo">Turn on</button></div>`;
+  const go = $('ntGo'); if (go) go.onclick = pushOn;
+}
+async function pushOn() {
+  const b = $('ntGo'); if (b) { b.disabled = true; b.textContent = 'Turning on…'; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { renderPush(); return; }
+    const { key } = await fetch(API + '/push/key').then(r => r.json());
+    const reg = await navigator.serviceWorker.ready;
+    const s = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(key) });
+    me = await api('/push/sub', { ...s.toJSON(), hour: Number($('ntHour')?.value || 9) }); PUSH.sub = s; render();
+    await api('/push/test', {}).catch(e => toast(e.message));
+    toast('Notifications on 🔔');
+  } catch (e) { toast('Couldn\'t turn on notifications. Try again.'); if (b) { b.disabled = false; b.textContent = 'Turn on'; } }
+}
+function wirePushSettings() {
+  $('ntHour2').onchange = async e => { try { me = await api('/push/hour', { hour: Number(e.target.value) }); toast(`Daily reminder set for ${e.target.selectedOptions[0].text}`); } catch (x) { toast(x.message); } };
+  $('ntTest').onclick = async () => { try { await api('/push/test', {}); toast('Test sent. Check your notifications'); } catch (x) { toast(x.message); } };
+  $('ntOff').onclick = async () => { try { const s = PUSH.sub; if (s) { await api('/push/off', { endpoint: s.endpoint }); await s.unsubscribe(); } PUSH.sub = null; render(); toast('Notifications off'); } catch (x) { toast(x.message); } };
+}
+wirePushSettings();
 function noticeRequests() { const ids = (me.requests || []).map(r => r.id);
   if (lastReq) { const n = (me.requests || []).filter(r => !lastReq.includes(r.id)); if (n.length) toast(`🔑 ${n[0].prospect.split(' ')[0]} is asking for the access code`); }
   lastReq = ids; }
@@ -435,7 +487,7 @@ function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeSeen();
+  noticeRequests(); noticeSeen(); renderPush();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();
