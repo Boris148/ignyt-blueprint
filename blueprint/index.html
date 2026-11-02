@@ -102,7 +102,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-120%);background:var(--card2);border:1px solid var(--orange);color:var(--txt);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;z-index:20;transition:.35s;max-width:90%;text-align:center}
 .toast.on{transform:translateX(-50%) translateY(0)}
-.tabs{display:flex;gap:6px;margin-top:16px} .tabs button{flex:1;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:11px 4px;font-weight:700;font-size:13px;font-family:inherit} .tabs button.on{border-color:var(--orange);color:var(--txt)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px} .tabs button{flex:1 1 28%;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:11px 4px;font-weight:700;font-size:13px;font-family:inherit} .tabs button.on{border-color:var(--orange);color:var(--txt)}
 .conf{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
 .conf i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall 2.4s ease-in forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.8}}
@@ -191,7 +191,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <section id="vBoard" hidden>
     <h1><b>Leader</b><span class="i">board.</span></h1>
     <p class="sub" id="players"></p>
-    <div class="tabs" id="bTabs"><button data-b="club" class="on">Today's 5/5 Club</button><button data-b="streaks">Streaks</button><button data-b="totals">Total</button></div>
+    <div class="tabs" id="bTabs"><button data-b="club" class="on">Today's 5/5 Club</button><button data-b="streaks">Streaks</button><button data-b="totals">Total</button><button data-b="customers">Customers 🎉</button><button data-b="partners">Brand Partners 🤝</button></div>
     <div class="card" id="board"></div>
   </section>
 
@@ -404,10 +404,10 @@ const fuRow = x => `<div class="fu"><div class="nm">Follow up with ${esc(x.prosp
 async function renderBoard() {
   if (!board) { $('board').innerHTML = '<div class="empty">Loading…</div>'; try { board = await api('/leaderboard'); } catch (x) { $('board').innerHTML = `<div class="empty">${esc(x.message)}</div>`; return; } }
   $('players').textContent = `${board.players} ${board.players === 1 ? 'person' : 'people'} on the Blueprint this November`;
-  const rows = board[bTab], isMe = r => me && r.name === me.user.name && r.sponsor === me.user.sponsor;
-  const val = r => bTab === 'club' ? `${new Date(r.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}<small>finished</small>` : bTab === 'streaks' ? `${r.streak} 🔥<small>day streak</small>` : `${r.total}<small>exposures</small>`;
+  const rows = board[bTab] || [], isMe = r => me && r.name === me.user.name && r.sponsor === me.user.sponsor;
+  const val = r => bTab === 'club' ? `${new Date(r.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}<small>finished</small>` : bTab === 'streaks' ? `${r.streak} 🔥<small>day streak</small>` : bTab === 'customers' ? `${r.n}<small>customer${r.n === 1 ? '' : 's'}</small>` : bTab === 'partners' ? `${r.n}<small>partner${r.n === 1 ? '' : 's'}</small>` : `${r.total}<small>exposures</small>`;
   $('board').innerHTML = rows.length ? rows.map((r, i) => `<div class="rk ${i < 3 ? 'top' : ''} ${isMe(r) ? 'me' : ''}"><div class="n">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</div><div class="w"><b>${esc(r.name)}</b><span>Sponsor: ${esc(r.sponsor)} · ${r.days} day${r.days === 1 ? '' : 's'} complete</span></div><div class="v">${val(r)}</div></div>`).join('')
-    : `<div class="empty">${bTab === 'club' ? 'Nobody has hit 5/5 yet today.<br>Be the first one on the board 🔥' : 'No one here yet — go get your 5.'}</div>`;
+    : `<div class="empty">${bTab === 'club' ? 'Nobody has hit 5/5 yet today.<br>Be the first one on the board 🔥' : bTab === 'customers' ? 'No customers enrolled yet.<br>First one takes the top spot 🎉' : bTab === 'partners' ? 'No Brand Partners enrolled yet.<br>First one takes the top spot 🤝' : 'No one here yet — go get your 5.'}</div>`;
 }
 $('bTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; bTab = b.dataset.b; [...$('bTabs').children].forEach(x => x.classList.toggle('on', x === b)); renderBoard(); };
 
