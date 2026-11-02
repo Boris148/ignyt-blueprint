@@ -230,4 +230,13 @@ body.locked{overflow:hidden}
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.15});
 document.querySelectorAll('.fade').forEach((el,i)=>{el.style.transitionDelay=(i*90)+'ms';io.observe(el)});
 </script>
+<script>
+/* IGNYT 5 Challenge: mark a partner's personal link (?b=code) as Seen once a real person engages. Not fired for link-preview bots. */
+(function(){var m=/[?&]b=([a-z0-9]{6})/i.exec(location.search);if(!m)return;var c=m[1].toLowerCase(),sent=false;
+try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
+if(/bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|telegram|discord|skype|linkedin/i.test(navigator.userAgent))return;
+function go(){if(sent||document.hidden)return;sent=true;var u='https://ignyt-challenge.hireboris.workers.dev/api/seen',d=JSON.stringify({b:c});
+if(!(navigator.sendBeacon&&navigator.sendBeacon(u,d)))fetch(u,{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
+['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,8000)})();
+</script>
 </body></html>

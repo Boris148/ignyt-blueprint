@@ -78,6 +78,11 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
 .pk button b{display:block;font-size:17px} .pk button span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
 .pk button i{display:block;font-style:normal;font-weight:800;color:var(--orange);font-size:18px;margin-top:8px}
 .pk button:active{border-color:var(--orange)}
+.ph{display:flex;gap:8px} .ph input{flex:1} .ph button{flex:0 0 auto;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:0 14px;font-weight:700;font-size:14px;color:var(--txt);font-family:inherit}
+.hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.4}
+.msg{white-space:pre-wrap;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;font-size:15px;line-height:1.4}
+a.btn{display:block;text-align:center;text-decoration:none}
+.seen{color:var(--ok);font-weight:700} .unseen{color:var(--mut)}
 .lnk{background:none;border:0;color:var(--orange);font-weight:700;font-size:14px;margin-top:14px;font-family:inherit;text-decoration:underline}
 .note{background:#fff4ec;border:1px solid #ffd2b8}
 .foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
@@ -146,9 +151,11 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
       <div class="circles" id="circles"></div>
       <div id="progress"></div>
       <form id="fAdd">
-        <div class="f"><input id="aName" placeholder="Who did you send to the Blueprint?" maxlength="60" autocomplete="off"></div>
+        <div class="f"><input id="aName" placeholder="Their name" maxlength="60" autocomplete="off"></div>
+        <div class="f ph"><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Customer</button><button type="button" data-k="partner" class="p">Brand Partner</button></div>
-        <button class="btn" id="aBtn" type="submit">Add to today</button>
+        <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
+        <div class="hint">Counts the moment you send. One send per number for the whole team. We'll mark it <b>Seen ✓</b> when they open the link.</div>
         <div class="err" id="aErr"></div>
       </form>
       <div class="list" id="todayList" style="margin-top:8px"></div>
@@ -192,6 +199,13 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
   <button data-v="People"><span class="e">👥</span>People</button>
 </div></nav>
 <div class="toast" id="toast"></div>
+<div class="sheet" id="sendSheet" hidden><div class="bx">
+  <h3 id="ssT"></h3><p>Counted ✓ Now send it from your phone.</p>
+  <div class="msg" id="ssM"></div>
+  <a class="btn" id="ssGo" href="#">Open Messages</a>
+  <button class="btn ghost" id="ssCopy">Copy message</button>
+  <button class="btn ghost" id="ssX" style="border:0">Done</button>
+</div></div>
 <div class="sheet" id="sheet" hidden><div class="bx">
   <h3 id="shT"></h3><p id="shS"></p>
   <div class="pk" id="shP"></div>
@@ -250,12 +264,31 @@ $('logout').onclick = e => { e.preventDefault(); api('/logout', {}).catch(() => 
 $('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return; kind = b.dataset.k; [...$('aKind').children].forEach(x => x.classList.toggle('on', x === b)); };
 $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = '';
   if (!$('aName').value.trim()) return $('aErr').textContent = 'Enter their name';
+  if (!$('aPhone').value.trim()) return $('aErr').textContent = 'Enter their mobile number';
   if (!kind) return $('aErr').textContent = 'Customer or Brand Partner?';
   $('aBtn').disabled = true;
-  try { const before = me.todayList.length; me = await api('/exposure', { prospect: $('aName').value, kind });
-    $('aName').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
-    if (before === me.perDay - 1) { confetti(); toast(`5/5! You're #${me.todayRank} in today's 5/5 Club 🔥`); board = null; } else toast(`${me.todayList.length} of 5 — keep going`);
-    render(); } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
+  try { const before = me.todayList.length, name = $('aName').value.trim();
+    me = await api('/exposure', { prospect: name, phone: $('aPhone').value, kind });
+    $('aName').value = ''; $('aPhone').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
+    if (before === me.perDay - 1) { confetti(); board = null; }
+    render(); openSend(name, me.sent, before === me.perDay - 1);
+  } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function openSend(name, sent, five) {
+  $('ssT').textContent = `Send to ${name.split(' ')[0]}`;
+  $('ssM').textContent = sent.message;
+  $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
+  $('ssCopy').textContent = 'Copy message';
+  $('sendSheet').hidden = false;
+  $('ssX').onclick = () => { $('sendSheet').hidden = true; toast(five ? `5/5! You're #${me.todayRank} in today's 5/5 Club 🔥` : `${me.todayList.length} of 5 — keep going`); };
+}
+$('ssCopy').onclick = async () => { try { await navigator.clipboard.writeText($('ssM').textContent); $('ssCopy').textContent = 'Copied ✓ paste it in your text'; } catch { const r = document.createRange(); r.selectNodeContents($('ssM')); getSelection().removeAllRanges(); getSelection().addRange(r); $('ssCopy').textContent = 'Selected — tap Copy'; } };
+if ('contacts' in navigator && 'select' in navigator.contacts) {
+  $('aPick').hidden = false;
+  $('aPick').onclick = async () => { try { const [c] = await navigator.contacts.select(['name', 'tel'], { multiple: false }); if (!c) return;
+    if (c.name?.[0] && !$('aName').value.trim()) $('aName').value = c.name[0]; if (c.tel?.[0]) $('aPhone').value = c.tel[0]; } catch {} };
+}
+const seenTag = x => x.phone ? (x.seen_at ? ' · <span class="seen">Seen ✓</span>' : ' · <span class="unseen">Not opened yet</span>') : '';
 async function del(id) { if (!confirm('Remove this person from today?')) return; try { me = await api('/exposure/delete', { id }); board = null; render(); } catch (x) { toast(x.message); } }
 function pickPack(id, action) {
   const x = me.prospects.find(p => p.id === id), T = me.packs[action];
@@ -287,14 +320,14 @@ function renderToday() {
   $('circles').innerHTML = [0, 1, 2, 3, 4].map(i => { const x = me.todayList[i]; return x ? `<div class="c f ${x.kind === 'partner' ? 'p' : ''}">${esc(x.prospect.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase())}</div>` : '<div class="c"></div>'; }).join('');
   $('progress').innerHTML = n >= me.perDay ? `<div class="done"><div class="big">5/5 🔥</div><div class="t">${me.todayRank ? `#${me.todayRank} in today's 5/5 Club` : 'Day complete'}</div></div>` : `<div class="prog"><b>${n} of 5</b> — ${5 - n} to go today</div>`;
   $('fAdd').hidden = n >= me.perDay || !inWin;
-  $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}</span></span><button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
+  $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}${seenTag(x)}</span></span><button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
   $('fuCard').hidden = !me.due.length;
   $('fuList').innerHTML = me.due.map(fuRow).join('');
   let m = ''; for (let i = 0; i < 30; i++) { const d = new Date((dn(me.start) + i) * 864e5).toISOString().slice(0, 10), done = me.doneDays.includes(d);
     m += `<div class="md ${done ? 'd' : d === me.today ? 't' : d < me.today ? 'm' : ''}">${i + 1}</div>`; }
   $('month').innerHTML = m;
 }
-const fuRow = x => `<div class="fu"><div class="nm">Follow up with ${esc(x.prospect)}</div><div class="k">${KIND[x.kind]} · sent to the Blueprint ${short(x.day)}${x.last_touch !== x.day ? ' · last follow-up ' + short(x.last_touch) : ''}</div>
+const fuRow = x => `<div class="fu"><div class="nm">Follow up with ${esc(x.prospect)}</div><div class="k">${KIND[x.kind]} · sent to the Blueprint ${short(x.day)}${seenTag(x)}${x.last_touch !== x.day ? ' · last follow-up ' + short(x.last_touch) : ''}</div>
   <div class="acts"><button class="a0" onclick="act('${x.id}','followed')">Followed up</button><button class="a1" onclick="act('${x.id}','customer')">Customer ✓</button><button class="a2" onclick="act('${x.id}','partner')">Partner ✓</button><button onclick="act('${x.id}','notnow')">Not now</button></div></div>`;
 
 async function renderBoard() {
