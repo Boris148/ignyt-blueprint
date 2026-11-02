@@ -165,7 +165,9 @@ body.locked{overflow:hidden}
   var qs=new URLSearchParams(location.search);
   var viaUrl=(qs.get('code')||qs.get('access')||'').trim().toLowerCase();
   var already=false; try{ already=localStorage.getItem(KEY)==='1'; }catch(e){}
-  if(already || viaUrl===CODE){ open_(true); return; }
+  // A partner's personal link (?b=code from the Blueprint app) opens the hub directly, no access code needed.
+  var personal=/[?&]b=[a-z0-9]{6}(&|$)/i.test(location.search);
+  if(already || viaUrl===CODE || personal){ open_(true); return; }
   document.body.classList.add('locked');
   setTimeout(function(){ inp.focus(); },350);
   form.addEventListener('submit',function(e){
@@ -249,7 +251,7 @@ var API='https://ignyt-challenge.hireboris.workers.dev/api',bot=/bot|crawl|spide
 function post(path,d){return fetch(API+path,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)}).then(function(r){return r.json()})}
 if(!bot){var sent=false;function go(){if(sent||document.hidden)return;sent=true;var d=JSON.stringify({b:c});
  if(!(navigator.sendBeacon&&navigator.sendBeacon(API+'/seen',d)))fetch(API+'/seen',{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
- ['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,8000)}
+ ['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,4000)}
 var gate=document.getElementById('gate');if(!gate||bot)return;
 post('/who',{b:c}).then(function(w){if(!w||!w.first||!document.getElementById('gate'))return;
  var esc=function(t){return String(t).replace(/[&<>"]/g,function(x){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]})},f=esc(w.first);
