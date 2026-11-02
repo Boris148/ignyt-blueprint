@@ -174,11 +174,13 @@ a.btn{display:block;text-align:center;text-decoration:none}
         <div class="f ph"><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Customer</button><button type="button" data-k="partner" class="p">Brand Partner</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
-        <div class="hint">Counts the moment you send. One send per number for the whole team. We'll mark it <b>Seen ✓</b> when they open the link.</div>
+        <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link.</div>
         <div class="err" id="aErr"></div>
       </form>
       <div class="list" id="todayList" style="margin-top:8px"></div>
     </div>
+    <div class="card" id="openCard" hidden><div class="lbl">👀 Opened your link · last 24 hrs</div><div class="list" id="openList"></div>
+      <p class="sub" style="font-size:12px;margin-top:8px">They're looking right now. A quick "what did you think?" text works best within the hour.</p></div>
     <div class="card gift" id="giftCard"><div class="lbl">🎁 Free product tracker</div><div class="row"><div class="dots" id="giftDots"></div><div class="t" id="giftT"></div></div></div>
     <div class="card" id="fuCard" hidden><div class="lbl">Follow up today</div><div id="fuList"></div></div>
     <div class="card"><div class="lbl">Your November</div><div class="month" id="month"></div>
@@ -316,7 +318,7 @@ if ('contacts' in navigator && 'select' in navigator.contacts) {
   $('aPick').onclick = async () => { try { const [c] = await navigator.contacts.select(['name', 'tel'], { multiple: false }); if (!c) return;
     if (c.name?.[0] && !$('aName').value.trim()) $('aName').value = c.name[0]; if (c.tel?.[0]) $('aPhone').value = c.tel[0]; } catch {} };
 }
-const seenTag = x => !x.phone ? '' : x.code_sent_at ? ' · <span class="seen">Code sent ✓</span>' : x.req_at ? ' · <span class="wants">🔑 Wants the code</span>' : x.seen_at ? ' · <span class="seen">Seen ✓</span>' : ' · <span class="unseen">Not opened yet</span>';
+const seenTag = x => !x.phone ? '' : x.code_sent_at ? ' · <span class="seen">Code sent ✓</span>' : x.req_at ? ' · <span class="wants">🔑 Wants the code</span>' : x.seen_at ? ` · <span class="seen">👀 Opened ${ago(x.seen_at)}</span>` : ' · <span class="unseen">Not opened yet</span>';
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' hr ago' : Math.round(m / 1440) + 'd ago'; };
 function renderRequests() {
   const R = me.requests || [];
@@ -344,6 +346,12 @@ function renderExtras() {
   $('giftT').innerHTML = c >= 3 ? `<b>Your product is free 🎉</b> ${c} customers. Use your commissions to get your IGNYT.<small>Based on projected commissions.</small>`
     : `<b>${c} of 3 customers.</b> Get ${3 - c} more and your IGNYT is free. Your commissions cover it.<small>Based on projected commissions.</small>`;
 }
+// Prospect opened their personal link: toast once per person (remembered on this phone), even if it happened while the app was closed.
+function noticeSeen() { let known; try { known = JSON.parse(localStorage.getItem('ig5_seen') || 'null'); } catch { known = null; }
+  const seen = (me.prospects || []).filter(x => x.seen_at), fresh = known ? seen.filter(x => !known.includes(x.id)) : [];
+  if (fresh.length) { fresh.sort((a, b) => b.seen_at - a.seen_at); const f = fresh[0].prospect.split(' ')[0];
+    toast(fresh.length > 1 ? `👀 ${f} + ${fresh.length - 1} more opened your Blueprint link` : `👀 ${f} just opened your Blueprint link`); }
+  try { localStorage.setItem('ig5_seen', JSON.stringify(seen.map(x => x.id))); } catch {} }
 function noticeRequests() { const ids = (me.requests || []).map(r => r.id);
   if (lastReq) { const n = (me.requests || []).filter(r => !lastReq.includes(r.id)); if (n.length) toast(`🔑 ${n[0].prospect.split(' ')[0]} is asking for the access code`); }
   lastReq = ids; }
@@ -381,6 +389,9 @@ function renderToday() {
   $('progress').innerHTML = n >= me.perDay ? `<div class="done"><div class="big">5/5 🔥</div><div class="t">${me.todayRank ? `#${me.todayRank} in today's 5/5 Club` : 'Day complete'}</div></div>` : `<div class="prog"><b>${n} of 5</b> — ${5 - n} to go today</div>`;
   $('fAdd').hidden = n >= me.perDay || !inWin;
   $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}${seenTag(x)}</span></span><button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
+  const op = (me.prospects || []).filter(x => x.seen_at && Date.now() - x.seen_at < 864e5).sort((a, b) => b.seen_at - a.seen_at);
+  $('openCard').hidden = !op.length;
+  $('openList').innerHTML = op.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]} · opened ${ago(x.seen_at)}</span></span></div>`).join('');
   $('fuCard').hidden = !me.due.length;
   $('fuList').innerHTML = me.due.map(fuRow).join('');
   let m = ''; for (let i = 0; i < 30; i++) { const d = new Date((dn(me.start) + i) * 864e5).toISOString().slice(0, 10), done = me.doneDays.includes(d);
@@ -424,7 +435,7 @@ function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests();
+  noticeRequests(); noticeSeen();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();
