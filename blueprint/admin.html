@@ -25,7 +25,7 @@ td{padding:8px;border-bottom:1px solid #2c2c33;white-space:nowrap} tr.d td:first
 const API='https://ignyt-challenge.hireboris.workers.dev/api', $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let rows=[], sortK='total', dir=-1;
-const COLS=[['name','Name'],['sponsor','Sponsor'],['phone','Phone'],['doneToday','5/5 today'],['streak','Streak'],['best','Best'],['days','Days 5/5'],['total','Exposures'],['texted','Texted'],['seen','Seen ✓'],['seenPct','Seen %'],['customers','Customers'],['customerPacks','Customer packs'],['partners','Partners'],['partnerPacks','Partner packs'],['projected','Projected $'],['sms_ok','SMS OK'],['tz','Time zone'],['joined','Joined']];
+const COLS=[['name','Name'],['sponsor','Sponsor'],['phone','Phone'],['doneToday','5/5 today'],['streak','Streak'],['best','Best'],['days','Days 5/5'],['total','Exposures'],['texted','Texted'],['seen','Seen ✓'],['seenPct','Seen %'],['codeRequests','Code requests'],['customers','Customers'],['customerPacks','Customer packs'],['partners','Partners'],['partnerPacks','Partner packs'],['projected','Projected $'],['sms_ok','SMS OK'],['tz','Time zone'],['joined','Joined']];
 $('key').value=localStorage.getItem('ig5_admin')||'';
 $('go').onclick=async()=>{ $('err').textContent='';
   const r=await fetch(API+'/admin',{headers:{'X-Admin-Key':$('key').value}}); const d=await r.json();

@@ -82,7 +82,12 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
 .hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.4}
 .msg{white-space:pre-wrap;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;font-size:15px;line-height:1.4}
 a.btn{display:block;text-align:center;text-decoration:none}
-.seen{color:var(--ok);font-weight:700} .unseen{color:var(--mut)}
+.seen{color:var(--ok);font-weight:700} .unseen{color:var(--mut)} .wants{color:var(--orange);font-weight:700}
+.rq{border:1.5px solid var(--orange);background:#fff7f2}
+.rq .lbl{color:var(--orange)}
+.rqi{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .rqi:first-of-type{border-top:0;padding-top:4px}
+.rqi .w{flex:1} .rqi .w b{display:block;font-size:16px} .rqi .w span{font-size:12.5px;color:var(--mut)}
+.rqi button{border:0;background:var(--orange);color:#fff;border-radius:11px;padding:12px 16px;font-weight:800;font-size:14px;font-family:inherit;white-space:nowrap}
 .lnk{background:none;border:0;color:var(--orange);font-weight:700;font-size:14px;margin-top:14px;font-family:inherit;text-decoration:underline}
 .note{background:#fff4ec;border:1px solid #ffd2b8}
 .foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
@@ -138,6 +143,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- TODAY -->
   <section id="vToday" hidden>
+    <div class="card rq" id="rqCard" hidden><div class="lbl">🔑 Access code requests</div><div id="rqList"></div></div>
     <div class="card note" id="recCard" hidden>
       <div class="lbl">Protect your account</div>
       <p class="sub" style="margin:0 0 4px">Set a secret word so you can reset your PIN yourself if you ever forget it.</p>
@@ -200,7 +206,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 </div></nav>
 <div class="toast" id="toast"></div>
 <div class="sheet" id="sendSheet" hidden><div class="bx">
-  <h3 id="ssT"></h3><p>Counted ✓ Now send it from your phone.</p>
+  <h3 id="ssT"></h3><p id="ssS">Counted ✓ Now send it from your phone.</p>
   <div class="msg" id="ssM"></div>
   <a class="btn" id="ssGo" href="#">Open Messages</a>
   <button class="btn ghost" id="ssCopy">Copy message</button>
@@ -274,13 +280,14 @@ $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = ''
     render(); openSend(name, me.sent, before === me.perDay - 1);
   } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
 const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-function openSend(name, sent, five) {
-  $('ssT').textContent = `Send to ${name.split(' ')[0]}`;
+function openSend(name, sent, five, title, sub) {
+  $('ssT').textContent = title || `Send to ${name.split(' ')[0]}`;
+  $('ssS').textContent = sub || 'Counted ✓ Now send it from your phone.';
   $('ssM').textContent = sent.message;
   $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
   $('ssCopy').textContent = 'Copy message';
   $('sendSheet').hidden = false;
-  $('ssX').onclick = () => { $('sendSheet').hidden = true; toast(five ? `5/5! You're #${me.todayRank} in today's 5/5 Club 🔥` : `${me.todayList.length} of 5 — keep going`); };
+  $('ssX').onclick = () => { $('sendSheet').hidden = true; if (five !== null) toast(five ? `5/5! You're #${me.todayRank} in today's 5/5 Club 🔥` : `${me.todayList.length} of 5 — keep going`); };
 }
 $('ssCopy').onclick = async () => { try { await navigator.clipboard.writeText($('ssM').textContent); $('ssCopy').textContent = 'Copied ✓ paste it in your text'; } catch { const r = document.createRange(); r.selectNodeContents($('ssM')); getSelection().removeAllRanges(); getSelection().addRange(r); $('ssCopy').textContent = 'Selected — tap Copy'; } };
 if ('contacts' in navigator && 'select' in navigator.contacts) {
@@ -288,7 +295,22 @@ if ('contacts' in navigator && 'select' in navigator.contacts) {
   $('aPick').onclick = async () => { try { const [c] = await navigator.contacts.select(['name', 'tel'], { multiple: false }); if (!c) return;
     if (c.name?.[0] && !$('aName').value.trim()) $('aName').value = c.name[0]; if (c.tel?.[0]) $('aPhone').value = c.tel[0]; } catch {} };
 }
-const seenTag = x => x.phone ? (x.seen_at ? ' · <span class="seen">Seen ✓</span>' : ' · <span class="unseen">Not opened yet</span>') : '';
+const seenTag = x => !x.phone ? '' : x.code_sent_at ? ' · <span class="seen">Code sent ✓</span>' : x.req_at ? ' · <span class="wants">🔑 Wants the code</span>' : x.seen_at ? ' · <span class="seen">Seen ✓</span>' : ' · <span class="unseen">Not opened yet</span>';
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' hr ago' : Math.round(m / 1440) + 'd ago'; };
+function renderRequests() {
+  const R = me.requests || [];
+  $('rqCard').hidden = !R.length;
+  $('rqList').innerHTML = R.map(x => `<div class="rqi"><div class="w"><b>${esc(x.prospect)}</b><span>Asked for the access code · ${ago(x.req_at)}</span></div><button onclick="sendCode('${x.id}')">Send code</button></div>`).join('');
+}
+async function sendCode(id) {
+  try { const x = (me.requests || []).find(r => r.id === id); me = await api('/codesent', { id }); render();
+    openSend(x ? x.prospect : '', me.sent, null, `Send ${x ? x.prospect.split(' ')[0] : 'them'} the code`, 'Their access code is filled in. Just hit Send.');
+  } catch (e) { toast(e.message); } }
+let lastReq = null;
+function noticeRequests() { const ids = (me.requests || []).map(r => r.id);
+  if (lastReq) { const n = (me.requests || []).filter(r => !lastReq.includes(r.id)); if (n.length) toast(`🔑 ${n[0].prospect.split(' ')[0]} is asking for the access code`); }
+  lastReq = ids; }
+setInterval(() => { if (tok && me && !document.hidden && $('sendSheet').hidden && $('sheet').hidden) api('/me').then(d => { me = d; render(); }).catch(() => {}); }, 45000);
 async function del(id) { if (!confirm('Remove this person from today?')) return; try { me = await api('/exposure/delete', { id }); board = null; render(); } catch (x) { toast(x.message); } }
 function pickPack(id, action) {
   const x = me.prospects.find(p => p.id === id), T = me.packs[action];
@@ -314,6 +336,7 @@ const KIND = { customer: 'Customer', partner: 'Brand Partner' };
 const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 
 function renderToday() {
+  renderRequests();
   const dayN = dn(me.today) - dn(me.start) + 1, inWin = me.today >= me.start && me.today <= me.end, n = me.todayList.length;
   $('dayH').innerHTML = inWin ? `<b>Day ${dayN}</b> <span class="i">of 30.</span>` : (me.today < me.start ? '<b>Starts</b> <span class="i">Nov 1.</span>' : '<b>That\'s</b> <span class="i">a wrap.</span>');
   $('daySub').textContent = fmt(me.today) + ' · Hi ' + me.user.name.split(' ')[0];
@@ -363,7 +386,8 @@ function renderPeople() {
 function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
-  $('fuBadge').hidden = !me.due.length; $('fuBadge').textContent = me.due.length;
+  const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
+  noticeRequests();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();

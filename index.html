@@ -230,13 +230,37 @@ body.locked{overflow:hidden}
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.15});
 document.querySelectorAll('.fade').forEach((el,i)=>{el.style.transitionDelay=(i*90)+'ms';io.observe(el)});
 </script>
+<style>
+#greq{margin-top:30px;text-align:center}
+#greq .q{font-family:Georgia,serif;font-style:italic;font-size:16px;color:#b9b6ae}
+#greq button{margin-top:14px;background:none;border:1.5px solid var(--orange);color:#f6f4ef;border-radius:999px;padding:14px 26px;font-size:15px;font-weight:700;letter-spacing:.5px;cursor:pointer;font-family:inherit}
+#greq button:disabled{opacity:.6;cursor:default}
+#greq .ok{margin-top:14px;font-size:15px;color:#f6f4ef;line-height:1.5}
+#greq .ok b{color:var(--orange)}
+</style>
 <script>
-/* IGNYT 5 Challenge: mark a partner's personal link (?b=code) as Seen once a real person engages. Not fired for link-preview bots. */
-(function(){var m=/[?&]b=([a-z0-9]{6})/i.exec(location.search);if(!m)return;var c=m[1].toLowerCase(),sent=false;
-try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
-if(/bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|telegram|discord|skype|linkedin/i.test(navigator.userAgent))return;
-function go(){if(sent||document.hidden)return;sent=true;var u='https://ignyt-challenge.hireboris.workers.dev/api/seen',d=JSON.stringify({b:c});
-if(!(navigator.sendBeacon&&navigator.sendBeacon(u,d)))fetch(u,{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
-['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,8000)})();
+/* IGNYT 5 Blueprint app: a partner's personal link (?b=code). Marks it Seen once a real person engages, and on the access gate
+   lets the prospect request the code; the partner is notified in the app and sends the code with one tap. */
+(function(){var m=/[?&]b=([a-z0-9]{6})/i.exec(location.search),c=m?m[1].toLowerCase():null;
+try{if(c)sessionStorage.setItem('ig5_b',c);else c=sessionStorage.getItem('ig5_b')}catch(e){}
+if(m)try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
+if(!c)return;
+var API='https://ignyt-challenge.hireboris.workers.dev/api',bot=/bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|telegram|discord|skype|linkedin/i.test(navigator.userAgent);
+function post(path,d){return fetch(API+path,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)}).then(function(r){return r.json()})}
+if(!bot){var sent=false;function go(){if(sent||document.hidden)return;sent=true;var d=JSON.stringify({b:c});
+ if(!(navigator.sendBeacon&&navigator.sendBeacon(API+'/seen',d)))fetch(API+'/seen',{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
+ ['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,8000)}
+var gate=document.getElementById('gate');if(!gate||bot)return;
+post('/who',{b:c}).then(function(w){if(!w||!w.first||!document.getElementById('gate'))return;
+ var esc=function(t){return String(t).replace(/[&<>"]/g,function(x){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]})},f=esc(w.first);
+ var hint=gate.querySelector('.hint');if(hint)hint.style.display='none';
+ var box=document.createElement('div');box.id='greq';
+ var done='<div class="ok">Request sent ✓<br><b>'+f+'</b> will text you your access code shortly.</div>';
+ box.innerHTML=w.requested?done:'<div class="q">Don&rsquo;t have a code yet?</div><button type="button">Request my access code from '+f+'</button>';
+ (hint||document.getElementById('gerr')).insertAdjacentElement('afterend',box);
+ var btn=box.querySelector('button');if(btn)btn.onclick=function(){btn.disabled=true;btn.textContent='Sending…';
+  post('/request',{b:c}).then(function(){box.innerHTML=done}).catch(function(){btn.disabled=false;btn.textContent='Try again'})};
+}).catch(function(){});
+})();
 </script>
 </body></html>
