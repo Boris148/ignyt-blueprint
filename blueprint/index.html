@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+<head><script>/* domain move 11/3: restore saved session carried over from ignythub.com */(function(){var m=location.hash.match(/[#&]mig=([^&]+)/);if(!m)return;try{var o=JSON.parse(decodeURIComponent(m[1]));for(var k in o)if(o[k]!=null&&!localStorage.getItem(k))localStorage.setItem(k,o[k]);}catch(e){}var h=location.hash.replace(/[#&]mig=[^&]+/,'').replace(/^&/,'#');history.replaceState(null,'',location.pathname+location.search+(h.length>1?h:''));})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#faf7f3">
@@ -380,7 +380,7 @@ function renderPush() {
   if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
     <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen and tap <b>Turn on</b> here</li></ol>
     <p style="font-size:12.5px">Already added it before today? Delete the old icon and add it again. Needs iOS 16.4 or newer.</p>`;
-  else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open ignythub.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
+  else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open thei5blueprint.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
   else if (Notification.permission === 'denied') $('ntBody').innerHTML = `<h3>Notifications are blocked</h3><p>${isIOS ? 'Open iPhone <b>Settings → Notifications → IGNYT 5</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'} Then come back here.</p>`;
   else $('ntBody').innerHTML = `<h3>Never miss your 5</h3><p>A daily reminder at your time, a 👀 alert the moment someone opens your link, a heads-up at 7pm if you're under 5, and reminders before every Blueprint call, with a tap-to-join Zoom link 5 min before.</p>
     <div class="ntb"><select id="ntHour" aria-label="Reminder time">${hourOpts()}</select><button type="button" id="ntGo">Turn on</button></div>`;
