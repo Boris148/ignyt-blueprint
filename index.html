@@ -167,6 +167,7 @@ body.locked{overflow:hidden}
   var already=false; try{ already=localStorage.getItem(KEY)==='1'; }catch(e){}
   // A partner's personal link (?b=code from the Blueprint app) opens the hub directly, no access code needed.
   var personal=/[?&]b=[a-z0-9]{6}(&|$)/i.test(location.search);
+  try{ if(sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b')) personal=true; }catch(e){}
   if(already || viaUrl===CODE || personal){ open_(true); return; }
   document.body.classList.add('locked');
   setTimeout(function(){ inp.focus(); },350);
@@ -252,17 +253,7 @@ function post(path,d){return fetch(API+path,{method:'POST',headers:{'Content-Typ
 if(!bot){var sent=false;function go(){if(sent||document.hidden)return;sent=true;var d=JSON.stringify({b:c});
  if(!(navigator.sendBeacon&&navigator.sendBeacon(API+'/seen',d)))fetch(API+'/seen',{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
  ['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,4000)}
-var gate=document.getElementById('gate');if(!gate||bot)return;
-post('/who',{b:c}).then(function(w){if(!w||!w.first||!document.getElementById('gate'))return;
- var esc=function(t){return String(t).replace(/[&<>"]/g,function(x){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]})},f=esc(w.first);
- var hint=gate.querySelector('.hint');if(hint)hint.style.display='none';
- var box=document.createElement('div');box.id='greq';
- var done='<div class="ok">Request sent ✓<br><b>'+f+'</b> will text you your access code shortly.</div>';
- box.innerHTML=w.requested?done:'<div class="q">Don&rsquo;t have a code yet?</div><button type="button">Request my access code from '+f+'</button>';
- (hint||document.getElementById('gerr')).insertAdjacentElement('afterend',box);
- var btn=box.querySelector('button');if(btn)btn.onclick=function(){btn.disabled=true;btn.textContent='Sending…';
-  post('/request',{b:c}).then(function(){box.innerHTML=done}).catch(function(){btn.disabled=false;btn.textContent='Try again'})};
-}).catch(function(){});
+
 })();
 </script>
 </body></html>
