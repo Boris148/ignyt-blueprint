@@ -95,7 +95,7 @@ nav a.cta{color:var(--orange)}
 .vid.idle .vbar{opacity:0}
 .vbar button{background:none;border:0;color:#fff;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px}
 .vbar svg{width:20px;height:20px;fill:#fff}
-.vbar .tr{flex:1;height:18px;display:flex;align-items:center;cursor:pointer}
+.vbar .tr{flex:1;height:18px;display:flex;align-items:center;cursor:default}
 .vbar .tr i{display:block;height:4px;width:100%;background:rgba(255,255,255,.25);border-radius:4px;position:relative;overflow:hidden}
 .vbar .tr b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--orange)}
 .vbar .tm{font-size:12px;font-variant-numeric:tabular-nums;color:#ddd;white-space:nowrap}
@@ -600,7 +600,6 @@ document.querySelectorAll('.fade').forEach(el=>io.observe(el));
   cover.addEventListener('click',start);
   cover.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();start();}});
   sh.addEventListener('click',toggle);ps.addEventListener('click',toggle);$('vpp').addEventListener('click',toggle);
-  $('vtr').addEventListener('click',function(e){var r=this.getBoundingClientRect();P.seekTo(P.getDuration()*(e.clientX-r.left)/r.width,true);upd();});
   $('vmu').addEventListener('click',function(){if(P.isMuted()){P.unMute();this.firstChild.innerHTML=ON;snd.classList.remove('on')}else{P.mute();this.firstChild.innerHTML=OFF}});
   snd.addEventListener('click',function(){P.unMute();snd.classList.remove('on');$('vmui').innerHTML=ON;});
   var fsOK=document.fullscreenEnabled||document.webkitFullscreenEnabled;
