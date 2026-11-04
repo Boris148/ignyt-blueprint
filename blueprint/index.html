@@ -34,7 +34,7 @@ h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-to
 .c.f.p{border-color:var(--gold);background:radial-gradient(circle at 35% 30%,#ffd27a,#ffb23e 60%,#c47a10);color:#2a1700}
 .prog{text-align:center;color:var(--mut);font-size:14px;margin-top:10px} .prog b{color:var(--txt)}
 .done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--goldt);font-weight:700;margin-top:4px}
-input,select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
 .seg{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-top:10px}
@@ -222,6 +222,25 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <div id="people"></div>
   </section>
 
+  <!-- ADMIN (only for accounts in ADMIN_PHONES) -->
+  <section id="vAdmin" hidden>
+    <h1><b>App</b> <span class="i">admin.</span></h1>
+    <p class="sub">Only you can see this tab.</p>
+    <div class="card"><div class="lbl">Send a notification</div>
+      <p class="sub" style="font-size:13px;margin:6px 0 12px">Goes to everyone with notifications turned on. It comes from the app, not from you.</p>
+      <input id="bTitle" maxlength="80" placeholder="Title" value="IGNYT 5">
+      <textarea id="bBody" maxlength="200" rows="3" placeholder="Your message (200 characters max)" style="margin-top:10px;resize:vertical"></textarea>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" id="bTest" type="button" style="flex:1">Send test to me</button><button class="btn" id="bSend" type="button" style="flex:1">Send to everyone</button></div>
+      <p class="sub" id="bOut" style="font-size:13px;margin-top:10px;font-weight:700"></p>
+    </div>
+    <div class="card"><div class="lbl">The team</div><div id="aKpi" style="margin-top:8px"></div>
+      <input id="aQ" placeholder="Search name or sponsor" style="margin-top:10px"><div id="aList" style="margin-top:8px"></div>
+      <a class="sub" href="/blueprint/admin.html" target="_blank" style="display:block;margin-top:10px;font-size:13px;font-weight:700;color:var(--orange)">Open the full dashboard (table + CSV) →</a></div>
+    <div class="card"><div class="lbl">Reset a member's PIN</div>
+      <input id="aRp" type="tel" placeholder="Their phone number" style="margin-top:10px"><button class="btn" id="aRgo" type="button" style="margin-top:10px;width:100%">Reset PIN</button>
+      <p class="sub" id="aRout" style="font-size:13px;margin-top:10px;font-weight:700"></p></div>
+  </section>
+
   <div class="foot" id="foot" hidden><span id="tzNote"></span><a href="#" id="logout">Sign out</a></div>
 </div>
 
@@ -230,6 +249,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button data-v="Board"><span class="e">🏆</span>Leaderboard</button>
   <button data-v="Week"><span class="e">📊</span>My Tally</button>
   <button data-v="People"><span class="e">👥</span>People</button>
+  <button data-v="Admin" id="navAdmin" hidden><span class="e">🛠️</span>Admin</button>
 </div></nav>
 <div class="toast" id="toast"></div>
 <div class="sheet" id="fbSheet" hidden><div class="bx">
@@ -485,6 +505,31 @@ function renderPeople() {
     return `<div class="card"><div class="lbl">${t} · ${xs.length}</div>` + xs.map(x => s === 'open' ? fuRow(x).replace('Follow up with ', '')
       : `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${x.pack ? `${x.pack} IGNYT · projected ${money(x.projected)} · ` : ''}sent ${short(x.day)}${x.outcome_day ? ' · enrolled ' + short(x.outcome_day) : ''}</span></span><button class="x" style="font-size:12px;font-weight:700" onclick="act('${x.id}','reopen')">Undo</button></div>`).join('') + '</div>'; }).join('');
 }
+// ---- admin tab
+let aRows = null;
+async function renderAdmin() {
+  if (!aRows) { $('aList').innerHTML = '<p class="sub">Loading…</p>'; try { aRows = await api('/admin'); } catch (x) { $('aList').innerHTML = `<p class="sub">${esc(x.message)}</p>`; return; } }
+  const S = k => aRows.reduce((a, r) => a + (+r[k] || 0), 0);
+  $('aKpi').innerHTML = `<p class="sub" style="font-size:13px"><b>${aRows.length}</b> members · <b>${aRows.filter(r => r.doneToday).length}</b> hit 5/5 today · <b>${S('total')}</b> sent · <b>${S('customers')}</b> customers · <b>${S('partners')}</b> brand partners</p>`;
+  const q = $('aQ').value.toLowerCase(), xs = aRows.filter(r => !q || (r.name + ' ' + r.sponsor).toLowerCase().includes(q)).sort((a, b) => b.total - a.total);
+  $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span></div>`).join('') || '<p class="sub">No one matches.</p>';
+}
+$('aQ').oninput = () => renderAdmin();
+async function broadcast(test) {
+  const title = $('bTitle').value.trim() || 'IGNYT 5', body = $('bBody').value.trim();
+  if (!body) return $('bOut').textContent = 'Write a message first.';
+  if (!test && !confirm(`Send this to everyone with notifications on?\n\n${title}\n${body}`)) return;
+  $('bOut').textContent = 'Sending…'; $('bSend').disabled = $('bTest').disabled = true;
+  try { const d = await api('/admin/push', { title, body, test });
+    $('bOut').textContent = test ? (d.devices ? 'Test sent to your phone ✓' : 'No device found. Turn on notifications on the Today tab first.') : `Sent ✓ ${d.users} people · ${d.devices} devices`;
+    if (!test) $('bBody').value = '';
+  } catch (x) { $('bOut').textContent = x.message; }
+  $('bSend').disabled = $('bTest').disabled = false;
+}
+$('bTest').onclick = () => broadcast(true);
+$('bSend').onclick = () => broadcast(false);
+$('aRgo').onclick = async () => { $('aRout').textContent = '';
+  try { const d = await api('/admin/reset', { phone: $('aRp').value }); $('aRout').textContent = `${d.name}'s temporary PIN: ${d.pin}. They can sign in with it now.`; } catch (x) { $('aRout').textContent = x.message; } };
 function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
@@ -492,13 +537,14 @@ function render() {
   noticeRequests(); noticeSeen(); renderPush();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
-  ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople })[view]();
+  $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
+  ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople, Admin: renderAdmin })[view]();
 }
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
 function show() {
   const authed = !!me;
   $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed;
-  ['Today', 'Board', 'Week', 'People'].forEach(v => $('v' + v).hidden = !authed || view !== v);
+  ['Today', 'Board', 'Week', 'People', 'Admin'].forEach(v => $('v' + v).hidden = !authed || view !== v);
   render();
 }
 async function load() { try { me = await api('/me'); } catch { me = null; } show(); }

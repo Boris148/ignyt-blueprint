@@ -27,11 +27,13 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let rows=[], sortK='total', dir=-1;
 const COLS=[['name','Name'],['sponsor','Sponsor'],['phone','Phone'],['doneToday','5/5 today'],['streak','Streak'],['best','Best'],['days','Days 5/5'],['total','Exposures'],['texted','Texted'],['seen','Seen ✓'],['seenPct','Seen %'],['codeRequests','Code requests'],['customers','Customers'],['customerPacks','Customer packs'],['partners','Partners'],['partnerPacks','Partner packs'],['projected','Projected $'],['fbGroup','FB group'],['sms_ok','SMS OK'],['tz','Time zone'],['joined','Joined']];
 $('key').value=localStorage.getItem('ig5_admin')||'';
+const TOK=localStorage.getItem('ig5_tok'); const AH=()=>({...($('key').value?{'X-Admin-Key':$('key').value}:{}),...(TOK?{Authorization:'Bearer '+TOK}:{})});
+if(TOK&&!$('key').value) setTimeout(()=>$('go').click(),0);
 $('go').onclick=async()=>{ $('err').textContent='';
-  const r=await fetch(API+'/admin',{headers:{'X-Admin-Key':$('key').value}}); const d=await r.json();
+  const r=await fetch(API+'/admin',{headers:AH()}); const d=await r.json();
   if(!r.ok) return $('err').textContent=d.error||'Error';
-  localStorage.setItem('ig5_admin',$('key').value); rows=d; $('csv').hidden=$('q').hidden=$('rbar').hidden=false; draw(); };
-$('rgo').onclick=async()=>{ $('rout').textContent=''; const r=await fetch(API+'/admin/reset',{method:'POST',headers:{'X-Admin-Key':$('key').value,'Content-Type':'application/json'},body:JSON.stringify({phone:$('rp').value})}); const d=await r.json();
+  if($('key').value) localStorage.setItem('ig5_admin',$('key').value); rows=d; $('csv').hidden=$('q').hidden=$('rbar').hidden=false; draw(); };
+$('rgo').onclick=async()=>{ $('rout').textContent=''; const r=await fetch(API+'/admin/reset',{method:'POST',headers:{...AH(),'Content-Type':'application/json'},body:JSON.stringify({phone:$('rp').value})}); const d=await r.json();
   $('rout').textContent=r.ok?`${d.name}'s temporary PIN: ${d.pin} — they can sign in with it now`:(d.error||'Error'); };
 $('q').oninput=draw;
 function draw(){
