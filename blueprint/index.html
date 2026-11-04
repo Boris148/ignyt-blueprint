@@ -191,9 +191,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <p class="sub" style="font-size:12px;margin-top:8px">They're looking right now. A quick "what did you think?" text works best within the hour.</p></div>
     <div class="card gift" id="giftCard"><div class="lbl">🎁 Free product tracker</div><div class="row"><div class="dots" id="giftDots"></div><div class="t" id="giftT"></div></div></div>
     <div class="card" id="fuCard" hidden><div class="lbl">Follow up today</div><div id="fuList"></div></div>
-    <div class="card" id="ntSet" hidden><div class="lbl">🔔 Notifications</div><div class="nset"><b>On</b> · Daily reminder <select id="ntHour2"></select><button type="button" id="ntTest">Send a test</button><button type="button" id="ntOff">Turn off</button></div>
-      <p class="sub" style="font-size:12px;margin-top:8px">You also get a 👀 alert when someone opens your link, and a 7pm heads-up if you're under 5.</p>
-      <label class="nset" style="margin-top:10px;display:flex;gap:10px;align-items:center;font-size:14px"><input type="checkbox" id="ntCalls" style="width:20px;height:20px;accent-color:#f05a1e"> <span><b>Call reminders</b> · 24 hrs, 30 min and 5 min before every Blueprint call. The 5-min one has the Zoom link. Tap to join.</span></label></div>
+    <div class="card" id="ntSet" hidden><div class="lbl">🔔 Notifications</div><div class="nset"><b>On</b> · Daily reminder <select id="ntHour2"></select><button type="button" id="ntTest">Send a test</button></div>
+      <p class="sub" style="font-size:12px;margin-top:8px">You'll get a 👀 alert when someone opens your link, video alerts when they start, pass halfway or finish a video, call reminders before every Blueprint call, and a 7pm heads-up if you're under 5.</p></div>
     <div class="card"><div class="lbl">Your November</div><div class="month" id="month"></div>
       <p class="sub" style="font-size:12px;margin-top:10px">Orange = hit your 5. Past days lock at midnight — no going back.</p></div>
   </section>
@@ -394,7 +393,7 @@ if (pushOK) navigator.serviceWorker.register('/blueprint/sw.js', { scope: '/blue
 function renderPush() {
   if (!me || !$('ntCard')) return;
   const on = !!PUSH.sub && Notification.permission === 'granted';
-  $('ntSet').hidden = !on; if (on) { $('ntHour2').innerHTML = hourOpts(); $('ntCalls').checked = me.user.callPush !== false; }
+  $('ntSet').hidden = !on; if (on) { $('ntHour2').innerHTML = hourOpts();  }
   if (on || (pushOK && !PUSH.ready)) { $('ntCard').hidden = true; return; }
   $('ntCard').hidden = false;
   if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
@@ -421,9 +420,7 @@ async function pushOn() {
 }
 function wirePushSettings() {
   $('ntHour2').onchange = async e => { try { me = await api('/push/hour', { hour: Number(e.target.value) }); toast(`Daily reminder set for ${e.target.selectedOptions[0].text}`); } catch (x) { toast(x.message); } };
-  $('ntCalls').onchange = async e => { try { me = await api('/push/calls', { on: e.target.checked }); toast(e.target.checked ? 'Call reminders on 📅' : 'Call reminders off'); } catch (x) { toast(x.message); e.target.checked = !e.target.checked; } };
   $('ntTest').onclick = async () => { try { await api('/push/test', {}); toast('Test sent. Check your notifications'); } catch (x) { toast(x.message); } };
-  $('ntOff').onclick = async () => { try { const s = PUSH.sub; if (s) { await api('/push/off', { endpoint: s.endpoint }); await s.unsubscribe(); } PUSH.sub = null; render(); toast('Notifications off'); } catch (x) { toast(x.message); } };
 }
 wirePushSettings();
 function noticeRequests() { const ids = (me.requests || []).map(r => r.id);

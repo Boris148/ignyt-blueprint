@@ -77,6 +77,17 @@ footer b{color:var(--orange);font-weight:700}
   </div>
 </div>
 
+<script>/* video alerts: tells the partner who sent this prospect when they start, pass 50%, finish, or stop early */
+(function(){var c;try{c=sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b')}catch(e){}if(!c||!/^[a-z0-9]{6}$/.test(c))return;
+var API='https://ignyt-challenge.hireboris.workers.dev/api/watch',PATH='life',sent={},secs={},n=0,pl=null,iv=null;
+function send(ev,pct){if(sent[ev])return;sent[ev]=1;var d=JSON.stringify({b:c,p:PATH,ev:ev,pct:pct||0});if(!(navigator.sendBeacon&&navigator.sendBeacon(API,d)))fetch(API,{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
+function dur(){return pl&&pl.getDuration?Math.floor(pl.getDuration()||0):0}
+function frac(){var d=dur();return d?Math.min(1,n/d):0}
+function tick(){if(!pl||!pl.getCurrentTime)return;var t=Math.floor(pl.getCurrentTime()||0);if(!secs[t]){secs[t]=1;n++}if(frac()>=.5)send('half')}
+window.IGW=function(s,p){pl=p;if(s===1){send('start');clearInterval(iv);iv=setInterval(tick,250)}else{clearInterval(iv);if(s===0){tick();var f=frac();if(f>=.9){send('half');send('end')}else if(f<.5)send('left',Math.round(f*100))}}};
+function leave(){if(sent.start&&!sent.half&&!sent.end){tick();send('left',Math.round(frac()*100))}}
+addEventListener('pagehide',leave);document.addEventListener('visibilitychange',function(){if(document.hidden)leave()});
+})();</script>
 <script>
 var player;
 var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';
@@ -85,7 +96,7 @@ function onYouTubeIframeAPIReady(){
   player=new YT.Player('player',{
     videoId:'LqoM2IfxIAY',
     playerVars:{rel:0,modestbranding:1,playsinline:1,color:'white'},
-    events:{onStateChange:function(e){if(e.data===YT.PlayerState.ENDED){document.getElementById('ov').classList.add('show');}}}
+    events:{onStateChange:function(e){window.IGW&&IGW(e.data,player);if(e.data===YT.PlayerState.ENDED){document.getElementById('ov').classList.add('show');}}}
   });
 }
 document.getElementById('again').addEventListener('click',function(){

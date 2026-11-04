@@ -244,7 +244,7 @@ document.querySelectorAll('.fade').forEach((el,i)=>{el.style.transitionDelay=(i*
 /* IGNYT 5 Blueprint app: a partner's personal link (?b=code). Marks it Seen once a real person engages, and on the access gate
    lets the prospect request the code; the partner is notified in the app and sends the code with one tap. */
 (function(){var m=/[?&]b=([a-z0-9]{6})/i.exec(location.search),c=m?m[1].toLowerCase():null;
-try{if(c)sessionStorage.setItem('ig5_b',c);else c=sessionStorage.getItem('ig5_b')}catch(e){}
+try{if(c){sessionStorage.setItem('ig5_b',c);localStorage.setItem('ig5_b',c)}else c=sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b')}catch(e){}
 if(m)try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
 if(!c)return;
 var API='https://ignyt-challenge.hireboris.workers.dev/api',bot=/bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|telegram|discord|skype|linkedin/i.test(navigator.userAgent);

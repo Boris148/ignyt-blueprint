@@ -558,6 +558,17 @@ footer .wm b{color:var(--orange);font-weight:700}
   <div class="wm"><b>ORYGN</b> &nbsp;&middot;&nbsp; IGNYT 5 &nbsp;&middot;&nbsp; The IGNYT Blueprint</div>
 </footer>
 
+<script>/* video alerts: tells the partner who sent this prospect when they start, pass 50%, finish, or stop early */
+(function(){var c;try{c=sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b')}catch(e){}if(!c||!/^[a-z0-9]{6}$/.test(c))return;
+var API='https://ignyt-challenge.hireboris.workers.dev/api/watch',PATH='wellness',sent={},secs={},n=0,pl=null,iv=null;
+function send(ev,pct){if(sent[ev])return;sent[ev]=1;var d=JSON.stringify({b:c,p:PATH,ev:ev,pct:pct||0});if(!(navigator.sendBeacon&&navigator.sendBeacon(API,d)))fetch(API,{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
+function dur(){return pl&&pl.getDuration?Math.floor(pl.getDuration()||0):0}
+function frac(){var d=dur();return d?Math.min(1,n/d):0}
+function tick(){if(!pl||!pl.getCurrentTime)return;var t=Math.floor(pl.getCurrentTime()||0);if(!secs[t]){secs[t]=1;n++}if(frac()>=.5)send('half')}
+window.IGW=function(s,p){pl=p;if(s===1){send('start');clearInterval(iv);iv=setInterval(tick,250)}else{clearInterval(iv);if(s===0){tick();var f=frac();if(f>=.9){send('half');send('end')}else if(f<.5)send('left',Math.round(f*100))}}};
+function leave(){if(sent.start&&!sent.half&&!sent.end){tick();send('left',Math.round(frac()*100))}}
+addEventListener('pagehide',leave);document.addEventListener('visibilitychange',function(){if(document.hidden)leave()});
+})();</script>
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});
 document.querySelectorAll('.fade').forEach(el=>io.observe(el));
@@ -578,7 +589,7 @@ document.querySelectorAll('.fade').forEach(el=>io.observe(el));
   var t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t);
   function go(){P.playVideo();setTimeout(function(){var s=P.getPlayerState();if(s!==1&&s!==3){P.mute();P.playVideo();snd.classList.add('on');}},1300);}
   function st(e){
-    var s=e.data;
+    var s=e.data;window.IGW&&IGW(s,P);
     if(s===1){ps.classList.remove('on');bar.classList.add('on');$('vppi').innerHTML=PAUSE;clearInterval(tick);tick=setInterval(upd,250);}
     if(s===2){ps.classList.add('on');$('vppi').innerHTML=PLAY;}
     if(s===0){clearInterval(tick);bar.classList.remove('on');ps.classList.remove('on');endc.classList.add('on');if(document.fullscreenElement)document.exitFullscreen();}
