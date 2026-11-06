@@ -114,6 +114,12 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .conf i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall 2.4s ease-in forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.8}}
 [hidden]{display:none!important}
+.sh h3{font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1.2} .sh p{font-size:14px;color:var(--mut);margin-top:6px;line-height:1.45}
+.shl{margin-top:12px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:700;word-break:break-all}
+.shm{margin-top:12px;background:var(--card2);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+.shq{display:flex;justify-content:center;margin-top:12px} .shq img{width:200px;height:200px;border-radius:12px;background:#fff;padding:10px;border:1px solid var(--line)}
+.shs{margin-top:6px;counter-reset:s} .shs li{list-style:none;counter-increment:s;display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.4} .shs li:first-child{border-top:0}
+.shs li:before{content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -222,6 +228,27 @@ a.btn{display:block;text-align:center;text-decoration:none}
   </section>
 
   <!-- ADMIN (only for accounts in ADMIN_PHONES) -->
+  <!-- SHARE (AJ 11/6) -->
+  <section id="vShare" hidden>
+    <h1><b>Share</b> the <span class="i">app.</span></h1>
+    <p class="sub">Get your team on The Blueprint. Your link fills in <b>you</b> as their sponsor when they sign up.</p>
+    <div class="card sh"><div class="lbl">Your team invite link</div>
+      <div class="shl" id="shLink"></div>
+      <a class="btn" id="shSms" href="#">💬 Text it to my team</a>
+      <button class="btn ghost" id="shNative" type="button" hidden>📤 Share…</button>
+      <button class="btn ghost" id="shCopy" type="button">Copy link</button>
+    </div>
+    <div class="card sh"><div class="lbl">The message they'll get</div><div class="shm" id="shMsg"></div>
+      <button class="btn ghost" id="shCopyM" type="button">Copy message</button></div>
+    <div class="card sh"><div class="lbl">In person? Let them scan</div>
+      <p>Have them point their phone camera at this code.</p><div class="shq"><img id="shQr" alt="QR code for your invite link"></div></div>
+    <div class="card sh"><div class="lbl">How they get set up</div><ol class="shs">
+      <li><span>Open your link and tap <b>Join the Blueprint</b>.</span></li>
+      <li><span>Your name is already in the sponsor box. Add their name, mobile and a 4-digit PIN.</span></li>
+      <li><span>Add it to the Home Screen (iPhone: Share → Add to Home Screen).</span></li>
+      <li><span>Turn on notifications so they get the daily 5 and call reminders.</span></li></ol></div>
+  </section>
+
   <section id="vAdmin" hidden>
     <h1><b>App</b> <span class="i">admin.</span></h1>
     <p class="sub">Only you can see this tab.</p>
@@ -248,6 +275,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button data-v="Board"><span class="e">🏆</span>Leaderboard</button>
   <button data-v="Week"><span class="e">📊</span>My Tally</button>
   <button data-v="People"><span class="e">👥</span>People</button>
+  <button data-v="Share"><span class="e">🤝</span>Share</button>
   <button data-v="Admin" id="navAdmin" hidden><span class="e">🛠️</span>Admin</button>
 </div></nav>
 <div class="toast" id="toast"></div>
@@ -527,6 +555,20 @@ $('bTest').onclick = () => broadcast(true);
 $('bSend').onclick = () => broadcast(false);
 $('aRgo').onclick = async () => { $('aRout').textContent = '';
   try { const d = await api('/admin/reset', { phone: $('aRp').value }); $('aRout').textContent = `${d.name}'s temporary PIN: ${d.pin}. They can sign in with it now.`; } catch (x) { $('aRout').textContent = x.message; } };
+function shareLink() { return 'https://ignythub.com/blueprint/?sp=' + encodeURIComponent(me.user.name).replace(/%20/g, '+'); }
+function shareMsg() { return `Hey! Join me on The Blueprint app 🔥 It's how our team does 5 a day to the Blueprint: track your sends, keep your streak, and get reminders before every call.\n\nSign up here (I'm already set as your sponsor): ${shareLink()}`; }
+function renderShare() {
+  const l = shareLink(), m = shareMsg();
+  $('shLink').textContent = l.replace('https://', ''); $('shMsg').textContent = m;
+  $('shSms').href = `sms:${IOS ? '&' : '?'}body=${encodeURIComponent(m)}`;
+  $('shQr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' + encodeURIComponent(l);
+  $('shNative').hidden = !navigator.share;
+}
+async function copyTxt(t, b, ok) { try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); } const o = b.textContent; b.textContent = ok; setTimeout(() => b.textContent = o, 2200); }
+$('shCopy').onclick = () => copyTxt(shareLink(), $('shCopy'), 'Copied ✓');
+$('shCopyM').onclick = () => copyTxt(shareMsg(), $('shCopyM'), 'Copied ✓ paste it anywhere');
+$('shNative').onclick = () => navigator.share({ title: 'The Blueprint app', text: shareMsg() }).catch(() => {});
+(function () { const sp = new URLSearchParams(location.search).get('sp'); if (sp) { $('jSponsor').value = sp.slice(0, 60); try { sessionStorage.setItem('ig5_sp', sp.slice(0, 60)); } catch {} } else { try { const v = sessionStorage.getItem('ig5_sp'); if (v) $('jSponsor').value = v; } catch {} } })();
 function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
@@ -535,13 +577,13 @@ function render() {
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
-  ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople, Admin: renderAdmin })[view]();
+  ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople, Share: renderShare, Admin: renderAdmin })[view]();
 }
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
 function show() {
   const authed = !!me;
   $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed;
-  ['Today', 'Board', 'Week', 'People', 'Admin'].forEach(v => $('v' + v).hidden = !authed || view !== v);
+  ['Today', 'Board', 'Week', 'People', 'Share', 'Admin'].forEach(v => $('v' + v).hidden = !authed || view !== v);
   render();
 }
 async function load() { try { me = await api('/me'); } catch { me = null; } show(); }
