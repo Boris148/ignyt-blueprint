@@ -228,25 +228,18 @@ a.btn{display:block;text-align:center;text-decoration:none}
   </section>
 
   <!-- ADMIN (only for accounts in ADMIN_PHONES) -->
-  <!-- SHARE (AJ 11/6) -->
+  <!-- SHARE (AJ 11/6: simple, no sponsor pre-fill — sharer may not be the sponsor) -->
   <section id="vShare" hidden>
     <h1><b>Share</b> the <span class="i">app.</span></h1>
-    <p class="sub">Get your team on The Blueprint. Your link fills in <b>you</b> as their sponsor when they sign up.</p>
-    <div class="card sh"><div class="lbl">Your team invite link</div>
-      <div class="shl" id="shLink"></div>
+    <p class="sub">Send The Blueprint app to your team.</p>
+    <div class="card sh"><div class="lbl">The app link</div>
+      <div class="shl">ignythub.com/blueprint</div>
       <a class="btn" id="shSms" href="#">💬 Text it to my team</a>
       <button class="btn ghost" id="shNative" type="button" hidden>📤 Share…</button>
       <button class="btn ghost" id="shCopy" type="button">Copy link</button>
     </div>
-    <div class="card sh"><div class="lbl">The message they'll get</div><div class="shm" id="shMsg"></div>
-      <button class="btn ghost" id="shCopyM" type="button">Copy message</button></div>
     <div class="card sh"><div class="lbl">In person? Let them scan</div>
-      <p>Have them point their phone camera at this code.</p><div class="shq"><img id="shQr" alt="QR code for your invite link"></div></div>
-    <div class="card sh"><div class="lbl">How they get set up</div><ol class="shs">
-      <li><span>Open your link and tap <b>Join the Blueprint</b>.</span></li>
-      <li><span>Your name is already in the sponsor box. Add their name, mobile and a 4-digit PIN.</span></li>
-      <li><span>Add it to the Home Screen (iPhone: Share → Add to Home Screen).</span></li>
-      <li><span>Turn on notifications so they get the daily 5 and call reminders.</span></li></ol></div>
+      <div class="shq"><img id="shQr" alt="QR code for the app link"></div></div>
   </section>
 
   <section id="vAdmin" hidden>
@@ -555,20 +548,16 @@ $('bTest').onclick = () => broadcast(true);
 $('bSend').onclick = () => broadcast(false);
 $('aRgo').onclick = async () => { $('aRout').textContent = '';
   try { const d = await api('/admin/reset', { phone: $('aRp').value }); $('aRout').textContent = `${d.name}'s temporary PIN: ${d.pin}. They can sign in with it now.`; } catch (x) { $('aRout').textContent = x.message; } };
-function shareLink() { return 'https://ignythub.com/blueprint/?sp=' + encodeURIComponent(me.user.name).replace(/%20/g, '+'); }
-function shareMsg() { return `Hey! Join me on The Blueprint app 🔥 It's how our team does 5 a day to the Blueprint: track your sends, keep your streak, and get reminders before every call.\n\nSign up here (I'm already set as your sponsor): ${shareLink()}`; }
+const SHARE_URL = 'https://ignythub.com/blueprint';
+const SHARE_MSG = `Join me on The Blueprint app 🔥 5 a day to the Blueprint. Track your sends, keep your streak, and get call reminders.\n\n${SHARE_URL}`;
 function renderShare() {
-  const l = shareLink(), m = shareMsg();
-  $('shLink').textContent = l.replace('https://', ''); $('shMsg').textContent = m;
-  $('shSms').href = `sms:${IOS ? '&' : '?'}body=${encodeURIComponent(m)}`;
-  $('shQr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' + encodeURIComponent(l);
+  $('shSms').href = `sms:${IOS ? '&' : '?'}body=${encodeURIComponent(SHARE_MSG)}`;
+  if (!$('shQr').src) $('shQr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' + encodeURIComponent(SHARE_URL);
   $('shNative').hidden = !navigator.share;
 }
 async function copyTxt(t, b, ok) { try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); } const o = b.textContent; b.textContent = ok; setTimeout(() => b.textContent = o, 2200); }
-$('shCopy').onclick = () => copyTxt(shareLink(), $('shCopy'), 'Copied ✓');
-$('shCopyM').onclick = () => copyTxt(shareMsg(), $('shCopyM'), 'Copied ✓ paste it anywhere');
-$('shNative').onclick = () => navigator.share({ title: 'The Blueprint app', text: shareMsg() }).catch(() => {});
-(function () { const sp = new URLSearchParams(location.search).get('sp'); if (sp) { $('jSponsor').value = sp.slice(0, 60); try { sessionStorage.setItem('ig5_sp', sp.slice(0, 60)); } catch {} } else { try { const v = sessionStorage.getItem('ig5_sp'); if (v) $('jSponsor').value = v; } catch {} } })();
+$('shCopy').onclick = () => copyTxt(SHARE_URL, $('shCopy'), 'Copied ✓');
+$('shNative').onclick = () => navigator.share({ title: 'The Blueprint app', text: SHARE_MSG }).catch(() => {});
 function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
