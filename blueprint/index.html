@@ -148,6 +148,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <div class="err" id="jErr"></div>
     </form>
     <form id="fIn" class="card" hidden>
+      <div id="inHi" hidden style="margin:0 0 12px"><h3 style="margin:0 0 4px">Welcome to the app 👋</h3><p class="sub" style="margin:0">Sign in one time with the mobile number and 4-digit PIN you picked when you joined.</p></div>
       <div class="f"><label>Mobile number</label><input id="iPhone" type="tel" autocomplete="tel" required></div>
       <div class="f"><label>PIN</label><input id="iPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" required></div>
       <button class="btn" type="submit">Sign in</button>
@@ -336,9 +337,9 @@ $('fRec').onsubmit = async e => { e.preventDefault(); $('recErr').textContent = 
 $('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '';
   if (!INV) { $('jErr').textContent = 'The app is invite-only — open the invite link you were sent.'; return; }
   try { const d = await api('/signup', { inv: INV, name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, word: $('jWord').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
-    tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); toast("You're in. Let's get your first 5 🔥"); } catch (x) { $('jErr').textContent = x.message; } };
+    tok = d.token; localStorage.setItem('ig5_tok', tok); localStorage.setItem('ig5_member', '1'); localStorage.removeItem('ig5_inv'); await load(); toast("You're in. Let's get your first 5 🔥"); } catch (x) { $('jErr').textContent = x.message; } };
 $('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
-  try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); } catch (x) { $('iErr').textContent = x.message; } };
+  try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); localStorage.setItem('ig5_member', '1'); await load(); } catch (x) { $('iErr').textContent = x.message; } };
 function signOut() { tok = null; me = null; localStorage.removeItem('ig5_tok'); show(); }
 $('logout').onclick = async e => { e.preventDefault(); const t = tok; if (PUSH.sub) { await api('/push/off', { endpoint: PUSH.sub.endpoint }).catch(() => {}); await PUSH.sub.unsubscribe().catch(() => {}); PUSH.sub = null; } tok = t; api('/logout', {}).catch(() => {}); signOut(); };
 
@@ -425,7 +426,7 @@ function renderPush() {
   $('ntCard').hidden = false;
   if (inApp) $('ntBody').innerHTML = `<h3>Open this in ${isIOS ? 'Safari' : 'Chrome'} to get reminders</h3><p>You're inside another app's browser, which can't do notifications. Tap the <b>⋯</b> menu → <b>Open in ${isIOS ? 'Safari' : 'Chrome'}</b> (or go to ignythub.com/blueprint there) and sign in.</p>`;
   else if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
-    <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen and tap <b>Turn on</b> here</li></ol>
+    <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen, sign in with your number + PIN, and tap <b>Turn on</b></li></ol>
     <p style="font-size:12.5px">Already added it before today? Delete the old icon and add it again. Needs iOS 16.4 or newer.</p>`;
   else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open ignythub.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
   else if (Notification.permission === 'denied') $('ntBody').innerHTML = `<h3>Notifications are blocked</h3><p>${isIOS ? 'Open iPhone <b>Settings → Notifications → IGNYT 5</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'} Then come back here.</p>`;
@@ -596,6 +597,8 @@ const joinTab = $('tJoin').onclick;
 async function checkInv() {
   const q = new URLSearchParams(location.search).get('inv'); if (q) localStorage.setItem('ig5_inv', q.trim().toUpperCase());
   const c = localStorage.getItem('ig5_inv'); invGate(false);
+  // Home Screen app on iPhone has its own storage → people who just joined in Safari arrive here signed out. Send them straight to Sign in.
+  if (!c && (standalone || localStorage.getItem('ig5_member'))) { $('tIn').click(); $('inHi').hidden = !standalone; return; }
   if (!c) return;
   try { const d = await api('/invite', { code: c }); INV = c; $('invBy').textContent = `✅ Invited by ${d.name}`; invGate(true); }
   catch { localStorage.removeItem('ig5_inv'); }
