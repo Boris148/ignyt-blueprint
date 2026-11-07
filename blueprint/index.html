@@ -410,17 +410,21 @@ function noticeSeen() { let known; try { known = JSON.parse(localStorage.getItem
 const PUSH = { sub: null, ready: false };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
 const pushOK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 const hourOpts = sel => [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(h => `<option value="${h}" ${h === (me?.user.remindHour ?? 9) ? 'selected' : ''}>${h % 12 || 12}:00 ${h < 12 ? 'AM' : 'PM'}</option>`).join('');
 const u8 = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
-if (pushOK) navigator.serviceWorker.register('/blueprint/sw.js', { scope: '/blueprint/' }).then(r => r.pushManager.getSubscription()).then(s => { PUSH.sub = s; PUSH.ready = true; if (s && tok) api('/push/sub', s.toJSON()).catch(() => {}); if (me) renderPush(); }).catch(() => { PUSH.ready = true; });
+// 11/7 fix: if the service worker fails or hangs (in-app browsers, slow phones) still show the card — never leave it hidden
+const pushDone = () => { if (PUSH.ready) return; PUSH.ready = true; if (me) renderPush(); };
+if (pushOK) { navigator.serviceWorker.register('/blueprint/sw.js', { scope: '/blueprint/' }).then(r => r.pushManager.getSubscription()).then(s => { PUSH.sub = s; if (s && tok) api('/push/sub', s.toJSON()).catch(() => {}); PUSH.ready = false; pushDone(); }).catch(pushDone); setTimeout(pushDone, 3000); }
 function renderPush() {
   if (!me || !$('ntCard')) return;
   const on = !!PUSH.sub && Notification.permission === 'granted';
   $('ntSet').hidden = !on; if (on) { $('ntHour2').innerHTML = hourOpts();  }
   if (on || (pushOK && !PUSH.ready)) { $('ntCard').hidden = true; return; }
   $('ntCard').hidden = false;
-  if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
+  if (inApp) $('ntBody').innerHTML = `<h3>Open this in ${isIOS ? 'Safari' : 'Chrome'} to get reminders</h3><p>You're inside another app's browser, which can't do notifications. Tap the <b>⋯</b> menu → <b>Open in ${isIOS ? 'Safari' : 'Chrome'}</b> (or go to ignythub.com/blueprint there) and sign in.</p>`;
+  else if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
     <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen and tap <b>Turn on</b> here</li></ol>
     <p style="font-size:12.5px">Already added it before today? Delete the old icon and add it again. Needs iOS 16.4 or newer.</p>`;
   else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open ignythub.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
@@ -435,12 +439,12 @@ async function pushOn() {
     const perm = await Notification.requestPermission();
     if (perm !== 'granted') { renderPush(); return; }
     const { key } = await fetch(API + '/push/key').then(r => r.json());
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await Promise.race([navigator.serviceWorker.ready, new Promise((_, no) => setTimeout(() => no(new Error('sw')), 8000))]);
     const s = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(key) });
     me = await api('/push/sub', { ...s.toJSON(), hour: Number($('ntHour')?.value || 9) }); PUSH.sub = s; render();
     await api('/push/test', {}).catch(e => toast(e.message));
     toast('Notifications on 🔔');
-  } catch (e) { toast('Couldn\'t turn on notifications. Try again.'); if (b) { b.disabled = false; b.textContent = 'Turn on'; } }
+  } catch (e) { toast(isIOS && !standalone ? 'Add IGNYT 5 to your Home Screen first, then turn on from there.' : 'Couldn\'t turn on notifications. Open ignythub.com/blueprint in ' + (isIOS ? 'the Home Screen app' : 'Chrome') + ' and try again.'); if (b) { b.disabled = false; b.textContent = 'Turn on'; } }
 }
 function wirePushSettings() {
   $('ntHour2').onchange = async e => { try { me = await api('/push/hour', { hour: Number(e.target.value) }); toast(`Daily reminder set for ${e.target.selectedOptions[0].text}`); } catch (x) { toast(x.message); } };
