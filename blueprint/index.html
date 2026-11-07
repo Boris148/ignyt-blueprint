@@ -134,7 +134,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <h1><b>5 a day</b> to the <span class="i">Blueprint.</span></h1>
     <p class="sub">Every day in November, get five people in front of the Blueprint at IGNYTHub.com. Keep your streak. Climb the board.</p>
     <div class="tabs"><button id="tJoin" class="on">Join the Blueprint</button><button id="tIn">Sign in</button></div>
+    <div id="noInv" class="card" hidden><h3 style="margin:0 0 6px">🔒 Invite-only</h3><p class="sub" style="margin:0">The Blueprint app is only for members of our community. Ask the person who brought you into the Blueprint to send you their invite link.</p><p class="sub" style="margin:10px 0 0">Already a member? Tap <b>Sign in</b>.</p></div>
     <form id="fJoin" class="card" autocomplete="on">
+      <div class="sub" id="invBy" style="margin:0 0 10px;color:var(--txt)"></div>
       <div class="f"><label>Your name</label><input id="jName" autocomplete="name" required maxlength="60"></div>
       <div class="f"><label>Your sponsor</label><input id="jSponsor" required maxlength="60"></div>
       <div class="f"><label>Mobile number (this is how you sign in)</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="+1 210 555 0123" required></div>
@@ -231,9 +233,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <!-- SHARE (AJ 11/6: simple, no sponsor pre-fill — sharer may not be the sponsor) -->
   <section id="vShare" hidden>
     <h1><b>Share</b> the <span class="i">app.</span></h1>
-    <p class="sub">Send The Blueprint app to your team.</p>
-    <div class="card sh"><div class="lbl">The app link</div>
-      <div class="shl">ignythub.com/blueprint</div>
+    <p class="sub">The app is invite-only. This is <b>your</b> invite link — only people you send it to can join.</p>
+    <div class="card sh"><div class="lbl">Your invite link</div>
+      <div class="shl" id="shLink">ignythub.com/blueprint</div>
       <a class="btn" id="shSms" href="#">💬 Text it to my team</a>
       <button class="btn ghost" id="shNative" type="button" hidden>📤 Share…</button>
       <button class="btn ghost" id="shCopy" type="button">Copy link</button>
@@ -332,7 +334,8 @@ $('fForgot').onsubmit = async e => { e.preventDefault(); $('rErr').textContent =
 $('fRec').onsubmit = async e => { e.preventDefault(); $('recErr').textContent = '';
   try { me = await api('/recovery', { word: $('recWord').value }); toast('Secret word saved 🔒'); render(); } catch (x) { $('recErr').textContent = x.message; } };
 $('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '';
-  try { const d = await api('/signup', { name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, word: $('jWord').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
+  if (!INV) { $('jErr').textContent = 'The app is invite-only — open the invite link you were sent.'; return; }
+  try { const d = await api('/signup', { inv: INV, name: $('jName').value, sponsor: $('jSponsor').value, phone: $('jPhone').value, pin: $('jPin').value, word: $('jWord').value, tz: $('jTz').value, sms_ok: $('jSms').checked });
     tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); toast("You're in. Let's get your first 5 🔥"); } catch (x) { $('jErr').textContent = x.message; } };
 $('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
   try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); await load(); } catch (x) { $('iErr').textContent = x.message; } };
@@ -530,7 +533,7 @@ async function renderAdmin() {
   const S = k => aRows.reduce((a, r) => a + (+r[k] || 0), 0);
   $('aKpi').innerHTML = `<p class="sub" style="font-size:13px"><b>${aRows.length}</b> members · <b>${aRows.filter(r => r.doneToday).length}</b> hit 5/5 today · <b>${S('total')}</b> sent · <b>${S('customers')}</b> customers · <b>${S('partners')}</b> brand partners</p>`;
   const q = $('aQ').value.toLowerCase(), xs = aRows.filter(r => !q || (r.name + ' ' + r.sponsor).toLowerCase().includes(q)).sort((a, b) => b.total - a.total);
-  $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span></div>`).join('') || '<p class="sub">No one matches.</p>';
+  $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)}${r.invitedBy ? ' · invited by ' + esc(r.invitedBy) : ''} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span></div>`).join('') || '<p class="sub">No one matches.</p>';
 }
 $('aQ').oninput = () => renderAdmin();
 async function broadcast(test) {
@@ -548,9 +551,13 @@ $('bTest').onclick = () => broadcast(true);
 $('bSend').onclick = () => broadcast(false);
 $('aRgo').onclick = async () => { $('aRout').textContent = '';
   try { const d = await api('/admin/reset', { phone: $('aRp').value }); $('aRout').textContent = `${d.name}'s temporary PIN: ${d.pin}. They can sign in with it now.`; } catch (x) { $('aRout').textContent = x.message; } };
-const SHARE_URL = 'https://ignythub.com/blueprint';
-const SHARE_MSG = `Join me on The Blueprint app 🔥 5 a day to the Blueprint. Track your sends, keep your streak, and get call reminders.\n\n${SHARE_URL}`;
+// AJ 11/7: invite-only — each member shares their own invite link
+let SHARE_URL = 'https://ignythub.com/blueprint', SHARE_MSG = '';
 function renderShare() {
+  const nu = 'https://ignythub.com/blueprint/?inv=' + me.user.invite;
+  if (nu !== SHARE_URL) { SHARE_URL = nu; $('shQr').removeAttribute('src'); }
+  SHARE_MSG = `Here's your invite to The Blueprint app 🔥 5 a day to the Blueprint. Track your sends, keep your streak, and get call reminders.\n\n${SHARE_URL}`;
+  $('shLink').textContent = SHARE_URL.replace('https://', '');
   $('shSms').href = `sms:${IOS ? '&' : '?'}body=${encodeURIComponent(SHARE_MSG)}`;
   if (!$('shQr').src) $('shQr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' + encodeURIComponent(SHARE_URL);
   $('shNative').hidden = !navigator.share;
@@ -576,7 +583,21 @@ function show() {
   render();
 }
 async function load() { try { me = await api('/me'); } catch { me = null; } show(); }
-tzOptions();
+// invite: ?inv=CODE from the link, remembered so a reload still works
+let INV = null;
+function invGate(ok) {
+  $('tJoin').onclick = ok ? joinTab : () => { $('tJoin').classList.add('on'); $('tIn').classList.remove('on'); $('fJoin').hidden = true; $('fIn').hidden = true; $('fForgot').hidden = true; $('noInv').hidden = false; };
+  $('noInv').hidden = true; $('tJoin').onclick(); }
+const joinTab = $('tJoin').onclick;
+async function checkInv() {
+  const q = new URLSearchParams(location.search).get('inv'); if (q) localStorage.setItem('ig5_inv', q.trim().toUpperCase());
+  const c = localStorage.getItem('ig5_inv'); invGate(false);
+  if (!c) return;
+  try { const d = await api('/invite', { code: c }); INV = c; $('invBy').textContent = `✅ Invited by ${d.name}`; invGate(true); }
+  catch { localStorage.removeItem('ig5_inv'); }
+}
+$('tIn').addEventListener('click', () => { $('noInv').hidden = true; });
+tzOptions(); checkInv();
 if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 </script>
