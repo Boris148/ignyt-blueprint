@@ -106,7 +106,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .rqi button{border:0;background:var(--orange);color:#fff;border-radius:11px;padding:12px 16px;font-weight:800;font-size:14px;font-family:inherit;white-space:nowrap}
 .lnk{background:none;border:0;color:var(--orange);font-weight:700;font-size:14px;margin-top:14px;font-family:inherit;text-decoration:underline}
 .note{background:#fff4ec;border:1px solid #ffd2b8}
-.foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:22px;padding:0 4px} .foot a{color:var(--mut)}
+.foot{margin-top:26px} .acct{border:1.5px solid var(--orange)} .acct .who{font-size:17px;font-weight:800} .acct .tz{margin-top:4px;font-size:13px;color:var(--mut)}
+.acct .btn.out{background:none;border:2px solid var(--orange);color:var(--orange);font-size:16px}
+.hdr-r{display:flex;align-items:center;gap:8px} @media(max-width:430px){.brand{letter-spacing:2px;font-size:10px}.streak{padding:7px 10px}} .me{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 12px;font-weight:800;font-size:13px;white-space:nowrap;color:var(--txt);font-family:inherit}
+#upd{margin:14px 0 0;background:var(--orange);color:#fff;border:0;border-radius:14px;padding:13px 16px;width:100%;font:800 15px/1.3 inherit;font-family:inherit;text-align:left;box-shadow:0 6px 18px rgba(240,90,30,.35)}
+#upd small{display:block;font-weight:600;font-size:12.5px;opacity:.92;margin-top:2px}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-120%);background:var(--card2);border:1px solid var(--orange);color:var(--txt);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;z-index:20;transition:.35s;max-width:90%;text-align:center}
 .toast.on{transform:translateX(-50%) translateY(0)}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px} .tabs button{flex:1 1 28%;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:11px 4px;font-weight:700;font-size:13px;font-family:inherit} .tabs button.on{border-color:var(--orange);color:var(--txt)}
@@ -126,8 +130,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="wrap">
   <div class="hd">
     <div class="brand"><svg viewBox="0 0 62 80"><path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/><text x="31" y="58" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-style="italic" font-size="30">5</text></svg>IGNYT 5 · The Blueprint</div>
-    <div class="streak" id="streak" hidden></div>
+    <div class="hdr-r"><div class="streak" id="streak" hidden></div><button class="me" id="meBtn" type="button" hidden>👤 Account</button></div>
   </div>
+  <button id="upd" type="button" hidden>✨ New update ready — tap to update<small>Takes 2 seconds. You stay signed in.</small></button>
 
   <!-- AUTH -->
   <section id="auth" hidden>
@@ -263,7 +268,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <p class="sub" id="aRout" style="font-size:13px;margin-top:10px;font-weight:700"></p></div>
   </section>
 
-  <div class="foot" id="foot" hidden><span id="tzNote"></span><a href="#" id="logout">Sign out</a></div>
+  <div class="foot" id="foot" hidden><div class="card acct" id="acct"><div class="lbl">Your account</div>
+    <div class="who" id="acWho"></div><div class="tz" id="tzNote"></div>
+    <button class="btn ghost" id="acUpd" type="button">🔄 Get the latest update</button>
+    <button class="btn out" id="logout" type="button">Sign out</button></div></div>
 </div>
 
 <nav id="nav" hidden><div class="in">
@@ -341,7 +349,7 @@ $('fJoin').onsubmit = async e => { e.preventDefault(); $('jErr').textContent = '
 $('fIn').onsubmit = async e => { e.preventDefault(); $('iErr').textContent = '';
   try { const d = await api('/login', { phone: $('iPhone').value, pin: $('iPin').value }); tok = d.token; localStorage.setItem('ig5_tok', tok); localStorage.setItem('ig5_member', '1'); await load(); } catch (x) { $('iErr').textContent = x.message; } };
 function signOut() { tok = null; me = null; localStorage.removeItem('ig5_tok'); show(); }
-$('logout').onclick = async e => { e.preventDefault(); const t = tok; if (PUSH.sub) { await api('/push/off', { endpoint: PUSH.sub.endpoint }).catch(() => {}); await PUSH.sub.unsubscribe().catch(() => {}); PUSH.sub = null; } tok = t; api('/logout', {}).catch(() => {}); signOut(); };
+$('logout').onclick = async e => { e.preventDefault(); const t = tok; if (PUSH.sub) { await api('/push/off', { endpoint: PUSH.sub.endpoint }).catch(() => {}); await PUSH.sub.unsubscribe().catch(() => {}); PUSH.sub = null; } tok = t; await api('/logout', {}).catch(() => {}); signOut(); freshReload(); };
 
 // ---- add exposure
 $('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return; kind = b.dataset.k; [...$('aKind').children].forEach(x => x.classList.toggle('on', x === b)); };
@@ -576,14 +584,14 @@ function render() {
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
   noticeRequests(); noticeSeen(); renderPush();
   $('recCard').hidden = !!me.user.hasRecovery;
-  $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' ');
+  $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople, Share: renderShare, Admin: renderAdmin })[view]();
 }
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
 function show() {
   const authed = !!me;
-  $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed;
+  $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed; $('meBtn').hidden = !authed;
   ['Today', 'Board', 'Week', 'People', 'Share', 'Admin'].forEach(v => $('v' + v).hidden = !authed || view !== v);
   render();
 }
@@ -607,6 +615,14 @@ $('tIn').addEventListener('click', () => { $('noInv').hidden = true; });
 tzOptions(); checkInv();
 if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
+
+// App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
+const APP_V = '2026-11-09a';
+function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
+async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
+$('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
+$('meBtn').onclick = () => $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' });
+checkUpd(); document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpd(); }); setInterval(checkUpd, 5 * 60 * 1000);
 </script>
 </body>
 </html>
