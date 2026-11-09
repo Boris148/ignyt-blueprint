@@ -2,6 +2,7 @@
 <html lang="en"><head><script>/* domain move 11/3: restore saved session carried over from ignythub.com */(function(){var m=location.hash.match(/[#&]mig=([^&]+)/);if(!m)return;try{var o=JSON.parse(decodeURIComponent(m[1]));for(var k in o)if(o[k]!=null&&!localStorage.getItem(k))localStorage.setItem(k,o[k]);}catch(e){}var h=location.hash.replace(/[#&]mig=[^&]+/,'').replace(/^&/,'#');history.replaceState(null,'',location.pathname+location.search+(h.length>1?h:''));})();</script>
 <script>/* Blueprint app personal link (?b=code) opens this page directly: no access code, and marks the invite Seen (AJ 11/9) */
 (function(){var m=/[?&]b=([a-z0-9]{6})(&|$)/i.exec(location.search),c=m?m[1].toLowerCase():null;
+window.__ig5FromUrl=!!c;
 try{if(c){sessionStorage.setItem('ig5_b',c);localStorage.setItem('ig5_b',c)}}catch(e){}
 if(m)try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
 var personal=!!c;try{if(sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b'))personal=true}catch(e){}
@@ -620,4 +621,5 @@ document.querySelectorAll('.fade').forEach(el=>io.observe(el));
   box.addEventListener('contextmenu',function(e){e.preventDefault()});
 })();
 </script>
+<script src="assets/ig5-expiry.js?v=1"></script>
 </body></html>

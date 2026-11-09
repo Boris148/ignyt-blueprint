@@ -103,6 +103,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .rq .lbl{color:var(--orange)}
 .rqi{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .rqi:first-of-type{border-top:0;padding-top:4px}
 .rqi .w{flex:1} .rqi .w b{display:block;font-size:16px} .rqi .w span{font-size:12.5px;color:var(--mut)}
+.rx{border:0;background:var(--orange);color:#fff;border-radius:10px;padding:8px 11px;font-weight:800;font-size:12.5px;font-family:inherit;white-space:nowrap;margin-left:6px}
 .rqi button{border:0;background:var(--orange);color:#fff;border-radius:11px;padding:12px 16px;font-weight:800;font-size:14px;font-family:inherit;white-space:nowrap}
 .lnk{background:none;border:0;color:var(--orange);font-weight:700;font-size:14px;margin-top:14px;font-family:inherit;text-decoration:underline}
 .note{background:#fff4ec;border:1px solid #ffd2b8}
@@ -184,7 +185,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <h3>Join the IGNYT Blueprint Facebook group</h3>
       <p>Trainings, wins, and what's working for the team. Join first, then send your first Blueprint.</p>
       <div class="fbb"><a id="fbGo" href="#" target="_blank" rel="noopener">Join the group</a><button id="fbDone" type="button">I've joined ✓</button></div></div>
-    <div class="card rq" id="rqCard" hidden><div class="lbl">🔑 Access code requests</div><div id="rqList"></div></div>
+    <div class="card rq" id="rqCard" hidden><div class="lbl">🔑 Wants their link reactivated</div><div id="rqList"></div></div>
     <div class="card note" id="recCard" hidden>
       <div class="lbl">Protect your account</div>
       <p class="sub" style="margin:0 0 4px">Set a secret word so you can reset your PIN yourself if you ever forget it.</p>
@@ -202,7 +203,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
         <div class="f ph"><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Product</button><button type="button" data-k="partner" class="p">Business</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
-        <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link.</div>
+        <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
         <div class="err" id="aErr"></div>
       </form>
       <div class="list" id="todayList" style="margin-top:8px"></div>
@@ -392,12 +393,22 @@ if ('contacts' in navigator && 'select' in navigator.contacts) {
   $('aPick').onclick = async () => { try { const [c] = await navigator.contacts.select(['name', 'tel'], { multiple: false }); if (!c) return;
     if (c.name?.[0] && !$('aName').value.trim()) $('aName').value = c.name[0]; if (c.tel?.[0]) $('aPhone').value = c.tel[0]; } catch {} };
 }
-const seenTag = x => !x.phone ? '' : x.code_sent_at ? ' · <span class="seen">Code sent ✓</span>' : x.req_at ? ' · <span class="wants">🔑 Wants the code</span>' : x.seen_at ? ` · <span class="seen">👀 Opened ${ago(x.seen_at)}</span>` : ' · <span class="unseen">Not opened yet</span>';
+const seenTag = x => (!x.phone ? '' : x.code_sent_at ? ' · <span class="seen">Code sent ✓</span>' : x.seen_at ? ` · <span class="seen">👀 Opened ${ago(x.seen_at)}</span>` : ' · <span class="unseen">Not opened yet</span>') + expTag(x);
+// Time-sensitive links (AJ 11/9): 1 hour from send; expired links can be reactivated for another hour
+const wantsRx = x => !!(x.rq_at && x.rq_at > (x.ra_at || 0));
+const expired = x => !!(x.phone && x.exp_at && Date.now() >= x.exp_at);
+const expTag = x => { if (!x.phone || !x.exp_at) return ''; const left = x.exp_at - Date.now();
+  if (left > 0) return ` · <span class="wants">⏳ ${Math.max(1, Math.ceil(left / 60000))} min left</span>`;
+  return wantsRx(x) ? ' · <span class="wants">🔑 Wants it reactivated</span>' : ' · <span class="unseen">⌛ Link expired</span>'; };
+async function react(id) {
+  try { const x = (me.prospects || []).find(r => r.id === id); me = await api('/reactivate', { id }); render();
+    openSend(x ? x.prospect : '', me.sent, null, `Reactivate ${x ? x.prospect.split(' ')[0] : 'their'} link`, 'They get 1 more hour from now. Just hit Send.');
+  } catch (e) { toast(e.message); } }
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' hr ago' : Math.round(m / 1440) + 'd ago'; };
 function renderRequests() {
   const R = me.requests || [];
   $('rqCard').hidden = !R.length;
-  $('rqList').innerHTML = R.map(x => `<div class="rqi"><div class="w"><b>${esc(x.prospect)}</b><span>Asked for the access code · ${ago(x.req_at)}</span></div><button onclick="sendCode('${x.id}')">Send code</button></div>`).join('');
+  $('rqList').innerHTML = R.map(x => `<div class="rqi"><div class="w"><b>${esc(x.prospect)}</b><span>Link expired · asked ${ago(x.rq_at)}</span></div><button onclick="react('${x.id}')">Reactivate</button></div>`).join('');
 }
 async function sendCode(id) {
   try { const x = (me.requests || []).find(r => r.id === id); me = await api('/codesent', { id }); render();
@@ -472,7 +483,7 @@ function wirePushSettings() {
 }
 wirePushSettings();
 function noticeRequests() { const ids = (me.requests || []).map(r => r.id);
-  if (lastReq) { const n = (me.requests || []).filter(r => !lastReq.includes(r.id)); if (n.length) toast(`🔑 ${n[0].prospect.split(' ')[0]} is asking for the access code`); }
+  if (lastReq) { const n = (me.requests || []).filter(r => !lastReq.includes(r.id)); if (n.length) toast(`🔑 ${n[0].prospect.split(' ')[0]} wants their link reactivated`); }
   lastReq = ids; }
 setInterval(() => { if (tok && me && !document.hidden && $('sendSheet').hidden && $('sheet').hidden) api('/me').then(d => { me = d; render(); }).catch(() => {}); }, 45000);
 async function del(id) { if (!confirm('Remove this person from today?')) return; try { me = await api('/exposure/delete', { id }); board = null; render(); } catch (x) { toast(x.message); } }
@@ -507,7 +518,7 @@ function renderToday() {
   $('circles').innerHTML = [0, 1, 2, 3, 4].map(i => { const x = me.todayList[i]; return x ? `<div class="c f ${x.kind === 'partner' ? 'p' : ''}">${esc(x.prospect.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase())}</div>` : '<div class="c"></div>'; }).join('');
   $('progress').innerHTML = n >= me.perDay ? `<div class="done"><div class="big">5/5 🔥</div><div class="t">${me.todayRank ? `#${me.todayRank} in today's 5/5 Club` : 'Day complete'}</div></div>` : `<div class="prog"><b>${n} of 5</b> — ${5 - n} to go today</div>`;
   $('fAdd').hidden = n >= me.perDay || !inWin;
-  $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}${seenTag(x)}</span></span><button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
+  $('todayList').innerHTML = me.todayList.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]}${seenTag(x)}</span></span>${expired(x) ? `<button class="rx" onclick="react('${x.id}')">Reactivate</button>` : ''}<button class="x" onclick="del('${x.id}')" aria-label="Remove">×</button></div>`).join('');
   const op = (me.prospects || []).filter(x => x.seen_at && Date.now() - x.seen_at < 864e5).sort((a, b) => b.seen_at - a.seen_at);
   $('openCard').hidden = !op.length;
   $('openList').innerHTML = op.map(x => `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${KIND[x.kind]} · opened ${ago(x.seen_at)}</span></span></div>`).join('');
@@ -518,7 +529,7 @@ function renderToday() {
   $('month').innerHTML = m;
 }
 const fuRow = x => `<div class="fu"><div class="nm">Follow up with ${esc(x.prospect)}</div><div class="k">${KIND[x.kind]} · sent to the Blueprint ${short(x.day)}${seenTag(x)}${x.last_touch !== x.day ? ' · last follow-up ' + short(x.last_touch) : ''}</div>
-  <div class="acts"><button class="a0" onclick="act('${x.id}','followed')">Followed up</button><button class="a1" onclick="act('${x.id}','customer')">Customer ✓</button><button class="a2" onclick="act('${x.id}','partner')">Partner ✓</button><button onclick="act('${x.id}','notnow')">Not now</button></div></div>`;
+  <div class="acts">${expired(x) ? `<button class="a1" onclick="react('${x.id}')">↻ Reactivate link</button>` : ''}<button class="a0" onclick="act('${x.id}','followed')">Followed up</button><button class="a1" onclick="act('${x.id}','customer')">Customer ✓</button><button class="a2" onclick="act('${x.id}','partner')">Partner ✓</button><button onclick="act('${x.id}','notnow')">Not now</button></div></div>`;
 
 async function renderBoard() {
   if (!board) { $('board').innerHTML = '<div class="empty">Loading…</div>'; try { board = await api('/leaderboard'); } catch (x) { $('board').innerHTML = `<div class="empty">${esc(x.message)}</div>`; return; } }
