@@ -12,7 +12,7 @@
    '#ig5x .in{max-width:460px}#ig5x .ic{font-size:46px}#ig5x .kk{margin-top:18px;font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#f05a1e;font-weight:700}'+
    '#ig5x h2{margin-top:14px;font-size:34px;font-weight:300;letter-spacing:-.8px;line-height:1.1}#ig5x h2 b{font-weight:700}'+
    '#ig5x p{margin-top:14px;font-size:16px;line-height:1.55;color:#b9b6ae;font-weight:300}'+
-   '#ig5x button{margin-top:32px;background:linear-gradient(180deg,#ff7a3d 0%,#f05a1e 55%,#d9480f 100%);color:#fff;border:0;border-radius:999px;padding:22px 30px;font-size:19px;font-weight:800;letter-spacing:.2px;cursor:pointer;width:100%;max-width:360px;'+
+   '#ig5x button{margin-top:32px;background:linear-gradient(180deg,#ff7a3d 0%,#f05a1e 55%,#d9480f 100%);color:#fff;border:0;border-radius:999px;padding:21px 22px;font-size:clamp(15px,4.4vw,19px);white-space:nowrap;font-weight:800;letter-spacing:.2px;cursor:pointer;width:100%;max-width:360px;'+
    'box-shadow:0 0 0 0 rgba(240,90,30,.7),0 14px 40px rgba(240,90,30,.45),inset 0 1px 0 rgba(255,255,255,.35);animation:ig5p 1.8s ease-out infinite}'+
    '@keyframes ig5p{0%{box-shadow:0 0 0 0 rgba(240,90,30,.65),0 14px 40px rgba(240,90,30,.45),inset 0 1px 0 rgba(255,255,255,.35)}70%{box-shadow:0 0 0 18px rgba(240,90,30,0),0 14px 40px rgba(240,90,30,.45),inset 0 1px 0 rgba(255,255,255,.35)}100%{box-shadow:0 0 0 0 rgba(240,90,30,0),0 14px 40px rgba(240,90,30,.45),inset 0 1px 0 rgba(255,255,255,.35)}}'+
    '#ig5x button:active{transform:scale(.97)}'+
