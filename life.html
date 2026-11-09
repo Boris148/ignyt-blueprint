@@ -167,8 +167,8 @@ function send(ev,pct){if(sent[ev])return;sent[ev]=1;var d=JSON.stringify({b:c,p:
 function dur(){return pl&&pl.getDuration?Math.floor(pl.getDuration()||0):0}
 function frac(){var d=dur();return d?Math.min(1,n/d):0}
 function tick(){if(!pl||!pl.getCurrentTime)return;var t=Math.floor(pl.getCurrentTime()||0);if(!secs[t]){secs[t]=1;n++}if(frac()>=.5)send('half')}
-window.IGW=function(s,p){pl=p;if(s===1){send('start');clearInterval(iv);iv=setInterval(tick,250)}else{clearInterval(iv);if(s===0){tick();var f=frac();if(f>=.9){send('half');send('end')}else if(f<.5)send('left',Math.round(f*100))}}};
-function leave(){if(sent.start&&!sent.half&&!sent.end){tick();send('left',Math.round(frac()*100))}}
+window.IGW=function(s,p){pl=p;if(s===1){send('start');clearInterval(iv);iv=setInterval(tick,250)}else{clearInterval(iv);if(s===0){tick();var f=frac();if(f>=.9){send('half');send('end')}else if(f>=.5){send('half');send('stop',Math.round(f*100))}else send('left',Math.round(f*100))}}};
+function leave(){if(sent.start&&!sent.end){tick();if(sent.half)send('stop',Math.round(frac()*100));else send('left',Math.round(frac()*100))}}
 addEventListener('pagehide',leave);document.addEventListener('visibilitychange',function(){if(document.hidden)leave()});
 })();</script>
 <script>
