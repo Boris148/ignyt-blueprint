@@ -272,6 +272,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <div class="card"><div class="lbl">Reset a member's PIN</div>
       <input id="aRp" type="tel" placeholder="Their phone number" style="margin-top:10px"><button class="btn" id="aRgo" type="button" style="margin-top:10px;width:100%">Reset PIN</button>
       <p class="sub" id="aRout" style="font-size:13px;margin-top:10px;font-weight:700"></p></div>
+    <div class="card"><div class="lbl">Remove a prospect</div>
+      <p class="sub" style="font-size:13px;margin:6px 0 0">For testing. Search anyone on the team's list by name or phone. Removing frees the number so it can be sent again.</p>
+      <input id="aPq" placeholder="Prospect name or phone" style="margin-top:10px"><div id="aPlist" style="margin-top:8px"></div></div>
   </section>
 
   <div class="foot" id="foot" hidden><div class="card acct" id="acct"><div class="lbl">Your account</div>
@@ -625,7 +628,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-09b';
+const APP_V = '2026-11-09c';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
@@ -643,6 +646,15 @@ function noticeAlerts() { const list = me.alerts || [], top = list.length ? list
 $('popOk').onclick = () => { $('pop').hidden = true; };
 $('popGo').onclick = () => { $('pop').hidden = true; const b = document.querySelector('nav button[data-v="People"]'); if (b) b.click(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+
+// Admin: remove a prospect (AJ 11/9, testing)
+let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
+async function aPsearch() { const q = $('aPq').value.trim(); if (q.length < 2) { $('aPlist').innerHTML = ''; return; }
+  try { const d = await api('/admin/prospects', { q }); const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    $('aPlist').innerHTML = d.list.length ? d.list.map(x => `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)"><div style="flex:1;font-size:14px;line-height:1.35"><b>${esc(x.prospect)}</b><br><span style="color:var(--mut);font-size:12.5px">${esc(x.phone || 'no phone')} · ${x.kind === 'partner' ? 'Brand Partner' : 'Customer'} · ${esc(x.day)} · sent by ${esc(x.sender)}${x.seen_at ? ' · 👀 opened' : ''}</span></div><button class="btn ghost" data-del="${esc(x.id)}" data-n="${esc(x.prospect)}" type="button" style="width:auto;margin:0;padding:10px 14px;color:var(--orange);border-color:var(--orange)">Remove</button></div>`).join('') : '<p class="sub" style="font-size:13px">No prospects match.</p>';
+    $('aPlist').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (!confirm(`Remove ${b.dataset.n}? This deletes them from the sender's list and frees the number.`)) return;
+      try { await api('/admin/prospect/delete', { id: b.dataset.del }); toast(`${b.dataset.n} removed`); aPsearch(); api('/me').then(d => { me = d; render(); }).catch(() => {}); } catch (x) { toast(x.message); } });
+  } catch (x) { $('aPlist').innerHTML = `<p class="sub" style="font-size:13px">${x.message}</p>`; } }
 </script>
 </body>
 </html>
