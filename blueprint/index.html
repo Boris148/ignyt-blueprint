@@ -200,7 +200,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <form id="fAdd">
         <div class="f"><input id="aName" placeholder="Their name" maxlength="60" autocomplete="off"></div>
         <div class="f ph"><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div>
-        <div class="seg" id="aKind"><button type="button" data-k="customer">Customer</button><button type="button" data-k="partner" class="p">Brand Partner</button></div>
+        <div class="seg" id="aKind"><button type="button" data-k="customer">Product</button><button type="button" data-k="partner" class="p">Business</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
         <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link.</div>
         <div class="err" id="aErr"></div>
@@ -367,7 +367,7 @@ $('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return
 $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = '';
   if (!$('aName').value.trim()) return $('aErr').textContent = 'Enter their name';
   if (!$('aPhone').value.trim()) return $('aErr').textContent = 'Enter their mobile number';
-  if (!kind) return $('aErr').textContent = 'Customer or Brand Partner?';
+  if (!kind) return $('aErr').textContent = 'Product or Business?';
   if (!me.user.fbJoined && me.total === 0 && !fbNudged) { fbNudged = true; $('fbSheet').hidden = false; return; }
   $('aBtn').disabled = true;
   try { const before = me.todayList.length, name = $('aName').value.trim();
@@ -496,7 +496,7 @@ async function act(id, action, pack) {
 const fmt = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' });
 const short = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 const dn = d => Math.round(Date.parse(d + 'T00:00:00Z') / 864e5);
-const KIND = { customer: 'Customer', partner: 'Brand Partner' };
+const KIND = { customer: 'Product', partner: 'Business' };
 const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 
 function renderToday() {
@@ -651,7 +651,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('mess
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
 async function aPsearch() { const q = $('aPq').value.trim(); if (q.length < 2) { $('aPlist').innerHTML = ''; return; }
   try { const d = await api('/admin/prospects', { q }); const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-    $('aPlist').innerHTML = d.list.length ? d.list.map(x => `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)"><div style="flex:1;font-size:14px;line-height:1.35"><b>${esc(x.prospect)}</b><br><span style="color:var(--mut);font-size:12.5px">${esc(x.phone || 'no phone')} · ${x.kind === 'partner' ? 'Brand Partner' : 'Customer'} · ${esc(x.day)} · sent by ${esc(x.sender)}${x.seen_at ? ' · 👀 opened' : ''}</span></div><button class="btn ghost" data-del="${esc(x.id)}" data-n="${esc(x.prospect)}" type="button" style="width:auto;margin:0;padding:10px 14px;color:var(--orange);border-color:var(--orange)">Remove</button></div>`).join('') : '<p class="sub" style="font-size:13px">No prospects match.</p>';
+    $('aPlist').innerHTML = d.list.length ? d.list.map(x => `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)"><div style="flex:1;font-size:14px;line-height:1.35"><b>${esc(x.prospect)}</b><br><span style="color:var(--mut);font-size:12.5px">${esc(x.phone || 'no phone')} · ${x.kind === 'partner' ? 'Business' : 'Product'} · ${esc(x.day)} · sent by ${esc(x.sender)}${x.seen_at ? ' · 👀 opened' : ''}</span></div><button class="btn ghost" data-del="${esc(x.id)}" data-n="${esc(x.prospect)}" type="button" style="width:auto;margin:0;padding:10px 14px;color:var(--orange);border-color:var(--orange)">Remove</button></div>`).join('') : '<p class="sub" style="font-size:13px">No prospects match.</p>';
     $('aPlist').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (!confirm(`Remove ${b.dataset.n}? This deletes them from the sender's list and frees the number.`)) return;
       try { await api('/admin/prospect/delete', { id: b.dataset.del }); toast(`${b.dataset.n} removed`); aPsearch(); api('/me').then(d => { me = d; render(); }).catch(() => {}); } catch (x) { toast(x.message); } });
   } catch (x) { $('aPlist').innerHTML = `<p class="sub" style="font-size:13px">${x.message}</p>`; } }
