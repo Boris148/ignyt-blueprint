@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="en"><head><script>/* domain move 11/3: restore saved session carried over from ignythub.com */(function(){var m=location.hash.match(/[#&]mig=([^&]+)/);if(!m)return;try{var o=JSON.parse(decodeURIComponent(m[1]));for(var k in o)if(o[k]!=null&&!localStorage.getItem(k))localStorage.setItem(k,o[k]);}catch(e){}var h=location.hash.replace(/[#&]mig=[^&]+/,'').replace(/^&/,'#');history.replaceState(null,'',location.pathname+location.search+(h.length>1?h:''));})();</script>
-<script>(function(){try{if(localStorage.getItem("ignyt_blueprint_access")!=="1"){var q=new URLSearchParams(location.search),c=(q.get("code")||q.get("access")||"").trim().toLowerCase();if(c==="blueprint"){localStorage.setItem("ignyt_blueprint_access","1");}else{location.replace("index.html");}}}catch(e){}})();</script>
+<script>/* Blueprint app personal link (?b=code) opens this page directly: no access code, and marks the invite Seen (AJ 11/9) */
+(function(){var m=/[?&]b=([a-z0-9]{6})(&|$)/i.exec(location.search),c=m?m[1].toLowerCase():null;
+try{if(c){sessionStorage.setItem('ig5_b',c);localStorage.setItem('ig5_b',c)}}catch(e){}
+if(m)try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
+var personal=!!c;try{if(sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b'))personal=true}catch(e){}
+try{if(localStorage.getItem("ignyt_blueprint_access")!=="1"&&!personal){var q=new URLSearchParams(location.search),k=(q.get("code")||q.get("access")||"").trim().toLowerCase();if(k==="blueprint"){localStorage.setItem("ignyt_blueprint_access","1");}else{location.replace("index.html");return}}}catch(e){}
+if(!c)return;
+var API='https://ignyt-challenge.hireboris.workers.dev/api/seen';if(/bot|crawl|spider|preview|facebookexternalhit|whatsapp|slack|telegram|discord|skype|linkedin/i.test(navigator.userAgent))return;
+var sent=false;function go(){if(sent||document.hidden)return;sent=true;var d=JSON.stringify({b:c});if(!(navigator.sendBeacon&&navigator.sendBeacon(API,d)))fetch(API,{method:'POST',body:d,keepalive:true,mode:'no-cors'})}
+['scroll','touchstart','pointerdown','keydown'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})});setTimeout(go,4000);
+})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IGNYT Your Wellness — The IGNYT Blueprint</title>
