@@ -84,6 +84,13 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
 .hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.4}
 .msg{white-space:pre-wrap;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;font-size:15px;line-height:1.4}
 a.btn{display:block;text-align:center;text-decoration:none}
+.via-l{margin-top:14px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.via{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.sv{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:74px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--txt);
+ font:700 13.5px/1.2 inherit;font-family:inherit;text-align:center;text-decoration:none;padding:10px 6px;cursor:pointer}
+.sv .i{font-size:22px;line-height:1}.sv .i.wa{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#25d366;color:#fff;font-size:15px}
+.sv.on{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 6px 18px rgba(240,90,30,.3)}
+.sv[data-v=wa].on{background:#25d366;border-color:#25d366;box-shadow:0 6px 18px rgba(37,211,102,.3)}.sv[data-v=wa].on .i.wa{box-shadow:0 0 0 2px #fff}
 .seen{color:var(--ok);font-weight:700} .unseen{color:var(--mut)} .wants{color:var(--orange);font-weight:700}
 .rq{border:1.5px solid var(--orange);background:#fff7f2}
 .fb{border:1.5px solid #1877f2;background:#f5f9ff}
@@ -310,7 +317,12 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="sheet" id="sendSheet" hidden><div class="bx">
   <h3 id="ssT"></h3><p id="ssS">Counted ✓ Now send it from your phone.</p>
   <div class="msg" id="ssM"></div>
-  <a class="btn" id="ssGo" href="#">Open Messages</a>
+  <div class="via-l">Send it with</div>
+  <div class="via" id="ssVia">
+    <a class="sv" data-v="sms" id="ssGo" href="#"><span class="i">💬</span>Messages</a>
+    <a class="sv" data-v="wa" id="ssWa" href="#" target="_blank" rel="noopener"><span class="i wa"><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>WhatsApp</a>
+    <button class="sv" data-v="more" id="ssShare" type="button"><span class="i">📤</span>Messenger &amp; more</button>
+  </div>
   <button class="btn ghost" id="ssCopy">Copy message</button>
   <button class="btn ghost" id="ssX" style="border:0">Done</button>
 </div></div>
@@ -389,10 +401,18 @@ function openSend(name, sent, five, title, sub) {
   $('ssS').textContent = sub || 'Counted ✓ Now send it from your phone.';
   $('ssM').textContent = sent.message;
   $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
+  $('ssWa').href = `https://wa.me/${String(sent.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(sent.message)}`;
+  markVia();
   $('ssCopy').textContent = 'Copy message';
   $('sendSheet').hidden = false;
   $('ssX').onclick = () => { $('sendSheet').hidden = true; if (five !== null) toast(five ? `5/5! You're #${me.todayRank} in today's 5/5 Club 🔥` : `${me.todayList.length} of 5 — keep going`); };
 }
+// Send-with picker (AJ 11/10): Messages / WhatsApp / share sheet (Messenger, Telegram, IG…). Remembers each member's favourite.
+function markVia() { let v = 'sms'; try { v = localStorage.getItem('ig5_via') || 'sms'; } catch {} document.querySelectorAll('#ssVia .sv').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+document.querySelectorAll('#ssVia .sv').forEach(b => b.addEventListener('click', () => { try { localStorage.setItem('ig5_via', b.dataset.v); } catch {} markVia(); }));
+$('ssShare').onclick = async () => { const text = $('ssM').textContent;
+  if (navigator.share) { try { await navigator.share({ text }); } catch {} return; }
+  try { await navigator.clipboard.writeText(text); toast('Copied ✓ Paste it in Messenger, Telegram, or any app'); } catch { $('ssCopy').click(); } };
 $('ssCopy').onclick = async () => { try { await navigator.clipboard.writeText($('ssM').textContent); $('ssCopy').textContent = 'Copied ✓ paste it in your text'; } catch { const r = document.createRange(); r.selectNodeContents($('ssM')); getSelection().removeAllRanges(); getSelection().addRange(r); $('ssCopy').textContent = 'Selected — tap Copy'; } };
 if ('contacts' in navigator && 'select' in navigator.contacts) {
   $('aPick').hidden = false;
