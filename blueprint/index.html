@@ -596,9 +596,14 @@ async function renderAdmin() {
   const S = k => aRows.reduce((a, r) => a + (+r[k] || 0), 0);
   $('aKpi').innerHTML = `<p class="sub" style="font-size:13px"><b>${aRows.length}</b> members · <b>${aRows.filter(r => r.doneToday).length}</b> hit 5/5 today · <b>${S('total')}</b> sent · <b>${S('customers')}</b> customers · <b>${S('partners')}</b> brand partners</p>`;
   const q = $('aQ').value.toLowerCase(), xs = aRows.filter(r => !q || (r.name + ' ' + r.sponsor).toLowerCase().includes(q)).sort((a, b) => b.total - a.total);
-  $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)}${r.invitedBy ? ' · invited by ' + esc(r.invitedBy) : ''} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span></div>`).join('') || '<p class="sub">No one matches.</p>';
+  $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)}${r.invitedBy ? ' · invited by ' + esc(r.invitedBy) : ''} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span>${r.admin ? '' : `<button class="btn ghost" type="button" onclick="delMember('${esc(r.id)}')" style="width:auto;margin:0;padding:8px 12px;font-size:13px;color:var(--orange);border-color:var(--orange)">Remove</button>`}</div>`).join('') || '<p class="sub">No one matches.</p>';
 }
 $('aQ').oninput = () => renderAdmin();
+// AJ 11/10: remove a team member for good (account, sends, streak, devices). Two confirms, because it can't be undone.
+async function delMember(id) { const r = (aRows || []).find(x => x.id === id); if (!r) return;
+  if (!confirm(`Remove ${r.name} from the Blueprint app?\n\nThis permanently deletes their account, their ${r.total} sends, their streak and their spot on the leaderboard.`)) return;
+  if (prompt(`This can't be undone. Type REMOVE to delete ${r.name}.`) !== 'REMOVE') return toast('Cancelled. Nothing was deleted');
+  try { const d = await api('/admin/member/delete', { id }); aRows = null; board = null; toast(`${d.name} was removed`); renderAdmin(); } catch (x) { toast(x.message); } }
 async function broadcast(test) {
   const title = $('bTitle').value.trim() || 'IGNYT 5', body = $('bBody').value.trim();
   if (!body) return $('bOut').textContent = 'Write a message first.';
