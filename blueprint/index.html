@@ -323,7 +323,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <a class="sv" data-v="wa" id="ssWa" href="#" target="_blank" rel="noopener"><span class="i wa"><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>WhatsApp</a>
     <button class="sv" data-v="more" id="ssShare" type="button"><span class="i">📤</span>Messenger &amp; more</button>
   </div>
-  <button class="btn ghost" id="ssCopy">Copy message</button>
+  <div style="display:flex;gap:8px"><button class="btn ghost" id="ssCopy" style="flex:1.4">Copy message</button><button class="btn ghost" id="ssCopyL" style="flex:1">Copy link only</button></div>
   <button class="btn ghost" id="ssX" style="border:0">Done</button>
 </div></div>
 <div class="sheet" id="sheet" hidden><div class="bx">
@@ -403,13 +403,15 @@ function openSend(name, sent, five, title, sub) {
   $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
   $('ssWa').href = `https://wa.me/${String(sent.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(sent.message)}`;
   markVia();
-  $('ssCopy').textContent = 'Copy message';
+  $('ssCopy').textContent = 'Copy message'; $('ssCopyL').textContent = 'Copy link only';
   $('sendSheet').hidden = false;
   $('ssX').onclick = () => { $('sendSheet').hidden = true; if (five !== null) toast(five ? `5/5! You're #${me.todayRank} in today's 5/5 Club 🔥` : `${me.todayList.length} of 5 — keep going`); };
 }
 // Send-with picker (AJ 11/10): Messages / WhatsApp / share sheet (Messenger, Telegram, IG…). Remembers each member's favourite.
 function markVia() { let v = 'sms'; try { v = localStorage.getItem('ig5_via') || 'sms'; } catch {} document.querySelectorAll('#ssVia .sv').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
 document.querySelectorAll('#ssVia .sv').forEach(b => b.addEventListener('click', () => { try { localStorage.setItem('ig5_via', b.dataset.v); } catch {} markVia(); }));
+$('ssCopyL').onclick = async () => { const m = /IGNYTHub\.com\S+/i.exec($('ssM').textContent); const link = m ? 'https://' + m[0] : '';
+  if (!link) return; try { await navigator.clipboard.writeText(link); $('ssCopyL').textContent = 'Link copied ✓'; } catch { prompt('Copy your link:', link); } };
 $('ssShare').onclick = async () => { const text = $('ssM').textContent;
   if (navigator.share) { try { await navigator.share({ text }); } catch {} return; }
   try { await navigator.clipboard.writeText(text); toast('Copied ✓ Paste it in Messenger, Telegram, or any app'); } catch { $('ssCopy').click(); } };
