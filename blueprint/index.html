@@ -306,7 +306,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button data-v="Admin" id="navAdmin" hidden><span class="e">🛠️</span>Admin</button>
 </div></nav>
 <div class="toast" id="toast"></div>
-<div class="pop" id="pop" hidden><div class="ppc"><div class="ppk">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
+<div class="pop" id="pop" hidden><div class="ppc"><div class="ppk" id="popK">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
   <button class="btn" id="popGo" type="button">👥 Follow up now</button><button class="btn ghost" id="popOk" type="button">Got it</button></div></div>
 <div class="sheet" id="fbSheet" hidden><div class="bx">
   <h3>One thing first 👊</h3><p>Join the IGNYT Blueprint Facebook group before your first send. That's where the trainings and team wins live.</p>
@@ -672,23 +672,32 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-11a';
+const APP_V = '2026-11-11b';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
 $('meBtn').onclick = () => $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' });
 checkUpd(); document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpd(); }); setInterval(checkUpd, 5 * 60 * 1000);
 
-// Prospect activity pop-up in the middle of the app (AJ 11/9): opened link, started, past 50%, stopped, finished. Same events as the phone push.
+// Pop-up in the middle of the app (AJ 11/9 prospect activity; AJ 11/11: EVERY notification — calls, daily 5, streak, broadcasts, tests).
+// Time-bound reminders (calls / daily) only pop if they're under 2h old, so nobody opens the app to a stale "starts in 5 min".
+const POP_K = { prospect: 'Prospect update', call: 'Blueprint call', daily: 'Your daily 5', news: 'The Blueprint', note: 'Notification' };
+let popA = null;
 function noticeAlerts() { const list = me.alerts || [], top = list.length ? list[0].id : 0; let last = localStorage.getItem('ig5_alert_id');
   if (last === null) { localStorage.setItem('ig5_alert_id', String(top)); return; }
-  const fresh = list.filter(a => a.id > +last); if (!fresh.length) return; localStorage.setItem('ig5_alert_id', String(top));
+  const fresh = list.filter(a => a.id > +last && !((a.kind === 'call' || a.kind === 'daily') && Date.now() - a.at > 2 * 3600e3));
+  localStorage.setItem('ig5_alert_id', String(Math.max(top, +last))); if (!fresh.length) return;
   const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-  $('popT').textContent = fresh[0].title; $('popB').textContent = fresh[0].body;
-  $('popMore').innerHTML = fresh.slice(1, 6).map(a => '• ' + esc(a.title)).join('<br>') + (fresh.length > 6 ? `<br>+ ${fresh.length - 6} more` : '');
+  const a = popA = fresh[0], kind = a.kind || 'prospect';
+  $('popK').textContent = POP_K[kind] || 'Notification'; $('popT').textContent = a.title; $('popB').textContent = a.body || '';
+  $('popMore').innerHTML = fresh.slice(1, 6).map(x => '• ' + esc(x.title)).join('<br>') + (fresh.length > 6 ? `<br>+ ${fresh.length - 6} more` : '');
+  const go = kind === 'prospect' ? '👥 Follow up now' : kind === 'call' && a.url ? '🔴 Join on Zoom' : kind === 'daily' ? '🔥 Get my 5 in' : '';
+  $('popGo').style.display = go ? '' : 'none'; $('popGo').textContent = go; $('popOk').textContent = go ? 'Got it' : 'OK';
   $('pop').hidden = false; try { navigator.vibrate && navigator.vibrate(180); } catch {} }
 $('popOk').onclick = () => { $('pop').hidden = true; };
-$('popGo').onclick = () => { $('pop').hidden = true; const b = document.querySelector('nav button[data-v="People"]'); if (b) b.click(); };
+$('popGo').onclick = () => { $('pop').hidden = true; const k = (popA && popA.kind) || 'prospect';
+  if (k === 'call' && popA.url) { window.open(popA.url, '_blank', 'noopener'); return; }
+  const b = document.querySelector(`nav button[data-v="${k === 'daily' ? 'Today' : 'People'}"]`); if (b) b.click(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
