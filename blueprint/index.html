@@ -127,6 +127,13 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .pop .ppk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)} .pop .ppt{margin-top:10px;font-size:21px;font-weight:800;line-height:1.25}
 .pop .ppb{margin-top:8px;font-size:15px;color:var(--mut);line-height:1.45} .pop .ppm{margin-top:12px;text-align:left;font-size:13px;line-height:1.5;color:var(--txt);border-top:1px solid var(--line);padding-top:10px}
 .pop .ppm:empty{display:none}
+/* The Blueprint QOD (AJ 11/11) */
+.pop .ppc.qod{border-color:var(--orange);background:linear-gradient(175deg,#fff4ec,var(--card) 60%)}
+.qod .qmk{font-family:Georgia,serif;font-size:54px;line-height:1;color:var(--orange);opacity:.5;height:34px;margin-top:12px}
+.qod .qtx{margin-top:14px;font-family:Georgia,serif;font-style:italic;font-size:21px;line-height:1.4}
+.qod .qwho{margin-top:16px;font-size:12px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)}
+.qod .qrule{margin:16px auto 0;width:60px;height:2px;background:var(--orange);opacity:.5}
+.qod .qrow{display:flex;gap:10px;margin-top:18px} .qod .qrow .btn{flex:1;margin:0}
 .acct .btn.out{background:none;border:2px solid var(--orange);color:var(--orange);font-size:16px}
 .hdr-r{display:flex;align-items:center;gap:8px} @media(max-width:430px){.brand{letter-spacing:2px;font-size:10px}.streak{padding:7px 10px}} .me{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 12px;font-weight:800;font-size:13px;white-space:nowrap;color:var(--txt);font-family:inherit}
 #upd{margin:14px 0 0;background:var(--orange);color:#fff;border:0;border-radius:14px;padding:13px 16px;width:100%;font:800 15px/1.3 inherit;font-family:inherit;text-align:left;box-shadow:0 6px 18px rgba(240,90,30,.35)}
@@ -308,6 +315,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="toast" id="toast"></div>
 <div class="pop" id="pop" hidden><div class="ppc"><div class="ppk" id="popK">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
   <button class="btn" id="popGo" type="button">👥 Follow up now</button><button class="btn ghost" id="popOk" type="button">Got it</button></div></div>
+<div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
+  <div class="qmk">“</div><div class="qtx" id="qodT"></div><div class="qrule"></div><div class="qwho" id="qodW"></div>
+  <div class="qrow"><button class="btn ghost" id="qodShare" type="button">📤 Share</button><button class="btn" id="qodOk" type="button">Let’s go 🔥</button></div></div></div>
 <div class="sheet" id="fbSheet" hidden><div class="bx">
   <h3>One thing first 👊</h3><p>Join the IGNYT Blueprint Facebook group before your first send. That's where the trainings and team wins live.</p>
   <a class="btn" id="fbsGo" href="#" target="_blank" rel="noopener" style="background:#1877f2">Join the Facebook group</a>
@@ -637,7 +647,7 @@ function render() {
   if (!me) return;
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); renderPush();
+  noticeRequests(); noticeAlerts(); noticeQod(); renderPush();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
@@ -672,7 +682,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-11b';
+const APP_V = '2026-11-11c';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
@@ -698,6 +708,20 @@ $('popOk').onclick = () => { $('pop').hidden = true; };
 $('popGo').onclick = () => { $('pop').hidden = true; const k = (popA && popA.kind) || 'prospect';
   if (k === 'call' && popA.url) { window.open(popA.url, '_blank', 'noopener'); return; }
   const b = document.querySelector(`nav button[data-v="${k === 'daily' ? 'Today' : 'People'}"]`); if (b) b.click(); };
+
+// The Blueprint QOD (AJ 11/11): same quote for the whole team, once a day, a few seconds after the first open of that day.
+let qodT = null;
+function noticeQod() { const q = me && me.qod; if (!q || qodT || localStorage.getItem('ig5_qod_day') === q.day) return;
+  qodT = setTimeout(function show() {
+    if (!$('pop').hidden || !$('sendSheet').hidden || !$('sheet').hidden) { qodT = setTimeout(show, 4000); return; }   // wait out any other pop-up
+    localStorage.setItem('ig5_qod_day', q.day); qodT = null;
+    $('qodT').textContent = q.text; $('qodW').textContent = q.who; $('qod').hidden = false;
+  }, 4000); }
+$('qodOk').onclick = () => { $('qod').hidden = true; };
+$('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
+  const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
+  try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
+  try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
