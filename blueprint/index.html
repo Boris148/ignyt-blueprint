@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#faf7f3">
 <meta name="robots" content="noindex">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="IGNYT 5">
+<meta name="apple-mobile-web-app-title" content="The Blueprint">
 <link rel="manifest" href="/blueprint/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/blueprint/apple-touch-icon.png">
-<title>IGNYT 5 · The Blueprint</title>
-<meta property="og:title" content="IGNYT 5 · The Blueprint — 5 a day">
+<title>The Blueprint</title>
+<meta property="og:title" content="The Blueprint — 5 a day">
 <meta property="og:description" content="Get 5 people in front of the Blueprint every day. Track it, keep your streak, climb the leaderboard.">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -149,7 +149,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <body>
 <div class="wrap">
   <div class="hd">
-    <div class="brand"><svg viewBox="0 0 62 80"><path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/><text x="31" y="58" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-style="italic" font-size="30">5</text></svg>IGNYT 5 · The Blueprint</div>
+    <div class="brand"><svg viewBox="0 0 62 80"><path d="M31 2 C40 16 54 28 54 48 A23 23 0 0 1 8 48 C8 28 22 16 31 2 Z" fill="#f05a1e"/><text x="31" y="58" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-style="italic" font-size="30">5</text></svg>The Blueprint</div>
     <div class="hdr-r"><div class="streak" id="streak" hidden></div><button class="me" id="meBtn" type="button" hidden>👤 Account</button></div>
   </div>
   <button id="upd" type="button" hidden>✨ New update ready — tap to update<small>Takes 2 seconds. You stay signed in.</small></button>
@@ -275,7 +275,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <p class="sub">Only you can see this tab.</p>
     <div class="card"><div class="lbl">Send a notification</div>
       <p class="sub" style="font-size:13px;margin:6px 0 12px">Goes to everyone with notifications turned on. It comes from the app, not from you.</p>
-      <input id="bTitle" maxlength="80" placeholder="Title" value="IGNYT 5">
+      <input id="bTitle" maxlength="80" placeholder="Title" value="The Blueprint">
       <textarea id="bBody" maxlength="200" rows="3" placeholder="Your message (200 characters max)" style="margin-top:10px;resize:vertical"></textarea>
       <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" id="bTest" type="button" style="flex:1">Send test to me</button><button class="btn" id="bSend" type="button" style="flex:1">Send to everyone</button></div>
       <p class="sub" id="bOut" style="font-size:13px;margin-top:10px;font-weight:700"></p>
@@ -484,10 +484,10 @@ function renderPush() {
   $('ntCard').hidden = false;
   if (inApp) $('ntBody').innerHTML = `<h3>Open this in ${isIOS ? 'Safari' : 'Chrome'} to get reminders</h3><p>You're inside another app's browser, which can't do notifications. Tap the <b>⋯</b> menu → <b>Open in ${isIOS ? 'Safari' : 'Chrome'}</b> (or go to ignythub.com/blueprint there) and sign in.</p>`;
   else if (isIOS && !standalone) $('ntBody').innerHTML = `<h3>Get your daily 5 reminder</h3><p>On iPhone, notifications only work from the Home Screen app:</p>
-    <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>IGNYT 5</b> from your Home Screen, sign in with your number + PIN, and tap <b>Turn on</b></li></ol>
+    <ol><li>Tap the <b>Share</b> button <span style="font-size:16px">⬆︎</span> in Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Open <b>The Blueprint</b> from your Home Screen, sign in with your number + PIN, and tap <b>Turn on</b></li></ol>
     <p style="font-size:12.5px">Already added it before today? Delete the old icon and add it again. Needs iOS 16.4 or newer.</p>`;
   else if (!pushOK) $('ntBody').innerHTML = `<h3>Notifications aren't available here</h3><p>Open ignythub.com/blueprint in ${isIOS ? 'Safari (iOS 16.4+), add it to your Home Screen,' : 'Chrome'} and turn them on there.</p>`;
-  else if (Notification.permission === 'denied') $('ntBody').innerHTML = `<h3>Notifications are blocked</h3><p>${isIOS ? 'Open iPhone <b>Settings → Notifications → IGNYT 5</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'} Then come back here.</p>`;
+  else if (Notification.permission === 'denied') $('ntBody').innerHTML = `<h3>Notifications are blocked</h3><p>${isIOS ? 'Open iPhone <b>Settings → Notifications → The Blueprint</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'} Then come back here.</p>`;
   else $('ntBody').innerHTML = `<h3>Never miss your 5</h3><p>A daily reminder at your time, a 👀 alert the moment someone opens your link, a heads-up at 7pm if you're under 5, and reminders before every Blueprint call, with a tap-to-join Zoom link 5 min before.</p>
     <div class="ntb"><select id="ntHour" aria-label="Reminder time">${hourOpts()}</select><button type="button" id="ntGo">Turn on</button></div>`;
   const go = $('ntGo'); if (go) go.onclick = pushOn;
@@ -503,7 +503,7 @@ async function pushOn() {
     me = await api('/push/sub', { ...s.toJSON(), hour: Number($('ntHour')?.value || 9) }); PUSH.sub = s; render();
     await api('/push/test', {}).catch(e => toast(e.message));
     toast('Notifications on 🔔');
-  } catch (e) { toast(isIOS && !standalone ? 'Add IGNYT 5 to your Home Screen first, then turn on from there.' : 'Couldn\'t turn on notifications. Open ignythub.com/blueprint in ' + (isIOS ? 'the Home Screen app' : 'Chrome') + ' and try again.'); if (b) { b.disabled = false; b.textContent = 'Turn on'; } }
+  } catch (e) { toast(isIOS && !standalone ? 'Add The Blueprint to your Home Screen first, then turn on from there.' : 'Couldn\'t turn on notifications. Open ignythub.com/blueprint in ' + (isIOS ? 'the Home Screen app' : 'Chrome') + ' and try again.'); if (b) { b.disabled = false; b.textContent = 'Turn on'; } }
 }
 function wirePushSettings() {
   $('ntHour2').onchange = async e => { try { me = await api('/push/hour', { hour: Number(e.target.value) }); toast(`Daily reminder set for ${e.target.selectedOptions[0].text}`); } catch (x) { toast(x.message); } };
@@ -605,7 +605,7 @@ async function delMember(id) { const r = (aRows || []).find(x => x.id === id); i
   if (prompt(`This can't be undone. Type REMOVE to delete ${r.name}.`) !== 'REMOVE') return toast('Cancelled. Nothing was deleted');
   try { const d = await api('/admin/member/delete', { id }); aRows = null; board = null; toast(`${d.name} was removed`); renderAdmin(); } catch (x) { toast(x.message); } }
 async function broadcast(test) {
-  const title = $('bTitle').value.trim() || 'IGNYT 5', body = $('bBody').value.trim();
+  const title = $('bTitle').value.trim() || 'The Blueprint', body = $('bBody').value.trim();
   if (!body) return $('bOut').textContent = 'Write a message first.';
   if (!test && !confirm(`Send this to everyone with notifications on?\n\n${title}\n${body}`)) return;
   $('bOut').textContent = 'Sending…'; $('bSend').disabled = $('bTest').disabled = true;
@@ -672,7 +672,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-09c';
+const APP_V = '2026-11-11a';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;

@@ -1,6 +1,6 @@
 {
-  "name": "IGNYT 5 · The Blueprint",
-  "short_name": "IGNYT 5",
+  "name": "The Blueprint",
+  "short_name": "The Blueprint",
   "start_url": "/blueprint/",
   "scope": "/blueprint/",
   "display": "standalone",
