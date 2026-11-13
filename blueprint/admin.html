@@ -25,7 +25,7 @@ td{padding:8px;border-bottom:1px solid #2c2c33;white-space:nowrap} tr.d td:first
 const API='https://ignyt-challenge.hireboris.workers.dev/api', $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let rows=[], sortK='total', dir=-1;
-const COLS=[['name','Name'],['sponsor','Sponsor'],['invitedBy','Invited by'],['phone','Phone'],['doneToday','5/5 today'],['streak','Streak'],['best','Best'],['days','Days 5/5'],['total','Exposures'],['texted','Texted'],['seen','Seen ✓'],['seenPct','Seen %'],['codeRequests','Code requests'],['customers','Customers'],['customerPacks','Customer packs'],['partners','Partners'],['partnerPacks','Partner packs'],['projected','Projected $'],['fbGroup','FB group'],['sms_ok','SMS OK'],['tz','Time zone'],['joined','Joined']];
+const COLS=[['name','Name'],['sponsor','Sponsor'],['invitedBy','Invited by'],['phone','Phone'],['doneToday','5/5 today'],['streak','Streak'],['best','Best'],['days','Days 5/5'],['total','Exposures'],['texted','Texted'],['seen','Seen ✓'],['seenPct','Seen %'],['codeRequests','Code requests'],['customers','Customers'],['customerPacks','Customer packs'],['partners','Partners'],['partnerPacks','Partner packs'],['projected','Projected $'],['appTraining','App training ✓'],['launchVideo','Launch video ✓'],['fbGroup','FB group'],['sms_ok','SMS OK'],['tz','Time zone'],['joined','Joined']];
 $('key').value=localStorage.getItem('ig5_admin')||'';
 const TOK=localStorage.getItem('ig5_tok'); const AH=()=>({...($('key').value?{'X-Admin-Key':$('key').value}:{}),...(TOK?{Authorization:'Bearer '+TOK}:{})});
 if(TOK&&!$('key').value) setTimeout(()=>$('go').click(),0);
@@ -40,7 +40,7 @@ function draw(){
   const q=$('q').value.toLowerCase(), xs=rows.filter(r=>!q||(r.name+' '+r.sponsor).toLowerCase().includes(q)).sort((a,b)=>(a[sortK]>b[sortK]?1:a[sortK]<b[sortK]?-1:0)*dir);
   const S=(k)=>xs.reduce((a,r)=>a+(+r[k]||0),0);
   $('kpi').innerHTML=[[xs.length,'People'],[xs.filter(r=>r.doneToday).length,'5/5 today'],[S('total'),'Exposures'],[S('texted')?Math.round(100*S('seen')/S('texted'))+'%':'—','Links opened'],[S('customers'),'Customers'],[S('partners'),'Brand Partners'],['$'+S('projected').toLocaleString('en-US',{maximumFractionDigits:2}),'Projected commissions'],[xs.filter(r=>r.streak>=3).length,'3+ day streak']].map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('');
-  $('t').innerHTML='<tr>'+COLS.map(([k,l])=>`<th data-k="${k}">${l}${k===sortK?(dir<0?' ↓':' ↑'):''}</th>`).join('')+'</tr>'+xs.map(r=>`<tr class="${r.doneToday?'d':''}">`+COLS.map(([k])=>`<td>${esc(k==='doneToday'||k==='sms_ok'||k==='fbGroup'?(r[k]?'✓':''):k==='joined'?r[k].slice(0,10):r[k])}</td>`).join('')+'</tr>').join('');
+  $('t').innerHTML='<tr>'+COLS.map(([k,l])=>`<th data-k="${k}">${l}${k===sortK?(dir<0?' ↓':' ↑'):''}</th>`).join('')+'</tr>'+xs.map(r=>`<tr class="${r.doneToday?'d':''}">`+COLS.map(([k])=>`<td>${esc(k==='doneToday'||k==='sms_ok'||k==='fbGroup'?(r[k]?'✓':''):k==='appTraining'||k==='launchVideo'?(r[k]?'✓ '+r[k].slice(5,10):''):k==='joined'?r[k].slice(0,10):r[k])}</td>`).join('')+'</tr>').join('');
   document.querySelectorAll('th').forEach(th=>th.onclick=()=>{ if(sortK===th.dataset.k) dir=-dir; else {sortK=th.dataset.k; dir=-1;} draw(); });
 }
 $('csv').onclick=()=>{ const c=[COLS.map(x=>x[1]).join(',')].concat(rows.map(r=>COLS.map(([k])=>'"'+String(r[k]).replace(/"/g,'""')+'"').join(','))).join('\n');

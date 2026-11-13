@@ -79,7 +79,7 @@ nav .badge{position:absolute;top:6px;left:50%;margin-left:8px;background:var(--o
 .pk button{background:var(--card2);border:2px solid var(--line);border-radius:14px;padding:14px 10px;text-align:left;font-family:inherit;color:var(--txt)}
 .pk button b{display:block;font-size:17px} .pk button span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
 .pk button i{display:block;font-style:normal;font-weight:800;color:var(--orange);font-size:18px;margin-top:8px}
-.pk button:active{border-color:var(--orange)}
+.pk button:active,.pk button.on{border-color:var(--orange)} .pk button.on{background:#fff4ec}
 .ph{display:flex;gap:8px} .ph input{flex:1} .ph button{flex:0 0 auto;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:0 14px;font-weight:700;font-size:14px;color:var(--txt);font-family:inherit}
 .hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.4}
 .msg{white-space:pre-wrap;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;font-size:15px;line-height:1.4}
@@ -122,6 +122,15 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .note{background:#fff4ec;border:1px solid #ffd2b8}
 .foot{margin-top:26px} .acct{border:1.5px solid var(--orange)} .acct .who{font-size:17px;font-weight:800} .acct .tz{margin-top:4px;font-size:13px;color:var(--mut)}
 .pop{position:fixed;inset:0;z-index:80;background:rgba(20,16,12,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px}
+.vg{position:fixed;inset:0;z-index:90;background:#0d0c0b;color:#fff;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto}
+.vg[hidden]{display:none} .vg .vk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)}
+.vg h2{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:8px;line-height:1.15} .vg h2 i{color:var(--orange);font-family:Georgia,serif;font-weight:400}
+.vg .vs{color:#bdb6ad;font-size:14.5px;line-height:1.45;margin-top:8px}
+.vg .vw{margin:18px auto 0;width:100%;max-width:520px;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.vg video{width:100%;max-height:100%;border-radius:14px;background:#000;display:block}
+.vg .vbar{height:5px;border-radius:3px;background:#2b2825;margin:14px auto 0;width:100%;max-width:520px;overflow:hidden} .vg .vbar b{display:block;height:100%;width:0;background:var(--orange);transition:width .4s}
+.vg .vt{text-align:center;color:#bdb6ad;font-size:13px;margin-top:8px;font-weight:600}
+.vg .btn{max-width:520px;margin-left:auto;margin-right:auto} .vg .btn:disabled{opacity:.3}
 .pop[hidden]{display:none} .pop .ppc{background:var(--card);border:2px solid var(--orange);border-radius:22px;padding:24px 20px 16px;width:min(380px,100%);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popin .28s ease-out}
 @keyframes popin{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
 .pop .ppk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)} .pop .ppt{margin-top:10px;font-size:21px;font-weight:800;line-height:1.25}
@@ -336,6 +345,12 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <div style="display:flex;gap:8px"><button class="btn ghost" id="ssCopy" style="flex:1.4">Copy message</button><button class="btn ghost" id="ssCopyL" style="flex:1">Copy link only</button></div>
   <button class="btn ghost" id="ssX" style="border:0">Done</button>
 </div></div>
+<div class="vg" id="vg" hidden>
+  <div class="vk" id="vgK"></div><h2 id="vgT"></h2><p class="vs" id="vgS"></p>
+  <div class="vw"><video id="vgV" playsinline webkit-playsinline preload="metadata" controls controlslist="nodownload noplaybackrate" disablepictureinpicture></video></div>
+  <div class="vbar"><b id="vgB"></b></div><div class="vt" id="vgL">Tap play to start</div>
+  <button class="btn" id="vgGo" type="button" disabled>Watch to the end to continue</button>
+</div>
 <div class="sheet" id="sheet" hidden><div class="bx">
   <h3 id="shT"></h3><p id="shS"></p>
   <div class="pk" id="shP"></div>
@@ -397,6 +412,7 @@ $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = ''
   if (!$('aName').value.trim()) return $('aErr').textContent = 'Enter their name';
   if (!$('aPhone').value.trim()) return $('aErr').textContent = 'Enter their mobile number';
   if (!kind) return $('aErr').textContent = 'Product or Business?';
+  if (me.user.launchNeeded && me.total === 0) return openVideo('launch', () => $('fAdd').requestSubmit());   // AJ 11/13: launch video before the first send
   if (!me.user.fbJoined && me.total === 0 && !fbNudged) { fbNudged = true; $('fbSheet').hidden = false; return; }
   $('aBtn').disabled = true;
   try { const before = me.todayList.length, name = $('aName').value.trim();
@@ -525,19 +541,22 @@ function noticeRequests() { const ids = (me.requests || []).map(r => r.id);
   lastReq = ids; }
 setInterval(() => { if (tok && me && !document.hidden && $('sendSheet').hidden && $('sheet').hidden) api('/me').then(d => { me = d; render(); }).catch(() => {}); }, 45000);
 async function del(id) { if (!confirm('Remove this person from today?')) return; try { me = await api('/exposure/delete', { id }); board = null; render(); } catch (x) { toast(x.message); } }
-function pickPack(id, action) {
+function pickPack(id, action, change) {
   const x = me.prospects.find(p => p.id === id), T = me.packs[action];
-  $('shT').textContent = `${x ? x.prospect : 'They'} enrolled as a ${action === 'customer' ? 'Customer' : 'Brand Partner'}`;
-  $('shS').textContent = 'Which pack did they choose?';
+  $('shT').textContent = change ? `Change ${x ? x.prospect.split(' ')[0] + '’s' : 'their'} pack` : `${x ? x.prospect : 'They'} enrolled as a ${action === 'customer' ? 'Customer' : 'Brand Partner'}`;
+  $('shS').textContent = change ? `Pick the pack they're on now. Your projected ${action === 'customer' ? 'commissions' : 'Fast Start'} update right away.` : 'Which pack did they choose?';
   $('shP').innerHTML = [1, 2, 4, 6].map(n => `<button data-p="${n}"><b>${n} IGNYT</b><span>${money(T[n].price)} · ${T[n].cv} CV</span><i>${money(T[n].pay)}</i><span>projected ${action === 'customer' ? 'commission' : 'Fast Start'}</span></button>`).join('');
   $('sheet').hidden = false;
-  $('shP').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('sheet').hidden = true; act(id, action, +b.dataset.p); };
+  $('shP').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('sheet').hidden = true; act(id, change ? 'pack' : action, +b.dataset.p); };
+  [...$('shP').children].forEach(b => b.classList.toggle('on', change && x && +b.dataset.p === x.pack));
 }
 $('shX').onclick = () => $('sheet').hidden = true;
 $('sheet').onclick = e => { if (e.target.id === 'sheet') $('sheet').hidden = true; };
 async function act(id, action, pack) {
   if ((action === 'customer' || action === 'partner') && !pack) return pickPack(id, action);
+  if (action === 'pack' && !pack) { const x = me.prospects.find(p => p.id === id); return x && pickPack(id, x.status, true); }
   try { me = await api('/prospect', { id, action, pack });
+  if (action === 'pack') { toast(`Updated to ${pack} IGNYT ✓ Projected ${money(me.prospects.find(p => p.id === id)?.projected || 0)}`); render(); return; }
   toast({ followed: 'Nice — we\'ll remind you again in 2 days', customer: `New customer! 🎉 Projected ${money(me.packs.customer[pack]?.pay || 0)}`, partner: `New Brand Partner! 🎉 Projected ${money(me.packs.partner[pack]?.pay || 0)}`, notnow: 'Got it — moved to Not now', reopen: 'Back on your follow-up list' }[action]);
   if (action === 'customer' || action === 'partner') confetti(); render(); } catch (x) { toast(x.message); } }
 
@@ -597,7 +616,7 @@ function renderPeople() {
   if (!me.prospects.length) { $('people').innerHTML = '<div class="card"><div class="empty">Nobody yet. Add your first person on the Today tab.</div></div>'; return; }
   $('people').innerHTML = G.map(([s, t]) => { const xs = me.prospects.filter(x => x.status === s); if (!xs.length) return '';
     return `<div class="card"><div class="lbl">${t} · ${xs.length}</div>` + xs.map(x => s === 'open' ? fuRow(x).replace('Follow up with ', '')
-      : `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${x.pack ? `${x.pack} IGNYT · projected ${money(x.projected)} · ` : ''}sent ${short(x.day)}${x.outcome_day ? ' · enrolled ' + short(x.outcome_day) : ''}</span></span><button class="x" style="font-size:12px;font-weight:700" onclick="act('${x.id}','reopen')">Undo</button></div>`).join('') + '</div>'; }).join('');
+      : `<div class="it"><span class="dot ${x.kind === 'partner' ? 'p' : ''}"></span><span class="nm">${esc(x.prospect)}<span class="k">${x.pack ? `${x.pack} IGNYT · projected ${money(x.projected)} · ` : ''}sent ${short(x.day)}${x.outcome_day ? ' · enrolled ' + short(x.outcome_day) : ''}</span></span><button class="x" style="font-size:12px;font-weight:700;color:var(--orange);width:auto;padding:0 6px" onclick="act('${x.id}','pack')">${x.pack ? 'Change pack' : 'Add pack'}</button><button class="x" style="font-size:12px;font-weight:700" onclick="act('${x.id}','reopen')">Undo</button></div>`).join('') + '</div>'; }).join('');
 }
 // ---- admin tab
 let aRows = null;
@@ -645,6 +664,7 @@ $('shCopy').onclick = () => copyTxt(SHARE_URL, $('shCopy'), 'Copied ✓');
 $('shNative').onclick = () => navigator.share({ title: 'The Blueprint app', text: SHARE_MSG }).catch(() => {});
 function render() {
   if (!me) return;
+  if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
   noticeRequests(); noticeAlerts(); noticeQod(); renderPush();
@@ -654,6 +674,38 @@ function render() {
   ({ Today: renderToday, Board: renderBoard, Week: renderWeek, People: renderPeople, Share: renderShare, Admin: renderAdmin })[view]();
 }
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
+// ---- required videos (AJ 11/13). Can't skip ahead: seeking past what they've watched snaps back. Unlocks only at the end.
+const VIDS = {
+  app: { k: 'Before you start', t: 'How to use <i>the app.</i>', s: 'Watch the full walkthrough once. The app opens as soon as it ends.', go: 'Open the app' },
+  launch: { k: 'Before your first send', t: 'The Blueprint <i>launch.</i>', s: 'Why this business matters and how The Blueprint works. Watch it all the way through, then send your first one.', go: 'Send my first one 🔥' },
+};
+let vgHls = null;
+function loadHls() { return window.Hls ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
+async function openVideo(which, after) {
+  const V = VIDS[which], url = which === 'app' ? me.user.trainUrl : me.user.launchUrl, v = $('vgV');
+  if (!url) return after && after();
+  $('vgK').textContent = V.k; $('vgT').innerHTML = V.t; $('vgS').textContent = V.s; $('vgB').style.width = '0';
+  $('vgL').textContent = 'Tap play to start'; $('vgGo').disabled = true; $('vgGo').textContent = 'Watch to the end to continue';
+  $('vg').hidden = false; document.body.style.overflow = 'hidden';
+  if (vgHls) { vgHls.destroy(); vgHls = null; }
+  const key = 'ig5_vid_' + which + '_' + url; let maxT = +localStorage.getItem(key) || 0, done = false;
+  if (/\.m3u8(\?|$)/.test(url) && !v.canPlayType('application/vnd.apple.mpegurl')) {
+    try { await loadHls(); vgHls = new Hls({ startPosition: maxT }); vgHls.loadSource(url); vgHls.attachMedia(v); } catch { v.src = url; }
+  } else v.src = url;
+  v.poster = url.replace(/[^/]*$/, 'poster.jpg');
+  const mmss = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+  const finish = async () => { if (done) return; done = true;
+    $('vgB').style.width = '100%'; $('vgL').textContent = 'Done ✓'; $('vgGo').disabled = false; $('vgGo').textContent = V.go;
+    try { me = await api('/trained', { v: which }); } catch (x) { done = false; $('vgL').textContent = x.message + ' Tap play to try again.'; $('vgGo').disabled = true; } };
+  v.onloadedmetadata = () => { if (maxT > 1 && maxT < v.duration - 2) v.currentTime = maxT; };
+  v.ontimeupdate = () => { if (v.seeking) return; const t = v.currentTime, d = v.duration || 0;
+    if (t > maxT && t - maxT < 3) { maxT = t; localStorage.setItem(key, String(Math.floor(maxT))); }
+    if (d) { $('vgB').style.width = (100 * maxT / d) + '%'; if (!done) $('vgL').textContent = `${mmss(Math.max(0, d - maxT))} left`; }
+    if (d && maxT >= d - 1.5) finish(); };
+  v.onseeking = () => { if (v.currentTime > maxT + 1.5) v.currentTime = maxT; };
+  v.onended = () => { if (maxT >= (v.duration || 0) - 3) finish(); };
+  $('vgGo').onclick = () => { if ($('vgGo').disabled) return; v.pause(); $('vg').hidden = true; document.body.style.overflow = ''; localStorage.removeItem(key); render(); after && after(); };
+}
 function show() {
   const authed = !!me;
   $('auth').hidden = authed; $('nav').hidden = !authed; $('foot').hidden = !authed; $('streak').hidden = !authed; $('meBtn').hidden = !authed;
@@ -682,7 +734,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-11c';
+const APP_V = '2026-11-13a';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
