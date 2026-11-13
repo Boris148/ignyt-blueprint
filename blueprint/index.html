@@ -699,10 +699,11 @@ async function openVideo(which, after) {
     try { me = await api('/trained', { v: which }); } catch (x) { done = false; $('vgL').textContent = x.message + ' Tap play to try again.'; $('vgGo').disabled = true; } };
   v.onloadedmetadata = () => { if (maxT > 1 && maxT < v.duration - 2) v.currentTime = maxT; };
   v.ontimeupdate = () => { if (v.seeking) return; const t = v.currentTime, d = v.duration || 0;
-    if (t > maxT && t - maxT < 3) { maxT = t; localStorage.setItem(key, String(Math.floor(maxT))); }
+    if (t > maxT && t - maxT < 4) { maxT = t; localStorage.setItem(key, String(Math.floor(maxT))); }
     if (d) { $('vgB').style.width = (100 * maxT / d) + '%'; if (!done) $('vgL').textContent = `${mmss(Math.max(0, d - maxT))} left`; }
     if (d && maxT >= d - 1.5) finish(); };
   v.onseeking = () => { if (v.currentTime > maxT + 1.5) v.currentTime = maxT; };
+  v.onratechange = () => { if (v.playbackRate > 1) v.playbackRate = 1; };   // no fast-forwarding through it
   v.onended = () => { if (maxT >= (v.duration || 0) - 3) finish(); };
   $('vgGo').onclick = () => { if ($('vgGo').disabled) return; v.pause(); $('vg').hidden = true; document.body.style.overflow = ''; localStorage.removeItem(key); render(); after && after(); };
 }
@@ -734,7 +735,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-13a';
+const APP_V = '2026-11-13b';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
