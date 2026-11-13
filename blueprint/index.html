@@ -322,6 +322,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button data-v="Admin" id="navAdmin" hidden><span class="e">🛠️</span>Admin</button>
 </div></nav>
 <div class="toast" id="toast"></div>
+<div class="pop" id="updPop" hidden style="z-index:95"><div class="ppc"><div class="ppk">App update</div>
+  <div style="font-size:44px;margin-top:10px">✨</div><div class="ppt">A new update is ready</div>
+  <div class="ppb">Tap to update. Takes 2 seconds and you stay signed in.</div>
+  <button class="btn" id="updGo" type="button">Tap to update</button><button class="btn ghost" id="updLater" type="button" style="border:0;margin-top:4px">Later</button></div></div>
 <div class="pop" id="pop" hidden><div class="ppc"><div class="ppk" id="popK">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
   <button class="btn" id="popGo" type="button">👥 Follow up now</button><button class="btn ghost" id="popOk" type="button">Got it</button></div></div>
 <div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
@@ -735,12 +739,16 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-13b';
+const APP_V = '2026-11-13c';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
-async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); $('upd').hidden = !j.v || j.v === APP_V; } catch {} }
+// AJ 11/13: a new release pops up in the middle of the screen (banner stays as a backup). "Later" hides it for 10 min, then it comes back.
+let updLater = 0;
+async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); const nu = !!j.v && j.v !== APP_V;
+  $('upd').hidden = !nu; $('updPop').hidden = !nu || Date.now() - updLater < 10 * 60 * 1000; } catch {} }
+$('updGo').onclick = freshReload; $('updLater').onclick = () => { updLater = Date.now(); $('updPop').hidden = true; };
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
 $('meBtn').onclick = () => $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' });
-checkUpd(); document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpd(); }); setInterval(checkUpd, 5 * 60 * 1000);
+checkUpd(); document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpd(); }); setInterval(checkUpd, 2 * 60 * 1000);
 
 // Pop-up in the middle of the app (AJ 11/9 prospect activity; AJ 11/11: EVERY notification — calls, daily 5, streak, broadcasts, tests).
 // Time-bound reminders (calls / daily) only pop if they're under 2h old, so nobody opens the app to a stale "starts in 5 min".
