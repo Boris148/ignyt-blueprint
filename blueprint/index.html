@@ -135,7 +135,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 @keyframes popin{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
 .pop .ppk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)} .pop .ppt{margin-top:10px;font-size:21px;font-weight:800;line-height:1.25}
 .pop .ppb{margin-top:8px;font-size:15px;color:var(--mut);line-height:1.45} .pop .ppm{margin-top:12px;text-align:left;font-size:13px;line-height:1.5;color:var(--txt);border-top:1px solid var(--line);padding-top:10px}
-.pop .ppm:empty{display:none}
+.pop .ppm:empty{display:none} .pop .ppm ul{margin:0;padding-left:18px} .pop .ppm li{margin:4px 0}
 /* The Blueprint QOD (AJ 11/11) */
 .pop .ppc.qod{border-color:var(--orange);background:linear-gradient(175deg,#fff4ec,var(--card) 60%)}
 .qod .qmk{font-family:Georgia,serif;font-size:54px;line-height:1;color:var(--orange);opacity:.5;height:34px;margin-top:12px}
@@ -327,8 +327,12 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="toast" id="toast"></div>
 <div class="pop" id="updPop" hidden style="z-index:95"><div class="ppc"><div class="ppk">App update</div>
   <div style="font-size:44px;margin-top:10px">✨</div><div class="ppt">A new update is ready</div>
-  <div class="ppb">Tap to update. Takes 2 seconds and you stay signed in.</div>
+  <div class="ppb">Tap to update. Takes 2 seconds and you stay signed in.</div><div class="ppm" id="updNotes"></div>
   <button class="btn" id="updGo" type="button">Tap to update</button><button class="btn ghost" id="updLater" type="button" style="border:0;margin-top:4px">Later</button></div></div>
+<div class="pop" id="wnPop" hidden style="z-index:85"><div class="ppc"><div class="ppk">What&rsquo;s new</div>
+  <div style="font-size:44px;margin-top:10px">✨</div><div class="ppt">Your app just got an update</div>
+  <div class="ppm" id="wnNotes"></div>
+  <button class="btn" id="wnOk" type="button">Got it</button></div></div>
 <div class="pop" id="pop" hidden><div class="ppc"><div class="ppk" id="popK">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
   <button class="btn" id="popGo" type="button">👥 Follow up now</button><button class="btn ghost" id="popOk" type="button">Got it</button></div></div>
 <div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
@@ -674,7 +678,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); renderPush();
+  noticeRequests(); noticeAlerts(); noticeQod(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
@@ -747,11 +751,19 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-14c';
+const APP_V = '2026-11-14d';
+// AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
+const APP_NOTES = ['Rewatch any time: scroll to <b>Training videos</b> at the bottom of the app for <b>The App Training</b> and <b>The Blueprint Launch Video</b>. Skip ahead, rewind or close whenever you like.',
+  'New members watch The App Training first, then tap <b>“I understand and I’m ready to launch the Blueprint”</b> to open the app.',
+  'Update pop-ups now tell you what changed.'];
+const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
+function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
+  $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
+$('wnOk').onclick = () => { localStorage.setItem('ig5_wn', APP_V); $('wnPop').hidden = true; };
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 // AJ 11/13: a new release pops up in the middle of the screen (banner stays as a backup). "Later" hides it for 10 min, then it comes back.
 let updLater = 0;
-async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); const nu = !!j.v && j.v !== APP_V;
+async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); const nu = !!j.v && j.v !== APP_V; $('updNotes').innerHTML = notesHtml(j.notes);
   $('upd').hidden = !nu; $('updPop').hidden = !nu || Date.now() - updLater < 10 * 60 * 1000; } catch {} }
 $('updGo').onclick = freshReload; $('updLater').onclick = () => { updLater = Date.now(); $('updPop').hidden = true; };
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
