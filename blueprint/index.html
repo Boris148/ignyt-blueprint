@@ -347,7 +347,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="pop" id="grPop" hidden style="z-index:86"><div class="ppc qod"><div class="ppk">Gratitude Sunday</div>
   <div style="font-size:44px;margin-top:10px">🙏</div><div class="ppt">What are you grateful for today?</div>
   <div class="ppb">It goes on the Gratitude Wall for the whole family to see this Sunday.</div>
-  <textarea id="grTx" maxlength="280" rows="4" placeholder="Today I'm grateful for…" style="margin-top:12px;resize:none;text-align:left"></textarea>
+  <textarea id="grTx" maxlength="200" rows="4" placeholder="Today I'm grateful for…" style="margin-top:12px;resize:none;text-align:left"></textarea><div id="grN" style="margin-top:4px;text-align:right;font-size:12px;color:var(--mut)">0 / 200</div>
   <button class="btn" id="grGo" type="button">Share on the Gratitude Wall</button><button class="btn ghost" id="grNo" type="button" style="border:0;margin-top:4px">Maybe later</button></div></div>
 <div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
   <div class="qmk">“</div><div class="qtx" id="qodT"></div><div class="qrule"></div><div class="qwho" id="qodW"></div>
@@ -765,9 +765,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-15a';
+const APP_V = '2026-11-15b';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for. It shows on the new <b>Gratitude Wall</b> at the top of Today for the whole family to see."];
+const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for (200 characters or less). It shows on the <b>Gratitude Wall</b> at the top of Today for the whole family to see."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
@@ -813,7 +813,9 @@ function renderGratitude() { const g = me && me.gratitude, c = $('gwCard'); if (
     : '<div class="ge">Be the first to share today 🙏</div>';
   $('gwList').querySelectorAll('.gx').forEach(b => b.onclick = async () => { if (!confirm('Remove this post from the Gratitude Wall?')) return;
     try { me = await api('/admin/gratitude/hide', { id: b.dataset.id }); render(); toast('Removed'); } catch (x) { toast(x.message); } }); }
-function openGrat() { const g = me && me.gratitude; if (!g || !g.sunday) return; $('grTx').value = g.mine || ''; $('grPop').hidden = false; }
+function openGrat() { const g = me && me.gratitude; if (!g || !g.sunday) return; $('grTx').value = g.mine || ''; grCount(); $('grPop').hidden = false; }
+function grCount() { const n = $('grTx').value.length; $('grN').textContent = n + ' / 200'; $('grN').style.color = n >= 190 ? 'var(--orange)' : ''; }
+$('grTx').addEventListener('input', grCount);
 function noticeGrat() { const g = me && me.gratitude; if (!g || !g.sunday || g.mine || grT || me.user.trainNeeded || localStorage.getItem('ig5_gr_day') === g.day) return;
   grT = setTimeout(function show() {
     if (!$('pop').hidden || !$('qod').hidden || !$('vg').hidden || !$('wnPop').hidden || !$('updPop').hidden || !$('sendSheet').hidden || !$('sheet').hidden) { grT = setTimeout(show, 4000); return; }
