@@ -135,7 +135,12 @@ a.btn{display:block;text-align:center;text-decoration:none}
 @keyframes popin{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
 .pop .ppk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)} .pop .ppt{margin-top:10px;font-size:21px;font-weight:800;line-height:1.25}
 .pop .ppb{margin-top:8px;font-size:15px;color:var(--mut);line-height:1.45} .pop .ppm{margin-top:12px;text-align:left;font-size:13px;line-height:1.5;color:var(--txt);border-top:1px solid var(--line);padding-top:10px}
-.pop .ppm:empty{display:none} .pop .ppm ul{margin:0;padding-left:18px} .pop .ppm li{margin:4px 0}
+.pop .ppm:empty{display:none}
+.gw{border:1.5px solid var(--orange);background:linear-gradient(175deg,#fff4ec,var(--card) 55%)} .gw h3{margin-top:6px;font-size:22px;font-weight:800;letter-spacing:-.4px} .gw h3 i{font-family:Georgia,serif;font-weight:400;color:var(--orange)}
+.gw .gs{margin-top:4px;font-size:14px;color:var(--mut)} .gw .gl{margin-top:12px;max-height:420px;overflow-y:auto}
+.gw .gp{padding:12px 0;border-top:1px solid var(--line)} .gw .gp:first-child{border-top:0} .gw .gn{font-size:13px;font-weight:800} .gw .gn span{font-weight:500;color:var(--mut);padding-left:6px}
+.gw .gt{margin-top:4px;font-family:Georgia,serif;font-size:16px;line-height:1.45} .gw .gx{margin-left:8px;border:0;background:none;color:var(--orange);font-size:12px;font-weight:700;padding:0;width:auto}
+.gw .ge{margin-top:10px;font-size:14px;color:var(--mut);font-style:italic} .pop .ppm ul{margin:0;padding-left:18px} .pop .ppm li{margin:4px 0}
 /* The Blueprint QOD (AJ 11/11) */
 .pop .ppc.qod{border-color:var(--orange);background:linear-gradient(175deg,#fff4ec,var(--card) 60%)}
 .qod .qmk{font-family:Georgia,serif;font-size:54px;line-height:1;color:var(--orange);opacity:.5;height:34px;margin-top:12px}
@@ -209,6 +214,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- TODAY -->
   <section id="vToday" hidden>
+    <div class="card gw" id="gwCard" hidden><div class="lbl">🙏 Gratitude Sunday</div><h3>The Gratitude <i>Wall.</i></h3>
+      <div class="gs">What our family is grateful for today.</div>
+      <button class="btn" id="gwShare" type="button" style="margin-top:12px">✍️ Share what you&rsquo;re grateful for</button>
+      <div class="gl" id="gwList"></div></div>
     <div class="card nt" id="ntCard" hidden><div class="lbl">🔔 Turn on notifications</div><div id="ntBody"></div></div>
     <div class="card fb" id="fbCard" hidden><div class="lbl" id="fbK">Step 1 · Before your first send</div>
       <h3>Join the IGNYT Blueprint Facebook group</h3>
@@ -335,6 +344,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button class="btn" id="wnOk" type="button">Got it</button></div></div>
 <div class="pop" id="pop" hidden><div class="ppc"><div class="ppk" id="popK">Prospect update</div><div class="ppt" id="popT"></div><div class="ppb" id="popB"></div><div class="ppm" id="popMore"></div>
   <button class="btn" id="popGo" type="button">👥 Follow up now</button><button class="btn ghost" id="popOk" type="button">Got it</button></div></div>
+<div class="pop" id="grPop" hidden style="z-index:86"><div class="ppc qod"><div class="ppk">Gratitude Sunday</div>
+  <div style="font-size:44px;margin-top:10px">🙏</div><div class="ppt">What are you grateful for today?</div>
+  <div class="ppb">It goes on the Gratitude Wall for the whole family to see this Sunday.</div>
+  <textarea id="grTx" maxlength="280" rows="4" placeholder="Today I'm grateful for…" style="margin-top:12px;resize:none;text-align:left"></textarea>
+  <button class="btn" id="grGo" type="button">Share on the Gratitude Wall</button><button class="btn ghost" id="grNo" type="button" style="border:0;margin-top:4px">Maybe later</button></div></div>
 <div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
   <div class="qmk">“</div><div class="qtx" id="qodT"></div><div class="qrule"></div><div class="qwho" id="qodW"></div>
   <div class="qrow"><button class="btn ghost" id="qodShare" type="button">📤 Share</button><button class="btn" id="qodOk" type="button">Let’s go 🔥</button></div></div></div>
@@ -678,7 +692,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
@@ -751,9 +765,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-14e';
+const APP_V = '2026-11-15a';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["The training video is now called <b>The Blueprint App Training</b>.", "Rewatch it any time: scroll to <b>Training videos</b> at the bottom of the app for <b>The Blueprint App Training</b> and <b>The Blueprint Launch Video</b>."];
+const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for. It shows on the new <b>Gratitude Wall</b> at the top of Today for the whole family to see."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
@@ -791,6 +805,22 @@ $('popGo').onclick = () => { $('pop').hidden = true; const k = (popA && popA.kin
 
 // The Blueprint QOD (AJ 11/11): same quote for the whole team, once a day, a few seconds after the first open of that day.
 let qodT = null;
+// AJ 11/15: Gratitude Sunday. Wall shows on Sundays only (member's own date); a one-time prompt pops up each Sunday until they share.
+let grT = null;
+function renderGratitude() { const g = me && me.gratitude, c = $('gwCard'); if (!g || !g.sunday) { c.hidden = true; return; }
+  c.hidden = false; $('gwShare').textContent = g.mine ? '✏️ Edit what I shared' : '✍️ Share what you’re grateful for';
+  $('gwList').innerHTML = g.wall.length ? g.wall.map(p => `<div class="gp"><div class="gn">${esc(p.name)}<span>${ago(p.at)}</span>${me.user.admin ? `<button class="gx" data-id="${p.id}">Remove</button>` : ''}</div><div class="gt">${esc(p.text)}</div></div>`).join('')
+    : '<div class="ge">Be the first to share today 🙏</div>';
+  $('gwList').querySelectorAll('.gx').forEach(b => b.onclick = async () => { if (!confirm('Remove this post from the Gratitude Wall?')) return;
+    try { me = await api('/admin/gratitude/hide', { id: b.dataset.id }); render(); toast('Removed'); } catch (x) { toast(x.message); } }); }
+function openGrat() { const g = me && me.gratitude; if (!g || !g.sunday) return; $('grTx').value = g.mine || ''; $('grPop').hidden = false; }
+function noticeGrat() { const g = me && me.gratitude; if (!g || !g.sunday || g.mine || grT || me.user.trainNeeded || localStorage.getItem('ig5_gr_day') === g.day) return;
+  grT = setTimeout(function show() {
+    if (!$('pop').hidden || !$('qod').hidden || !$('vg').hidden || !$('wnPop').hidden || !$('updPop').hidden || !$('sendSheet').hidden || !$('sheet').hidden) { grT = setTimeout(show, 4000); return; }
+    localStorage.setItem('ig5_gr_day', g.day); grT = null; openGrat(); }, 7000); }
+$('gwShare').onclick = openGrat; $('grNo').onclick = () => { $('grPop').hidden = true; };
+$('grGo').onclick = async () => { const t = $('grTx').value.trim(); if (t.length < 3) { toast('Tell us what you’re grateful for'); return; }
+  $('grGo').disabled = true; try { me = await api('/gratitude', { text: t }); $('grPop').hidden = true; render(); toast('On the Gratitude Wall 🙏'); } catch (x) { toast(x.message); } $('grGo').disabled = false; };
 function noticeQod() { const q = me && me.qod; if (!q || qodT || localStorage.getItem('ig5_qod_day') === q.day) return;
   qodT = setTimeout(function show() {
     if (!$('pop').hidden || !$('sendSheet').hidden || !$('sheet').hidden) { qodT = setTimeout(show, 4000); return; }   // wait out any other pop-up
