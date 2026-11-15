@@ -307,7 +307,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <input id="aPq" placeholder="Prospect name or phone" style="margin-top:10px"><div id="aPlist" style="margin-top:8px"></div></div>
   </section>
 
-  <div class="foot" id="foot" hidden><div class="card acct" id="acct"><div class="lbl">Your account</div>
+  <div class="foot" id="foot" hidden><div class="card" id="vids"><div class="lbl">Training videos</div>
+    <button class="btn ghost" id="rwApp" type="button">▶️ Watch the app training again</button>
+    <button class="btn ghost" id="rwLaunch" type="button">▶️ Watch the launch video again</button></div>
+  <div class="card acct" id="acct"><div class="lbl">Your account</div>
     <div class="who" id="acWho"></div><div class="tz" id="tzNote"></div>
     <button class="btn ghost" id="acUpd" type="button">🔄 Get the latest update</button>
     <button class="btn out" id="logout" type="button">Sign out</button></div></div>
@@ -685,14 +688,15 @@ const VIDS = {
 };
 let vgHls = null;
 function loadHls() { return window.Hls ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
-async function openVideo(which, after) {
+async function openVideo(which, after, replay) {   // AJ 11/14: replay = free rewatch from the Training videos card
   const V = VIDS[which], url = which === 'app' ? me.user.trainUrl : me.user.launchUrl, v = $('vgV');
   if (!url) return after && after();
   $('vgK').textContent = V.k; $('vgT').innerHTML = V.t; $('vgS').textContent = V.s; $('vgB').style.width = '0';
   $('vgL').textContent = 'Tap play to start'; $('vgGo').disabled = true; $('vgGo').textContent = 'Watch to the end to continue';
+  if (replay) { $('vgK').textContent = 'Watch again'; $('vgS').textContent = 'Skip ahead, rewind or close it any time.'; $('vgL').textContent = 'Tap play to start'; $('vgGo').disabled = false; $('vgGo').textContent = 'Close'; }
   $('vg').hidden = false; document.body.style.overflow = 'hidden';
   if (vgHls) { vgHls.destroy(); vgHls = null; }
-  const key = 'ig5_vid_' + which + '_' + url; let maxT = +localStorage.getItem(key) || 0, done = false;
+  const key = 'ig5_vid_' + which + '_' + url; let maxT = replay ? 0 : (+localStorage.getItem(key) || 0), done = !!replay;
   if (/\.m3u8(\?|$)/.test(url) && !v.canPlayType('application/vnd.apple.mpegurl')) {
     try { await loadHls(); vgHls = new Hls({ startPosition: maxT }); vgHls.loadSource(url); vgHls.attachMedia(v); } catch { v.src = url; }
   } else v.src = url;
@@ -701,6 +705,10 @@ async function openVideo(which, after) {
   const finish = async () => { if (done) return; done = true;
     $('vgB').style.width = '100%'; $('vgL').textContent = 'Done ✓'; $('vgGo').disabled = false; $('vgGo').textContent = V.go;
     try { me = await api('/trained', { v: which }); } catch (x) { done = false; $('vgL').textContent = x.message + ' Tap play to try again.'; $('vgGo').disabled = true; } };
+  if (replay) { v.onloadedmetadata = null; v.onseeking = null; v.onratechange = null; v.onended = null;
+    v.ontimeupdate = () => { const d = v.duration || 0; if (d) { $('vgB').style.width = (100 * v.currentTime / d) + '%'; $('vgL').textContent = `${mmss(Math.max(0, d - v.currentTime))} left`; } };
+    $('vgGo').onclick = () => { v.pause(); $('vg').hidden = true; document.body.style.overflow = ''; };
+    v.play().catch(() => {}); return; }
   v.onloadedmetadata = () => { if (maxT > 1 && maxT < v.duration - 2) v.currentTime = maxT; };
   v.ontimeupdate = () => { if (v.seeking) return; const t = v.currentTime, d = v.duration || 0;
     if (t > maxT && t - maxT < 4) { maxT = t; localStorage.setItem(key, String(Math.floor(maxT))); }
@@ -739,7 +747,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-14a';
+const APP_V = '2026-11-14b';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 // AJ 11/13: a new release pops up in the middle of the screen (banner stays as a backup). "Later" hides it for 10 min, then it comes back.
 let updLater = 0;
@@ -747,6 +755,7 @@ async function checkUpd() { try { const r = await fetch('/blueprint/version.json
   $('upd').hidden = !nu; $('updPop').hidden = !nu || Date.now() - updLater < 10 * 60 * 1000; } catch {} }
 $('updGo').onclick = freshReload; $('updLater').onclick = () => { updLater = Date.now(); $('updPop').hidden = true; };
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
+$('rwApp').onclick = () => me && openVideo('app', null, true); $('rwLaunch').onclick = () => me && openVideo('launch', null, true);
 $('meBtn').onclick = () => $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' });
 checkUpd(); document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpd(); }); setInterval(checkUpd, 2 * 60 * 1000);
 
