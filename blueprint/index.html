@@ -308,7 +308,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
   </section>
 
   <div class="foot" id="foot" hidden><div class="card" id="vids"><div class="lbl">Training videos</div>
-    <button class="btn ghost" id="rwApp" type="button">▶️ The App Training</button>
+    <button class="btn ghost" id="rwApp" type="button">▶️ The Blueprint App Training</button>
     <button class="btn ghost" id="rwLaunch" type="button">▶️ The Blueprint Launch Video</button></div>
   <div class="card acct" id="acct"><div class="lbl">Your account</div>
     <div class="who" id="acWho"></div><div class="tz" id="tzNote"></div>
@@ -687,7 +687,7 @@ function render() {
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = b.dataset.v; document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b)); if (view === 'Board') board = null; show(); window.scrollTo(0, 0); });
 // ---- required videos (AJ 11/13). Can't skip ahead: seeking past what they've watched snaps back. Unlocks only at the end.
 const VIDS = {
-  app: { k: 'Welcome to the Blueprint', t: 'How to use <i>the app.</i>', s: 'Everything about the app, in one video. Watch it all the way through, then tap the button below to start.', go: 'I understand and I\u2019m ready to launch the Blueprint' },
+  app: { k: 'Welcome to the Blueprint', t: 'The Blueprint <i>App Training.</i>', s: 'Everything about the app, in one video. Watch it all the way through, then tap the button below to start.', go: 'I understand and I\u2019m ready to launch the Blueprint' },
   launch: { k: 'Before your first send', t: 'The Blueprint <i>Launch Video.</i>', s: 'Why this business matters and how The Blueprint works. Watch it all the way through, then send your first one.', go: 'Send my first one 🔥' },
 };
 let vgHls = null;
@@ -751,11 +751,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-14d';
+const APP_V = '2026-11-14e';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ['Rewatch any time: scroll to <b>Training videos</b> at the bottom of the app for <b>The App Training</b> and <b>The Blueprint Launch Video</b>. Skip ahead, rewind or close whenever you like.',
-  'New members watch The App Training first, then tap <b>“I understand and I’m ready to launch the Blueprint”</b> to open the app.',
-  'Update pop-ups now tell you what changed.'];
+const APP_NOTES = ["The training video is now called <b>The Blueprint App Training</b>.", "Rewatch it any time: scroll to <b>Training videos</b> at the bottom of the app for <b>The Blueprint App Training</b> and <b>The Blueprint Launch Video</b>."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
