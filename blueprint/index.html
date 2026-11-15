@@ -765,9 +765,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-15b';
+const APP_V = '2026-11-15c';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for (200 characters or less). It shows on the <b>Gratitude Wall</b> at the top of Today for the whole family to see."];
+const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for (200 characters or less) on the <b>Gratitude Wall</b> at the top of Today.", "<b>Real time:</b> when someone shares, the whole family gets it on their phone and the wall updates by itself."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
@@ -806,8 +806,11 @@ $('popGo').onclick = () => { $('pop').hidden = true; const k = (popA && popA.kin
 // The Blueprint QOD (AJ 11/11): same quote for the whole team, once a day, a few seconds after the first open of that day.
 let qodT = null;
 // AJ 11/15: Gratitude Sunday. Wall shows on Sundays only (member's own date); a one-time prompt pops up each Sunday until they share.
-let grT = null;
+let grT = null, grTop = null;
 function renderGratitude() { const g = me && me.gratitude, c = $('gwCard'); if (!g || !g.sunday) { c.hidden = true; return; }
+  const top = g.wall[0];   // AJ 11/15: real time. Someone new posted while the app is open, so let them know
+  if (top && grTop !== null && top.id !== grTop && top.name !== me.user.name) toast(`🙏 New on the Gratitude Wall: ${top.name.split(' ')[0]}`);
+  grTop = top ? top.id : 0;
   c.hidden = false; $('gwShare').textContent = g.mine ? '✏️ Edit what I shared' : '✍️ Share what you’re grateful for';
   $('gwList').innerHTML = g.wall.length ? g.wall.map(p => `<div class="gp"><div class="gn">${esc(p.name)}<span>${ago(p.at)}</span>${me.user.admin ? `<button class="gx" data-id="${p.id}">Remove</button>` : ''}</div><div class="gt">${esc(p.text)}</div></div>`).join('')
     : '<div class="ge">Be the first to share today 🙏</div>';
