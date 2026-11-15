@@ -308,8 +308,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
   </section>
 
   <div class="foot" id="foot" hidden><div class="card" id="vids"><div class="lbl">Training videos</div>
-    <button class="btn ghost" id="rwApp" type="button">▶️ Watch the app training again</button>
-    <button class="btn ghost" id="rwLaunch" type="button">▶️ Watch the launch video again</button></div>
+    <button class="btn ghost" id="rwApp" type="button">▶️ The App Training</button>
+    <button class="btn ghost" id="rwLaunch" type="button">▶️ The Blueprint Launch Video</button></div>
   <div class="card acct" id="acct"><div class="lbl">Your account</div>
     <div class="who" id="acWho"></div><div class="tz" id="tzNote"></div>
     <button class="btn ghost" id="acUpd" type="button">🔄 Get the latest update</button>
@@ -684,7 +684,7 @@ document.querySelectorAll('nav button').forEach(b => b.onclick = () => { view = 
 // ---- required videos (AJ 11/13). Can't skip ahead: seeking past what they've watched snaps back. Unlocks only at the end.
 const VIDS = {
   app: { k: 'Welcome to the Blueprint', t: 'How to use <i>the app.</i>', s: 'Everything about the app, in one video. Watch it all the way through, then tap the button below to start.', go: 'I understand and I\u2019m ready to launch the Blueprint' },
-  launch: { k: 'Before your first send', t: 'The Blueprint <i>launch.</i>', s: 'Why this business matters and how The Blueprint works. Watch it all the way through, then send your first one.', go: 'Send my first one 🔥' },
+  launch: { k: 'Before your first send', t: 'The Blueprint <i>Launch Video.</i>', s: 'Why this business matters and how The Blueprint works. Watch it all the way through, then send your first one.', go: 'Send my first one 🔥' },
 };
 let vgHls = null;
 function loadHls() { return window.Hls ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
@@ -747,7 +747,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-14b';
+const APP_V = '2026-11-14c';
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 // AJ 11/13: a new release pops up in the middle of the screen (banner stays as a backup). "Later" hides it for 10 min, then it comes back.
 let updLater = 0;
