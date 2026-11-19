@@ -669,7 +669,7 @@ $('aQ').oninput = () => renderAdmin();
 // AJ 11/19: rank-up flyer maker (dark style, approved 11/19). Background art is pre-rendered per rank in /blueprint/flyers/;
 // the photo + name are drawn here on a canvas, so it works offline on the phone and nothing is uploaded.
 const FLY = { ph: { x: 330, y: 210, d: 420 }, cy: 743, max: 940 }, fBg = {}; let fImg = null, fBusy = false;
-const fLoad = r => fBg[r] || (fBg[r] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { delete fBg[r]; no(new Error('Could not load the flyer art. Check your connection.')); }; i.src = '/blueprint/flyers/' + r + '.jpg?v=1'; }));
+const fLoad = r => fBg[r] || (fBg[r] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { delete fBg[r]; no(new Error('Could not load the flyer art. Check your connection.')); }; i.src = '/blueprint/flyers/' + r + '.jpg?v=2'; }));
 async function fDraw() {
   const c = $('fCv'), x = c.getContext('2d'), r = $('fRank').value; let bg;
   try { bg = await fLoad(r); } catch (e) { $('fOut').textContent = e.message; return; }
@@ -680,7 +680,8 @@ async function fDraw() {
     x.drawImage(fImg, px - (w - d) * ($('fX').value / 100), py - (h - d) * ($('fY').value / 100), w, h); x.restore(); }
   const raw = $('fName').value.trim(), name = (raw || 'Their name').toUpperCase();
   const font = f => `900 ${f}px "Helvetica Neue", Helvetica, Arial, sans-serif`; let fs = 74;
-  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = raw ? '#fff' : 'rgba(255,255,255,.3)';
+  x.textAlign = 'center'; x.textBaseline = 'middle'; const lt = r === 'ignyt5';   // AJ 11/19: IGNYT 5 uses the bright (light) design, so the name is dark ink
+  x.fillStyle = lt ? (raw ? '#16120f' : 'rgba(22,18,15,.3)') : (raw ? '#fff' : 'rgba(255,255,255,.3)');
   if ('letterSpacing' in x) x.letterSpacing = '-1.5px';
   x.font = font(fs); while (x.measureText(name).width > FLY.max && fs > 36) { fs -= 2; x.font = font(fs); }
   x.fillText(name, 540, FLY.cy + 2);
@@ -815,7 +816,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19a';
+const APP_V = '2026-11-19b';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> new tools for team leaders. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
