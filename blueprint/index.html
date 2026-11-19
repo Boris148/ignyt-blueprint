@@ -35,6 +35,7 @@ h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-to
 .prog{text-align:center;color:var(--mut);font-size:14px;margin-top:10px} .prog b{color:var(--txt)}
 .done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--goldt);font-weight:700;margin-top:4px}
 .fl input[type=range]{padding:0;background:none;border:0;accent-color:var(--orange);margin:4px 0 10px} .fl .rl{font-size:13px;font-weight:700;color:var(--mut,#8b837b);margin-top:6px}
+.ph select{flex:0 0 auto;width:auto;max-width:112px;padding:14px 6px;font-size:15px} .cchint{font-size:12px;color:var(--mut,#8b837b);margin-top:6px}
 input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
@@ -239,7 +240,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <div id="progress"></div>
       <form id="fAdd">
         <div class="f"><input id="aName" placeholder="Their name" maxlength="60" autocomplete="off"></div>
-        <div class="f ph"><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div>
+        <div class="f ph"><select id="aCc" aria-label="Country code"></select><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div><div class="cchint" id="aCcHint">Pick their country, then type their number. Or paste it with + and the country code.</div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Product</button><button type="button" data-k="partner" class="p">Business</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
         <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
@@ -453,7 +454,7 @@ $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = ''
   if (!me.user.fbJoined && me.total === 0 && !fbNudged) { fbNudged = true; $('fbSheet').hidden = false; return; }
   $('aBtn').disabled = true;
   try { const before = me.todayList.length, name = $('aName').value.trim();
-    me = await api('/exposure', { prospect: name, phone: $('aPhone').value, kind });
+    me = await api('/exposure', { prospect: name, phone: fullPhone(), kind });
     $('aName').value = ''; $('aPhone').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
     if (before === me.perDay - 1) { confetti(); board = null; }
     render(); openSend(name, me.sent, before === me.perDay - 1);
@@ -530,6 +531,20 @@ function noticeSeen() { let known; try { known = JSON.parse(localStorage.getItem
   try { localStorage.setItem('ig5_seen', JSON.stringify(seen.map(x => x.id))); } catch {} }
 // ---- Push notifications ----
 const PUSH = { sub: null, ready: false };
+
+// AJ 11/19: international prospects in every market. The country picker sets the code; a number typed with + overrides it.
+const CC = [['US','🇺🇸',1],['CA','🇨🇦',1],['MY','🇲🇾',60],['SG','🇸🇬',65],['NO','🇳🇴',47],['SE','🇸🇪',46],['DK','🇩🇰',45],['FI','🇫🇮',358],['NG','🇳🇬',234],['GH','🇬🇭',233],['KE','🇰🇪',254],['ZA','🇿🇦',27],['GB','🇬🇧',44],['IE','🇮🇪',353],['IT','🇮🇹',39],['GR','🇬🇷',30],['DE','🇩🇪',49],['FR','🇫🇷',33],['ES','🇪🇸',34],['PT','🇵🇹',351],['NL','🇳🇱',31],['CZ','🇨🇿',420],['PL','🇵🇱',48],['MX','🇲🇽',52],['DO','🇩🇴',1],['PR','🇵🇷',1],['CO','🇨🇴',57],['BR','🇧🇷',55],['AU','🇦🇺',61],['NZ','🇳🇿',64],['JP','🇯🇵',81],['VN','🇻🇳',84],['PH','🇵🇭',63],['ID','🇮🇩',62],['TH','🇹🇭',66],['TW','🇹🇼',886],['HK','🇭🇰',852],['CN','🇨🇳',86],['IN','🇮🇳',91],['AE','🇦🇪',971]];
+const TZ_CC = { 'Asia/Kuala_Lumpur':'MY','Asia/Kuching':'MY','Asia/Singapore':'SG','Europe/Oslo':'NO','Europe/Stockholm':'SE','Europe/Copenhagen':'DK','Europe/Helsinki':'FI','Africa/Lagos':'NG','Africa/Accra':'GH','Africa/Nairobi':'KE','Africa/Johannesburg':'ZA','Europe/London':'GB','Europe/Dublin':'IE','Europe/Rome':'IT','Europe/Athens':'GR','Europe/Berlin':'DE','Europe/Paris':'FR','Europe/Madrid':'ES','Europe/Lisbon':'PT','Europe/Amsterdam':'NL','Europe/Prague':'CZ','Europe/Warsaw':'PL','America/Mexico_City':'MX','America/Santo_Domingo':'DO','America/Puerto_Rico':'PR','America/Bogota':'CO','America/Sao_Paulo':'BR','America/Toronto':'CA','America/Vancouver':'CA','Australia/Perth':'AU','Australia/Sydney':'AU','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Pacific/Auckland':'NZ','Asia/Tokyo':'JP','Asia/Ho_Chi_Minh':'VN','Asia/Manila':'PH','Asia/Jakarta':'ID','Asia/Bangkok':'TH','Asia/Taipei':'TW','Asia/Hong_Kong':'HK','Asia/Shanghai':'CN','Asia/Kolkata':'IN','Asia/Dubai':'AE' };
+$('aCc').innerHTML = CC.map(([k, f, c]) => `<option value="${k}">${f} +${c}</option>`).join('');
+let ccSet = false;
+function ccDefault() { if (ccSet || !me) return; ccSet = true;
+  const k = localStorage.getItem('ig5_cc') || TZ_CC[me.user.tz] || 'US'; $('aCc').value = CC.some(x => x[0] === k) ? k : 'US'; }
+$('aCc').onchange = () => localStorage.setItem('ig5_cc', $('aCc').value);
+function fullPhone() { const raw = $('aPhone').value.trim(); if (raw.startsWith('+') || raw.startsWith('00')) return '+' + raw.replace(/^00/, '').replace(/\D/g, '');
+  const c = (CC.find(x => x[0] === $('aCc').value) || CC[0])[2], d = raw.replace(/\D/g, '');
+  if (c === 1) return d;   // North America: the server checks it as a US/Canada number
+  return '+' + c + (c === 39 ? d : d.replace(/^0+/, ''));   // drop the local leading 0 (Italy keeps it)
+}
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -744,6 +759,7 @@ function render() {
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
   noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
   $('navAdmin').hidden = !me.user.admin; if (view === 'Admin' && !me.user.admin) view = 'Today';
@@ -816,9 +832,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19b';
+const APP_V = '2026-11-19c';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Behind the scenes:</b> new tools for team leaders. Nothing changes in how you use the app."];
+const APP_NOTES = ["<b>International numbers 🌍</b> Next to their mobile number, pick their country, then type the number the way they gave it to you. You can also paste a number that starts with + and the country code."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
