@@ -34,6 +34,7 @@ h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-to
 .c.f.p{border-color:var(--gold);background:radial-gradient(circle at 35% 30%,#ffd27a,#ffb23e 60%,#c47a10);color:#2a1700}
 .prog{text-align:center;color:var(--mut);font-size:14px;margin-top:10px} .prog b{color:var(--txt)}
 .done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--goldt);font-weight:700;margin-top:4px}
+.fl input[type=range]{padding:0;background:none;border:0;accent-color:var(--orange);margin:4px 0 10px} .fl .rl{font-size:13px;font-weight:700;color:var(--mut,#8b837b);margin-top:6px}
 input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
@@ -305,6 +306,17 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn ghost" id="bTest" type="button" style="flex:1">Send test to me</button><button class="btn" id="bSend" type="button" style="flex:1">Send to everyone</button></div>
       <p class="sub" id="bOut" style="font-size:13px;margin-top:10px;font-weight:700"></p>
     </div>
+    <div class="card fl"><div class="lbl">🏆 Rank-up flyer</div>
+      <p class="sub" style="font-size:13px;margin:6px 0 12px">Pick the rank, type their name and add their photo. The flyer is made right here on your phone, ready to post.</p>
+      <select id="fRank"><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option><option value="ignyt5">IGNYT 5</option></select>
+      <input id="fName" maxlength="40" placeholder="Their full name" style="margin-top:10px" autocomplete="off">
+      <label class="btn ghost" style="display:block;text-align:center;margin-top:10px;cursor:pointer">📷 <span id="fPl">Choose their photo</span><input id="fPhoto" type="file" accept="image/*" hidden></label>
+      <div id="fAdj" hidden style="margin-top:8px"><div class="rl">Zoom</div><input type="range" id="fZoom" min="100" max="300" value="115">
+        <div class="rl">Move up / down</div><input type="range" id="fY" min="0" max="100" value="30">
+        <div class="rl">Move left / right</div><input type="range" id="fX" min="0" max="100" value="50"></div>
+      <canvas id="fCv" width="1080" height="1350" style="width:100%;border-radius:12px;margin-top:10px;display:block;background:#1a1410"></canvas>
+      <button class="btn" id="fSave" type="button" style="margin-top:10px;width:100%">Save or share the flyer</button>
+      <p class="sub" id="fOut" style="font-size:13px;margin-top:8px;font-weight:700"></p></div>
     <div class="card"><div class="lbl">The team</div><div id="aKpi" style="margin-top:8px"></div>
       <input id="aQ" placeholder="Search name or sponsor" style="margin-top:10px"><div id="aList" style="margin-top:8px"></div>
       <a class="sub" href="/blueprint/admin.html" target="_blank" style="display:block;margin-top:10px;font-size:13px;font-weight:700;color:var(--orange)">Open the full dashboard (table + CSV) →</a></div>
@@ -646,6 +658,7 @@ function renderPeople() {
 // ---- admin tab
 let aRows = null;
 async function renderAdmin() {
+  fDraw();
   if (!aRows) { $('aList').innerHTML = '<p class="sub">Loading…</p>'; try { aRows = await api('/admin'); } catch (x) { $('aList').innerHTML = `<p class="sub">${esc(x.message)}</p>`; return; } }
   const S = k => aRows.reduce((a, r) => a + (+r[k] || 0), 0);
   $('aKpi').innerHTML = `<p class="sub" style="font-size:13px"><b>${aRows.length}</b> members · <b>${aRows.filter(r => r.doneToday).length}</b> hit 5/5 today · <b>${S('total')}</b> sent · <b>${S('customers')}</b> customers · <b>${S('partners')}</b> brand partners</p>`;
@@ -653,6 +666,43 @@ async function renderAdmin() {
   $('aList').innerHTML = xs.map(r => `<div class="it"><span class="dot ${r.doneToday ? '' : 'p'}"></span><span class="nm">${esc(r.name)}<span class="k">${esc(r.sponsor)}${r.invitedBy ? ' · invited by ' + esc(r.invitedBy) : ''} · 🔥 ${r.streak} · ${r.total} sent · ${r.customers} cust · ${r.partners} BP</span></span>${r.admin ? '' : `<button class="btn ghost" type="button" onclick="delMember('${esc(r.id)}')" style="width:auto;margin:0;padding:8px 12px;font-size:13px;color:var(--orange);border-color:var(--orange)">Remove</button>`}</div>`).join('') || '<p class="sub">No one matches.</p>';
 }
 $('aQ').oninput = () => renderAdmin();
+// AJ 11/19: rank-up flyer maker (dark style, approved 11/19). Background art is pre-rendered per rank in /blueprint/flyers/;
+// the photo + name are drawn here on a canvas, so it works offline on the phone and nothing is uploaded.
+const FLY = { ph: { x: 330, y: 210, d: 420 }, cy: 743, max: 940 }, fBg = {}; let fImg = null, fBusy = false;
+const fLoad = r => fBg[r] || (fBg[r] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { delete fBg[r]; no(new Error('Could not load the flyer art. Check your connection.')); }; i.src = '/blueprint/flyers/' + r + '.jpg?v=1'; }));
+async function fDraw() {
+  const c = $('fCv'), x = c.getContext('2d'), r = $('fRank').value; let bg;
+  try { bg = await fLoad(r); } catch (e) { $('fOut').textContent = e.message; return; }
+  x.clearRect(0, 0, 1080, 1350); x.drawImage(bg, 0, 0, 1080, 1350);
+  const { x: px, y: py, d } = FLY.ph;
+  if (fImg) { x.save(); x.beginPath(); x.arc(px + d / 2, py + d / 2, d / 2, 0, Math.PI * 2); x.closePath(); x.clip();
+    const z = $('fZoom').value / 100, sc = Math.max(d / fImg.width, d / fImg.height) * z, w = fImg.width * sc, h = fImg.height * sc;
+    x.drawImage(fImg, px - (w - d) * ($('fX').value / 100), py - (h - d) * ($('fY').value / 100), w, h); x.restore(); }
+  const raw = $('fName').value.trim(), name = (raw || 'Their name').toUpperCase();
+  const font = f => `900 ${f}px "Helvetica Neue", Helvetica, Arial, sans-serif`; let fs = 74;
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = raw ? '#fff' : 'rgba(255,255,255,.3)';
+  if ('letterSpacing' in x) x.letterSpacing = '-1.5px';
+  x.font = font(fs); while (x.measureText(name).width > FLY.max && fs > 36) { fs -= 2; x.font = font(fs); }
+  x.fillText(name, 540, FLY.cy + 2);
+  if ('letterSpacing' in x) x.letterSpacing = '0px';
+}
+$('fRank').onchange = $('fName').oninput = $('fZoom').oninput = $('fX').oninput = $('fY').oninput = () => fDraw();
+$('fPhoto').onchange = e => { const f = e.target.files && e.target.files[0]; if (!f) return;
+  const u = URL.createObjectURL(f), i = new Image();
+  i.onload = () => { fImg = i; $('fAdj').hidden = false; $('fPl').textContent = 'Change photo'; $('fZoom').value = 115; $('fX').value = 50; $('fY').value = 30; fDraw(); };
+  i.onerror = () => { $('fOut').textContent = 'That photo could not be opened. Try a JPG or a screenshot of it.'; };
+  i.src = u; };
+$('fSave').onclick = async () => { if (fBusy) return; const nm = $('fName').value.trim();
+  if (!nm) return $('fOut').textContent = 'Type their name first.';
+  if (!fImg) return $('fOut').textContent = 'Add their photo first.';
+  fBusy = true; await fDraw();
+  const r = $('fRank').selectedOptions[0].textContent, fn = ('Blueprint ' + r + ' ' + nm).replace(/[^\w ]+/g, '').trim().replace(/\s+/g, '-') + '.jpg';
+  $('fCv').toBlob(async b => { fBusy = false; if (!b) return $('fOut').textContent = 'Could not make the image. Try again.';
+    const file = new File([b], fn, { type: 'image/jpeg' });
+    try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); $('fOut').textContent = 'Done ✓'; return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fn; document.body.appendChild(a); a.click(); a.remove();
+    $('fOut').textContent = 'Saved ✓ Check your downloads.'; }, 'image/jpeg', 0.92); };
+
 // AJ 11/10: remove a team member for good (account, sends, streak, devices). Two confirms, because it can't be undone.
 async function delMember(id) { const r = (aRows || []).find(x => x.id === id); if (!r) return;
   if (!confirm(`Remove ${r.name} from the Blueprint app?\n\nThis permanently deletes their account, their ${r.total} sends, their streak and their spot on the leaderboard.`)) return;
@@ -765,9 +815,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-15c';
+const APP_V = '2026-11-19a';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Gratitude Sunday 🙏</b> Every Sunday, share what you’re grateful for (200 characters or less) on the <b>Gratitude Wall</b> at the top of Today.", "<b>Real time:</b> when someone shares, the whole family gets it on their phone and the wall updates by itself."];
+const APP_NOTES = ["<b>Behind the scenes:</b> new tools for team leaders. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
