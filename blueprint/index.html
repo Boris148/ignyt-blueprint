@@ -233,7 +233,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <div class="card rsvp" id="rvCard" hidden><div class="lbl" id="rvK">📅 Coming up</div><h3 id="rvName"></h3><div class="rvw" id="rvWhen"></div>
       <div id="rvAsk"><div class="rvq">Are you going to be there?</div><button class="btn" id="rvGo" type="button">✋ Yes, I&rsquo;ll be there!</button><button class="btn ghost" id="rvNo" type="button" style="margin-top:8px">Can&rsquo;t make it</button></div>
       <div id="rvDone" hidden><div class="rvok">✅ You&rsquo;re going! See you there.</div></div>
-      <div id="rvDecl" hidden><div class="rvno">😔 You can&rsquo;t make this one.</div><button class="btn" id="rvYes2" type="button">Changed your mind? ✋ I&rsquo;ll be there!</button></div>
+      <div id="rvDecl" hidden><div class="rvno">😔 You can&rsquo;t make this one.</div></div>
       <a class="btn" id="rvZoom" href="#" target="_blank" rel="noopener" hidden style="margin-top:10px;background:#2d8cff">🎥 Join on Zoom now</a>
       <div class="rvc" id="rvCount"></div><div class="rvn" id="rvNames" hidden></div></div>
     <div class="card rsvp" id="btCard" hidden><div class="lbl">🧪 Beta test invite</div><h3>AJ picked you.</h3>
@@ -647,7 +647,7 @@ function renderRsvp() { const c = me && me.call, el = $('rvCard'); if (!c) { el.
   $('rvK').textContent = ms <= 0 ? '🔴 Live now' : mins <= 60 ? `⏰ Starts in ${mins} min` : '📅 Coming up';
   $('rvName').textContent = c.name;
   $('rvWhen').textContent = `${day === today ? 'Today' : day} · ${tm}${tz !== 'America/Chicago' ? ' your time (' + ctl + ' Central)' : ' Central'}`;
-  const ans = c.going || c.declined; $('rvAsk').hidden = ans; $('rvDone').hidden = !c.going; $('rvDecl').hidden = !c.declined;   // AJ 11/20: a Yes is final (no change); Can't → Yes still allowed
+  const ans = c.going || c.declined; $('rvAsk').hidden = ans; $('rvDone').hidden = !c.going; $('rvDecl').hidden = !c.declined;   // AJ 11/20: the first answer is final (Yes or Can't), no switching
   $('rvZoom').hidden = !c.url; if (c.url) $('rvZoom').href = c.url;
   $('rvCount').textContent = c.count ? `🙌 ${c.count} ${c.count === 1 ? 'person is' : 'people are'} going` : 'Be the first to RSVP!';
   $('rvNames').hidden = true;   // AJ 11/20: counter only, no names
@@ -656,7 +656,7 @@ async function rsvp(ans) { if (!me || !me.call) return false;
   try { me = await api('/rsvp', { k: me.call.k, ans }); toast(ans === 'no' ? 'Got it. We’ll miss you this time' : '✅ You’re going! See you there'); render(); return true; } catch (x) { toast(x.message); return false; } }
 $('rvGo').onclick = async () => { $('rvGo').disabled = true; await rsvp('yes'); $('rvGo').disabled = false; };
 $('rvNo').onclick = async () => { $('rvNo').disabled = true; await rsvp('no'); $('rvNo').disabled = false; };
-$('rvYes2').onclick = async () => { $('rvYes2').disabled = true; await rsvp('yes'); $('rvYes2').disabled = false; };
+
 // AJ 11/20: Huddle promo pop-up — the flyer in the member's OWN time zone + "Yes, I'll be attending" / "Can't make it". Once per call per phone, until answered.
 let hpT = null;
 function tzLabel(tz) { try { const n = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'long' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName'); return n ? n.value : tz; } catch { return tz; } }
@@ -669,7 +669,8 @@ function fillHuddle() { const c = me.call, tz = me.user.tz || 'America/Chicago',
   $('hpCnt').textContent = c.count ? `🙌 ${c.count} ${c.count === 1 ? 'person is' : 'people are'} going` : 'Be the first to say yes!';
   const ans = c.going || c.declined; $('hpAsk').hidden = ans; $('hpDone').hidden = !ans;
   $('hpDoneT').textContent = c.going ? '✅ You’re going! See you there.' : '😔 Got it. We’ll miss you this time.'; }
-function noticeHuddle(force) { const c = me && me.call; if (!c || !c.promo || hpT || c.at <= Date.now()) return;
+function noticeHuddle(force) { const c = me && me.call; if (force && location.hash === '#huddle') try { history.replaceState(null, '', location.pathname + location.search); } catch {}
+  if (!c || !c.promo || hpT || c.at <= Date.now()) return;
   let seen = ''; try { seen = localStorage.getItem('ig5_hp') || ''; } catch {}
   if (!force && (seen === c.k || c.going || c.declined)) return;
   hpT = setTimeout(function show() { hpT = null;
@@ -1076,7 +1077,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-20d';
+const APP_V = '2026-11-20e';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
@@ -1149,7 +1150,7 @@ $('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
   const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
   try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
   try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#goal') && tok) api('/me').then(d => { me = d; render(); noticeGoal(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#goal') && tok) api('/me').then(d => { me = d; render(); noticeGoal(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#huddle') && tok) api('/me').then(d => { me = d; render(); noticeHuddle(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
