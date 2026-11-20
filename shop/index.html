@@ -69,7 +69,7 @@ section{padding:72px 0}
 .facts small{display:block;margin-top:10px;font-size:12px;color:#555}
 /* offer */
 .offer{background:#fff}
-.packs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px}
+.packs{display:grid;grid-template-columns:minmax(0,400px);justify-content:center;gap:14px;margin-top:36px}
 .pk{position:relative;border:2px solid var(--line);border-radius:20px;padding:18px 16px 18px;display:flex;flex-direction:column;background:var(--sand);cursor:pointer;transition:.15s}
 .pk.on{border-color:var(--or);background:#fff;box-shadow:0 14px 34px rgba(240,90,30,.16)}
 .pk .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;font-size:11px;font-weight:900;letter-spacing:2px;padding:6px 10px;border-radius:999px;white-space:nowrap}
@@ -138,7 +138,7 @@ footer b{color:#fff}
  .hero .w,.sci,.aj{grid-template-columns:1fr}
  .hero .art{order:-1}.hero .art img{max-height:340px}
  .grid3,.sup{grid-template-columns:1fr}
- .packs{grid-template-columns:1fr 1fr}
+ .packs{grid-template-columns:minmax(0,400px)}
  .rev{grid-template-columns:1fr}
  .trust{grid-template-columns:1fr 1fr}
  .aj img{max-width:260px}
@@ -160,7 +160,7 @@ footer b{color:#fff}
   <div class="kick">IGNYT · Metabolic Booster</div>
   <h1>Your 30-second<br>daily <em>wellness ritual.</em></h1>
   <p class="sub">One stick of IGNYT in water. 4,000 mg of patented ProGo<sup>®</sup> bioactive peptides from Norwegian salmon, built to support healthy metabolism, appetite control and steady energy.*</p>
-  <div class="cta"><a class="btn" href="#offer" data-click="hero_cta">Choose my bundle</a><a class="btn ghost" href="#how" data-click="hero_how">How it works</a></div>
+  <div class="cta"><a class="btn" href="#offer" data-click="hero_cta">Get my 1-month supply</a><a class="btn ghost" href="#how" data-click="hero_how">How it works</a></div>
   <div class="trust">
    <div><b>4,000mg</b><span>ProGo® peptides</span></div>
    <div><b>15</b><span>calories a stick</span></div>
@@ -178,7 +178,7 @@ footer b{color:#fff}
  <div class="grid3">
   <div class="card"><div class="n">01</div><h3>Simple enough to keep</h3><p>One stick, 8–16 oz of water, natural cranapple flavor. No blender, no scoop, no counting.</p></div>
   <div class="card"><div class="n">02</div><h3>Backed by real research</h3><p>ProGo® has a decade of research, $50M+ in R&amp;D and published, peer-reviewed studies behind it.*</p></div>
-  <div class="card"><div class="n">03</div><h3>You're not doing it alone</h3><p>Every bundle of 2+ bags includes the 30-Day Blueprint Challenge app and our community to keep you consistent.</p></div>
+  <div class="card"><div class="n">03</div><h3>You're not doing it alone</h3><p>Every order includes the 30-Day Blueprint Challenge app and our community to keep you consistent.</p></div>
  </div>
 </div></section>
 
@@ -227,13 +227,13 @@ footer b{color:#fff}
 
 <section class="offer" id="offer"><div class="w">
  <div style="text-align:center">
-  <div class="kick">Choose your bundle</div>
+  <div class="kick">Your 1-month supply</div>
   <h2>Start your <em>Blueprint.</em></h2>
-  <p class="sub">Most people take 2 sticks a day, so 2 bags = 1 month. The more you start with, the more you save.</p>
+  <p class="sub">Most people take 2 sticks a day, so one 2-bag pack = 1 month.</p>
  </div>
  <div class="packs" id="packs"></div>
  <div class="stack">
-  <h3>🎁 Free with every bundle of 2+ bags</h3>
+  <h3>🎁 Free with every order</h3>
   <div class="row"><div class="ic">📱</div><div><b>The 30-Day Blueprint Challenge app</b><p>A daily check-in, streaks and reminders so your 30 seconds actually happen every day.</p></div></div>
   <div class="row"><div class="ic">🤝</div><div><b>The Blueprint community</b><p>A private group of people doing the same ritual. Share wins, ask questions, stay on track.</p></div></div>
   <div class="row"><div class="ic">🎥</div><div><b>Weekly live wellness call</b><p>Routines, Q&amp;A and guest experts, live on Zoom every week.</p></div></div>
@@ -268,7 +268,7 @@ footer b{color:#fff}
  <h2>Good to know.</h2>
  <details><summary>What is IGNYT?</summary><p>IGNYT is a powdered drink mix by ORYGN. Each stick has 4,000 mg of ProGo®, a patented bioactive peptide from Norwegian Atlantic salmon, plus beet root. It's 15 calories with a natural cranapple flavor.</p></details>
  <details><summary>How do I take it?</summary><p>Mix one stick into 8–16 oz of water. Most people take 2 sticks a day, ideally away from food (about 30 minutes before and after). Always follow the directions on the package.</p></details>
- <details><summary>How long does a bag last?</summary><p>A bag has 30 sticks. At 2 sticks a day that's about 15 days, so 2 bags is one month and 6 bags is three months.</p></details>
+ <details><summary>How long does a bag last?</summary><p>A bag has 30 sticks. At 2 sticks a day that's about 15 days, so the 2-bag pack is one month.</p></details>
  <details><summary>Does it taste fishy?</summary><p>No. It's a light, natural cranapple flavor. It does contain fish (salmon), so skip it if you have a fish allergy.</p></details>
  <details><summary>Is this a drug or an injection?</summary><p>No. IGNYT is a dietary supplement. No needles, no prescription. It is not intended to diagnose, treat, cure or prevent any disease.</p></details>
  <details><summary>Who shouldn't take it?</summary><p>IGNYT is for adults 18+. If you're pregnant, nursing, taking medication or have a medical condition, talk to your doctor first.</p></details>
@@ -282,7 +282,7 @@ footer b{color:#fff}
  <p>Questions? Text or email us and a real person will answer.</p>
 </div></footer>
 
-<div class="sticky" id="sticky"><div class="p" id="stP">4 bags · $299.95<small>Most popular · 2 months</small></div><button class="btn" type="button" id="stBtn">Add to cart</button></div>
+<div class="sticky" id="sticky"><div class="p" id="stP">2 bags · $159.95<small>1 month</small></div><button class="btn" type="button" id="stBtn">Add to cart</button></div>
 <div class="ov" id="ov"></div>
 <aside class="drawer" id="drawer" aria-label="Cart">
  <div class="hd">Your cart <button class="x" id="closeCart" type="button" aria-label="Close">×</button></div>
@@ -298,18 +298,16 @@ footer b{color:#fff}
 // ---- Catalog (prices are ours; edit here + worker PRICES together) ----
 const API = 'https://blueprint-shop.hireboris.workers.dev';
 const CAT = {
- ignyt1:{name:'IGNYT · 1 bag',short:'1 bag',sup:'15 days · 30 sticks',price:84.95,img:'img/p1.webp',bags:1,tag:'',bonus:false},
- ignyt2:{name:'IGNYT · 2 bags',short:'2 bags',sup:'1 month · 60 sticks',price:159.95,img:'img/p2.webp',bags:2,tag:'',bonus:true},
- ignyt4:{name:'IGNYT · 4 bags',short:'4 bags',sup:'2 months · 120 sticks',price:299.95,img:'img/p4.webp',bags:4,tag:'MOST POPULAR',bonus:true},
- ignyt6:{name:'IGNYT · 6 bags',short:'6 bags',sup:'3 months · 180 sticks',price:419.95,img:'img/p6.webp',bags:6,tag:'BEST VALUE',bonus:true}
+ ignyt2:{name:'IGNYT · 2 bags',short:'2 bags',sup:'1 month · 60 sticks',price:159.95,img:'img/p2.webp',bags:2,tag:'',bonus:true}
 };
 const $ = id => document.getElementById(id), $$ = s => [...document.querySelectorAll(s)];
 const money = n => '$' + n.toFixed(2);
 const eid = p => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const track = (ev, data, id) => { try { fbq('track', ev, data, { eventID: id || eid(ev) }); } catch (e) {} };
 let cart = {}; try { cart = JSON.parse(localStorage.getItem('bp_cart') || '{}'); } catch (e) {}
-let pick = 'ignyt4';
-const base = CAT.ignyt1.price;
+Object.keys(cart).forEach(k => { if (!CAT[k] || !(cart[k] > 0)) delete cart[k]; });
+let pick = 'ignyt2';
+const base = CAT.ignyt2.price / CAT.ignyt2.bags;
 function renderPacks() {
  $('packs').innerHTML = Object.entries(CAT).map(([k, p]) => {
   const per = p.price / p.bags, save = base * p.bags - p.price;
@@ -370,7 +368,7 @@ renderCart();
 // ViewContent when the offer is seen; click tracking on CTAs
 let vc = false;
 new IntersectionObserver(es => { if (!vc && es.some(e => e.isIntersecting)) { vc = true;
- track('ViewContent', { content_ids: Object.keys(CAT), content_type: 'product', content_name: 'IGNYT bundles', value: CAT.ignyt4.price, currency: 'USD' }); } }, { threshold: .25 }).observe($('offer'));
+ track('ViewContent', { content_ids: Object.keys(CAT), content_type: 'product', content_name: 'IGNYT 2-pack', value: CAT.ignyt2.price, currency: 'USD' }); } }, { threshold: .25 }).observe($('offer'));
 document.addEventListener('click', e => { const a = e.target.closest('[data-click]'); if (a) try { fbq('trackCustom', 'CTAClick', { cta: a.dataset.click }); } catch (x) {} });
 // Reviews: verified buyers only (served by the shop worker)
 fetch(API + '/reviews').then(r => r.ok ? r.json() : []).then(rs => { if (!rs || !rs.length) return;
