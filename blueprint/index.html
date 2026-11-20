@@ -36,6 +36,7 @@ h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-to
 .done{text-align:center;padding:6px 0 2px} .done .big{font-size:40px;font-weight:800;letter-spacing:-1px} .done .t{color:var(--goldt);font-weight:700;margin-top:4px}
 .fl input[type=range]{padding:0;background:none;border:0;accent-color:var(--orange);margin:4px 0 10px} .fl .rl{font-size:13px;font-weight:700;color:var(--mut,#8b837b);margin-top:6px}
 .ph select{flex:0 0 auto;width:auto;max-width:112px;padding:14px 6px;font-size:15px} .cchint{font-size:12px;color:var(--mut,#8b837b);margin-top:6px}
+.rsvp{border:2px solid var(--orange);background:#fff8f3} .rsvp h3{font-size:22px;font-weight:900;margin-top:4px} .rvw{font-weight:700;color:var(--mut,#8b837b);margin-top:2px;font-size:14px} .rvq{font-weight:800;margin:12px 0 8px} .rvok{font-weight:900;font-size:17px;margin-top:12px;color:#2e7d32} .rvc{margin-top:10px;font-size:13px;font-weight:700;color:var(--mut,#8b837b)} .rvn{margin-top:6px;font-size:12px;color:var(--mut,#8b837b)} .rsvp .btn{display:block;width:100%;text-align:center}
 input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
@@ -216,6 +217,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- TODAY -->
   <section id="vToday" hidden>
+    <div class="card rsvp" id="rvCard" hidden><div class="lbl" id="rvK">📅 Coming up</div><h3 id="rvName"></h3><div class="rvw" id="rvWhen"></div>
+      <div id="rvAsk"><div class="rvq">Are you going to be there?</div><button class="btn" id="rvGo" type="button">✋ Yes, I&rsquo;m going!</button></div>
+      <div id="rvDone" hidden><div class="rvok">✅ You&rsquo;re going! See you there.</div></div>
+      <a class="btn" id="rvZoom" href="#" target="_blank" rel="noopener" hidden style="margin-top:10px;background:#2d8cff">🎥 Join on Zoom now</a>
+      <div class="rvc" id="rvCount"></div><div class="rvn" id="rvNames" hidden></div></div>
     <div class="card gw" id="gwCard" hidden><div class="lbl">🙏 Gratitude Sunday</div><h3>The Gratitude <i>Wall.</i></h3>
       <div class="gs">What our family is grateful for today.</div>
       <button class="btn" id="gwShare" type="button" style="margin-top:12px">✍️ Share what you&rsquo;re grateful for</button>
@@ -545,6 +551,22 @@ function fullPhone() { const raw = $('aPhone').value.trim(); if (raw.startsWith(
   if (c === 1) return d;   // North America: the server checks it as a US/Canada number
   return '+' + c + (c === 39 ? d : d.replace(/^0+/, ''));   // drop the local leading 0 (Italy keeps it)
 }
+
+// AJ 11/19: RSVP for every call ("Are you going? ✋ Yes, I'm going!") — shows 24h before through the first hour of the call.
+function renderRsvp() { const c = me && me.call, el = $('rvCard'); if (!c) { el.hidden = true; return; } el.hidden = false;
+  const ms = c.at - Date.now(), mins = Math.round(ms / 60000), t = new Date(c.at), tz = me.user.tz;
+  const tm = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz }), ctl = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Chicago' });
+  const day = t.toLocaleDateString('en-US', { weekday: 'long', timeZone: tz }), today = new Date().toLocaleDateString('en-US', { weekday: 'long', timeZone: tz });
+  $('rvK').textContent = ms <= 0 ? '🔴 Live now' : mins <= 60 ? `⏰ Starts in ${mins} min` : '📅 Coming up';
+  $('rvName').textContent = c.name;
+  $('rvWhen').textContent = `${day === today ? 'Today' : day} · ${tm}${tz !== 'America/Chicago' ? ' your time (' + ctl + ' Central)' : ' Central'}`;
+  $('rvAsk').hidden = c.going; $('rvDone').hidden = !c.going;
+  $('rvZoom').hidden = !c.url; if (c.url) $('rvZoom').href = c.url;
+  $('rvCount').textContent = c.count ? `🙌 ${c.count} ${c.count === 1 ? 'person is' : 'people are'} going` : 'Be the first to RSVP!';
+  $('rvNames').hidden = !c.names || !c.names.length; if (c.names) $('rvNames').textContent = 'Going: ' + c.names.join(', ');
+}
+$('rvGo').onclick = async () => { if (!me || !me.call) return; $('rvGo').disabled = true;
+  try { me = await api('/rsvp', { k: me.call.k }); toast('✅ You’re going! See you there'); render(); } catch (x) { toast(x.message); } $('rvGo').disabled = false; };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -758,7 +780,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -832,9 +854,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19c';
+const APP_V = '2026-11-19d';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>International numbers 🌍</b> Next to their mobile number, pick their country, then type the number the way they gave it to you. You can also paste a number that starts with + and the country code."];
+const APP_NOTES = ["<b>RSVP for every call ✋</b> When a call is coming up, the top of Today asks if you're going. Tap <b>Yes, I'm going!</b> and the Zoom button shows up 10 minutes before it starts."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
