@@ -136,6 +136,17 @@ a.btn{display:block;text-align:center;text-decoration:none}
 .vg .vbar{height:5px;border-radius:3px;background:#2b2825;margin:14px auto 0;width:100%;max-width:520px;overflow:hidden} .vg .vbar b{display:block;height:100%;width:0;background:var(--orange);transition:width .4s}
 .vg .vt{text-align:center;color:#bdb6ad;font-size:13px;margin-top:8px;font-weight:600}
 .vg .btn{max-width:520px;margin-left:auto;margin-right:auto} .vg .btn:disabled{opacity:.3}
+#hpPop .ppc{padding:0 0 18px;overflow:hidden;width:min(390px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:#fff}
+.hp .hbar{height:7px;background:var(--orange)} .hp .hk{margin-top:22px;font-size:10.5px;letter-spacing:2.5px;font-weight:800;color:var(--orange);text-transform:uppercase}
+.hp h2{margin-top:10px;padding:0 14px;font-size:33px;line-height:1.02;font-weight:200;letter-spacing:-1px;color:#0b0b0d} .hp h2 i{font-family:Georgia,serif;font-weight:400;color:var(--orange)}
+.hp .hr{width:44px;height:3px;background:var(--orange);margin:16px auto 0}
+.hp .hyl{margin-top:16px;font-size:11px;letter-spacing:3px;font-weight:800;color:var(--mut);text-transform:uppercase}
+.hp .htm{font-size:46px;font-weight:800;letter-spacing:-1px;color:#0b0b0d;line-height:1.05;margin-top:4px} .hp .hdy{font-size:17px;font-weight:700;color:#0b0b0d}
+.hp .hzn{font-size:13px;color:var(--mut);margin-top:2px} .hp .hct{margin-top:10px;font-size:13px;font-weight:600;color:#3a3a40}
+.hp .hq{margin-top:12px;font-family:Georgia,serif;font-style:italic;font-size:17px;color:#3a3a40}
+.hp .hz{margin:14px 22px 0;border:1px solid rgba(11,11,13,.14);background:#fdfcfa;padding:10px} .hp .hz .l{font-size:10px;letter-spacing:4px;font-weight:800;color:var(--mut)} .hp .hz b{font-size:22px;letter-spacing:1px}
+.hp .hask{margin:16px 22px 0;font-weight:800;font-size:16px} .hp .btn{display:block;width:calc(100% - 44px);margin:10px 22px 0} .hp .hc{margin-top:8px;font-size:13px;font-weight:700;color:var(--mut)}
+.rvrow{display:flex;gap:8px} .rvrow .btn{flex:1} .rvno{color:var(--mut);font-weight:800;font-size:16px;margin-top:12px}
 .pop[hidden]{display:none} .pop .ppc{background:var(--card);border:2px solid var(--orange);border-radius:22px;padding:24px 20px 16px;width:min(380px,100%);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popin .28s ease-out}
 @keyframes popin{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
 .pop .ppk{font-size:10.5px;letter-spacing:3px;font-weight:800;text-transform:uppercase;color:var(--orange)} .pop .ppt{margin-top:10px;font-size:21px;font-weight:800;line-height:1.25}
@@ -220,8 +231,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <!-- TODAY -->
   <section id="vToday" hidden>
     <div class="card rsvp" id="rvCard" hidden><div class="lbl" id="rvK">📅 Coming up</div><h3 id="rvName"></h3><div class="rvw" id="rvWhen"></div>
-      <div id="rvAsk"><div class="rvq">Are you going to be there?</div><button class="btn" id="rvGo" type="button">✋ Yes, I&rsquo;m going!</button></div>
+      <div id="rvAsk"><div class="rvq">Are you going to be there?</div><button class="btn" id="rvGo" type="button">✋ Yes, I&rsquo;ll be there!</button><button class="btn ghost" id="rvNo" type="button" style="margin-top:8px">Can&rsquo;t make it</button></div>
       <div id="rvDone" hidden><div class="rvok">✅ You&rsquo;re going! See you there.</div></div>
+      <div id="rvDecl" hidden><div class="rvno">😔 You can&rsquo;t make this one.</div></div>
+      <button class="lnk" id="rvChg" type="button" hidden>Change my answer</button>
       <a class="btn" id="rvZoom" href="#" target="_blank" rel="noopener" hidden style="margin-top:10px;background:#2d8cff">🎥 Join on Zoom now</a>
       <div class="rvc" id="rvCount"></div><div class="rvn" id="rvNames" hidden></div></div>
     <div class="card rsvp" id="btCard" hidden><div class="lbl">🧪 Beta test invite</div><h3>AJ picked you.</h3>
@@ -388,6 +401,18 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <div class="ppb">It goes on the Gratitude Wall for the whole family to see this Sunday.</div>
   <textarea id="grTx" maxlength="200" rows="4" placeholder="Today I'm grateful for…" style="margin-top:12px;resize:none;text-align:left"></textarea><div id="grN" style="margin-top:4px;text-align:right;font-size:12px;color:var(--mut)">0 / 200</div>
   <button class="btn" id="grGo" type="button">Share on the Gratitude Wall</button><button class="btn ghost" id="grNo" type="button" style="border:0;margin-top:4px">Maybe later</button></div></div>
+<div class="pop hp" id="hpPop" hidden style="z-index:84"><div class="ppc"><div class="hbar"></div>
+  <div class="hk" id="hpK">Saturday · Family Huddle</div>
+  <h2>The Blueprint <i>Huddle.</i></h2><div class="hr"></div>
+  <div class="hyl">Your time</div><div class="htm" id="hpT"></div><div class="hdy" id="hpD"></div><div class="hzn" id="hpZ"></div>
+  <div class="hct" id="hpC"></div>
+  <div class="hq">One team. One system. One vision.</div>
+  <div class="hz"><div class="l">ZOOM MEETING ID</div><b id="hpId"></b></div>
+  <div id="hpAsk"><div class="hask">Will you be on the call?</div>
+    <button class="btn" id="hpYes" type="button">✋ Yes, I&rsquo;ll be attending!</button>
+    <button class="btn ghost" id="hpNo" type="button">Can&rsquo;t make it</button></div>
+  <div id="hpDone" hidden><div class="hask" id="hpDoneT"></div><button class="btn" id="hpOk" type="button">Done</button></div>
+  <div class="hc" id="hpCnt"></div></div></div>
 <div class="pop" id="qod" hidden><div class="ppc qod"><div class="ppk">The Blueprint QOD</div>
   <div class="qmk">“</div><div class="qtx" id="qodT"></div><div class="qrule"></div><div class="qwho" id="qodW"></div>
   <div class="qrow"><button class="btn ghost" id="qodShare" type="button">📤 Share</button><button class="btn" id="qodOk" type="button">Let’s go 🔥</button></div></div></div>
@@ -623,13 +648,37 @@ function renderRsvp() { const c = me && me.call, el = $('rvCard'); if (!c) { el.
   $('rvK').textContent = ms <= 0 ? '🔴 Live now' : mins <= 60 ? `⏰ Starts in ${mins} min` : '📅 Coming up';
   $('rvName').textContent = c.name;
   $('rvWhen').textContent = `${day === today ? 'Today' : day} · ${tm}${tz !== 'America/Chicago' ? ' your time (' + ctl + ' Central)' : ' Central'}`;
-  $('rvAsk').hidden = c.going; $('rvDone').hidden = !c.going;
+  const ans = c.going || c.declined; $('rvAsk').hidden = ans; $('rvDone').hidden = !c.going; $('rvDecl').hidden = !c.declined; $('rvChg').hidden = !ans || ms <= 0;
   $('rvZoom').hidden = !c.url; if (c.url) $('rvZoom').href = c.url;
   $('rvCount').textContent = c.count ? `🙌 ${c.count} ${c.count === 1 ? 'person is' : 'people are'} going` : 'Be the first to RSVP!';
   $('rvNames').hidden = true;   // AJ 11/20: counter only, no names
 }
-$('rvGo').onclick = async () => { if (!me || !me.call) return; $('rvGo').disabled = true;
-  try { me = await api('/rsvp', { k: me.call.k }); toast('✅ You’re going! See you there'); render(); } catch (x) { toast(x.message); } $('rvGo').disabled = false; };
+async function rsvp(ans) { if (!me || !me.call) return false;
+  try { me = await api('/rsvp', { k: me.call.k, ans }); toast(ans === 'no' ? 'Got it. We’ll miss you this time' : '✅ You’re going! See you there'); render(); return true; } catch (x) { toast(x.message); return false; } }
+$('rvGo').onclick = async () => { $('rvGo').disabled = true; await rsvp('yes'); $('rvGo').disabled = false; };
+$('rvNo').onclick = async () => { $('rvNo').disabled = true; await rsvp('no'); $('rvNo').disabled = false; };
+$('rvChg').onclick = () => { $('rvAsk').hidden = false; $('rvDone').hidden = $('rvDecl').hidden = $('rvChg').hidden = true; };
+// AJ 11/20: Huddle promo pop-up — the flyer in the member's OWN time zone + "Yes, I'll be attending" / "Can't make it". Once per call per phone, until answered.
+let hpT = null;
+function tzLabel(tz) { try { const n = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'long' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName'); return n ? n.value : tz; } catch { return tz; } }
+function fillHuddle() { const c = me.call, tz = me.user.tz || 'America/Chicago', t = new Date(c.at), ctz = 'America/Chicago';
+  const o = z => ({ timeZone: z }), tm = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', ...o(tz) }), dy = t.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', ...o(tz) });
+  $('hpK').textContent = t.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', ...o(ctz) }) + ' · Family Huddle';
+  $('hpT').textContent = tm; $('hpD').textContent = dy; $('hpZ').textContent = tzLabel(tz);
+  $('hpC').textContent = tz === ctz ? '' : `That’s ${t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', ...o(ctz) })} ${t.toLocaleDateString('en-US', { weekday: 'long', ...o(ctz) })} Central`;
+  $('hpId').textContent = (c.zoomId || '').replace(/(\d{3})(\d{3})(\d+)/, '$1 $2 $3');
+  $('hpCnt').textContent = c.count ? `🙌 ${c.count} ${c.count === 1 ? 'person is' : 'people are'} going` : 'Be the first to say yes!';
+  const ans = c.going || c.declined; $('hpAsk').hidden = ans; $('hpDone').hidden = !ans;
+  $('hpDoneT').textContent = c.going ? '✅ You’re going! See you there.' : '😔 Got it. We’ll miss you this time.'; }
+function noticeHuddle(force) { const c = me && me.call; if (!c || !c.promo || hpT || c.at <= Date.now()) return;
+  let seen = ''; try { seen = localStorage.getItem('ig5_hp') || ''; } catch {}
+  if (!force && (seen === c.k || c.going || c.declined)) return;
+  hpT = setTimeout(function show() { hpT = null;
+    if (!$('vg').hidden || me.user.trainNeeded || !$('pop').hidden || !$('sendSheet').hidden || !$('sheet').hidden || !$('qod').hidden || !$('goalSheet').hidden || !$('nightSheet').hidden || !$('updPop').hidden) { hpT = setTimeout(show, 3000); return; }
+    try { localStorage.setItem('ig5_hp', c.k); } catch {} fillHuddle(); $('hpPop').hidden = false; }, force ? 0 : 1500); }
+$('hpYes').onclick = async () => { $('hpYes').disabled = true; if (await rsvp('yes')) fillHuddle(); $('hpYes').disabled = false; };
+$('hpNo').onclick = async () => { $('hpNo').disabled = true; if (await rsvp('no')) fillHuddle(); $('hpNo').disabled = false; };
+$('hpOk').onclick = () => { $('hpPop').hidden = true; }; $('hpPop').onclick = e => { if (e.target === $('hpPop')) $('hpPop').hidden = true; };
 
 // AJ 11/19: in-person QR — one QR per person, good 15 min, counts when the OTHER phone opens it.
 let qrQ = null, qrPoll = null;
@@ -954,7 +1003,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); document.body.dataset.view = view; renderPhoto(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; noticeGoal(goalForce); goalForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); document.body.dataset.view = view; renderPhoto(); noticeGrat(); renderRsvp(); noticeHuddle(location.hash === '#huddle'); renderBeta(); noticeNight(nightForce); nightForce = false; noticeGoal(goalForce); goalForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -1028,7 +1077,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-20b';
+const APP_V = '2026-11-20c';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
@@ -1092,7 +1141,7 @@ $('grGo').onclick = async () => { const t = $('grTx').value.trim(); if (t.length
   $('grGo').disabled = true; try { me = await api('/gratitude', { text: t }); $('grPop').hidden = true; render(); toast('On the Gratitude Wall 🙏'); } catch (x) { toast(x.message); } $('grGo').disabled = false; };
 function noticeQod() { const q = me && me.qod; if (!q || qodT || localStorage.getItem('ig5_qod_day') === q.day) return;
   qodT = setTimeout(function show() {
-    if (!$('pop').hidden || !$('sendSheet').hidden || !$('sheet').hidden) { qodT = setTimeout(show, 4000); return; }   // wait out any other pop-up
+    if (!$('pop').hidden || !$('sendSheet').hidden || !$('sheet').hidden || !$('hpPop').hidden || hpT) { qodT = setTimeout(show, 4000); return; }   // wait out any other pop-up
     localStorage.setItem('ig5_qod_day', q.day); qodT = null;
     $('qodT').textContent = q.text; $('qodW').textContent = q.who; $('qod').hidden = false;
   }, 4000); }
