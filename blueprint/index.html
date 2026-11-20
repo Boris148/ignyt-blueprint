@@ -280,7 +280,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- WEEK -->
   <section id="vWeek" hidden>
-    <h1><b>Your</b> <span class="i">tally.</span></h1>
+    <h1 id="wkH"><b>Your</b> <span class="i">tally.</span></h1>
     <p class="sub">Your numbers only — nobody else sees your projected commissions.</p>
     <div id="weeks"></div>
     <div class="card"><div class="lbl">Badges</div><div class="badges" id="badges"></div></div>
@@ -289,7 +289,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
   <!-- PEOPLE -->
   <section id="vPeople" hidden>
-    <h1><b>Your</b> <span class="i">people.</span></h1>
+    <h1 id="ppH"><b>Your</b> <span class="i">people.</span></h1>
     <p class="sub">Everyone you've sent to the Blueprint. We'll remind you to follow up every 2 days until they decide.</p>
     <div id="people"></div>
   </section>
@@ -566,6 +566,7 @@ function renderExtras() {
   const c = (me.prospects || []).filter(x => x.status === 'customer').length, n = Math.min(c, 3);
   $('giftDots').innerHTML = [0, 1, 2].map(i => `<i class="${i < n ? 'on' : ''}">${i < n ? '✓' : ''}</i>`).join('');
   $('giftCard').classList.toggle('won', c >= 3);
+  $('giftCard').hidden = (LAYOUT2_ALL || me.user.admin) && c < 1;   // AJ 11/19 layout v2: only after their first customer
   $('giftT').innerHTML = c >= 3 ? `<b>Your product is free 🎉</b> ${c} customers. Use your commissions to get your IGNYT.<small>Based on projected commissions.</small>`
     : `<b>${c} of 3 customers.</b> Get ${3 - c} more and your IGNYT is free. Your commissions cover it.<small>Based on projected commissions.</small>`;
 }
@@ -677,6 +678,18 @@ function noticeNight(force) { const n = me && me.nightly; if (!n) return; let se
 $('nsChk').onchange = () => { $('nsGo').disabled = !$('nsChk').checked; };
 $('nsGo').onclick = async () => { $('nsGo').disabled = true; try { me = await api('/commit', {}); $('nsAsk').hidden = true; $('nsDone').hidden = false; toast('✊ Committed for tomorrow'); } catch (x) { toast(x.message); $('nsGo').disabled = false; } };
 $('nsX').onclick = () => { $('nightSheet').hidden = true; };
+
+// AJ 11/19 layout v2 (PREVIEW: admin only until AJ approves → then set LAYOUT2_ALL = true):
+// Today = sends + who to follow up today. Notifications settings + "Your November" move under Training videos.
+// Free product tracker only after the first customer. Tabs: People → Follow-ups, My Tally → My Earnings.
+const LAYOUT2_ALL = false; let layoutDone = false;
+function applyLayout() { if (!me || layoutDone || !(LAYOUT2_ALL || me.user.admin)) return; layoutDone = true;
+  const after = $('vids'), month = $('month') && $('month').closest('.card');
+  if (month) after.after(month); after.after($('ntSet'));
+  const nb = (v, e, t) => { const b = document.querySelector(`nav button[data-v="${v}"]`); if (b) b.innerHTML = `<span class="e">${e}</span>${t}` + (b.querySelector('.badge') ? b.querySelector('.badge').outerHTML : ''); };
+  nb('People', '📋', 'Follow-ups'); nb('Week', '💰', 'My Earnings');
+  $('ppH').innerHTML = '<b>Your</b> <span class="i">follow-ups.</span>'; $('wkH').innerHTML = '<b>Your</b> <span class="i">earnings.</span>';
+  document.body.classList.add('l2'); }
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -891,7 +904,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -965,9 +978,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19h';
+const APP_V = '2026-11-19i';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Nightly family tally 🌙</b> Every night at 9 PM, see how many Blueprints the whole family shared toward our goal of <b>100 a day</b>, plus your part. Then commit to getting your 5 done tomorrow ✊"];
+const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
