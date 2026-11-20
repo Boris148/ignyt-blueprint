@@ -249,7 +249,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
         <div class="f ph"><select id="aCc" aria-label="Country code"></select><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div><div class="cchint" id="aCcHint">Pick their country, then type their number. Or paste it with + and the country code.</div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Product</button><button type="button" data-k="partner" class="p">Business</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
-        <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
+        <button class="btn ghost" id="qrBtn" type="button" style="margin-top:8px">📷 In person? Show my QR code</button>
+        <div class="hint">Counts the moment you send. One send per number for the whole team. In person? Show your QR and it counts when their phone opens it. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
         <div class="err" id="aErr"></div>
       </form>
       <div class="list" id="todayList" style="margin-top:8px"></div>
@@ -376,6 +377,14 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <a class="btn" id="fbsGo" href="#" target="_blank" rel="noopener" style="background:#1877f2">Join the Facebook group</a>
   <button class="btn ghost" id="fbsDone">I've joined ✓ Send now</button>
   <button class="btn ghost" id="fbsLater" style="border:0">Send now, join later</button>
+</div></div>
+<div class="sheet" id="qrSheet" hidden><div class="bx" style="text-align:center">
+  <h3>Have them scan this 📷</h3><p id="qrS" style="margin-top:4px">They point their phone camera at it. It counts the moment <b>their</b> phone opens it.</p>
+  <img id="qrImg" alt="QR code" style="width:240px;height:240px;margin:14px auto 6px;display:block;border-radius:12px;background:#fff;padding:10px">
+  <div id="qrOk" hidden style="font-size:20px;font-weight:900;color:#2e7d32;margin:10px 0">✅ Scanned! It counted toward your 5.</div>
+  <p class="sub" id="qrT" style="font-size:12px"></p>
+  <button class="btn" id="qrNew" type="button" hidden style="margin-top:8px">Show a new QR for the next person</button>
+  <button class="btn ghost" id="qrX" type="button" style="border:0;margin-top:6px">Close</button>
 </div></div>
 <div class="sheet" id="sendSheet" hidden><div class="bx">
   <h3 id="ssT"></h3><p id="ssS">Counted ✓ Now send it from your phone.</p>
@@ -567,6 +576,22 @@ function renderRsvp() { const c = me && me.call, el = $('rvCard'); if (!c) { el.
 }
 $('rvGo').onclick = async () => { if (!me || !me.call) return; $('rvGo').disabled = true;
   try { me = await api('/rsvp', { k: me.call.k }); toast('✅ You’re going! See you there'); render(); } catch (x) { toast(x.message); } $('rvGo').disabled = false; };
+
+// AJ 11/19: in-person QR — one QR per person, good 15 min, counts when the OTHER phone opens it.
+let qrQ = null, qrPoll = null;
+async function qrShow() { $('aErr').textContent = '';
+  if (!kind) return $('aErr').textContent = 'Pick Product or Business first, then show your QR';
+  if (me.user.launchNeeded && me.total === 0) return openVideo('launch', qrShow);
+  try { const d = await api('/qr', { kind, prospect: $('aName').value.trim() }); qrQ = d.q;
+    $('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=' + encodeURIComponent(d.url);
+    $('qrImg').style.opacity = 1; $('qrOk').hidden = true; $('qrNew').hidden = true; $('qrT').textContent = 'One person per code · good for 15 minutes';
+    $('qrSheet').hidden = false; clearInterval(qrPoll);
+    qrPoll = setInterval(async () => { if ($('qrSheet').hidden) return clearInterval(qrPoll);
+      try { const r = await api('/qr/status', { q: qrQ }); if (r.scanned) { clearInterval(qrPoll); if (r.me) me = r.me;
+        $('qrImg').style.opacity = .15; $('qrOk').hidden = false; $('qrNew').hidden = false; $('qrT').textContent = ''; $('aName').value = ''; render(); toast('📷 Scanned! It counted 🔥'); } } catch (e) {} }, 3000);
+  } catch (x) { $('aErr').textContent = x.message; } }
+$('qrBtn').onclick = qrShow; $('qrNew').onclick = qrShow;
+$('qrX').onclick = () => { $('qrSheet').hidden = true; clearInterval(qrPoll); };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -854,9 +879,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19d';
+const APP_V = '2026-11-19e';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>RSVP for every call ✋</b> When a call is coming up, the top of Today asks if you're going. Tap <b>Yes, I'm going!</b> and the Zoom button shows up 10 minutes before it starts."];
+const APP_NOTES = ["<b>In person? Show your QR 📷</b> Pick Product or Business, tap <b>Show my QR code</b>, and have them scan it with their camera. It counts toward your 5 the moment <b>their</b> phone opens it. No phone number needed."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }

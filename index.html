@@ -166,7 +166,7 @@ body.locked{overflow:hidden}
   var viaUrl=(qs.get('code')||qs.get('access')||'').trim().toLowerCase();
   var already=false; try{ already=localStorage.getItem(KEY)==='1'; }catch(e){}
   // A partner's personal link (?b=code from the Blueprint app) opens the hub directly, no access code needed.
-  var personal=/[?&]b=[a-z0-9]{6}(&|$)/i.test(location.search);
+  var personal=/[?&]b=[a-z0-9]{6}(&|$)/i.test(location.search)||/[?&]q=[a-z0-9]{6,16}(&|$)/i.test(location.search);
   try{ if(sessionStorage.getItem('ig5_b')||localStorage.getItem('ig5_b')) personal=true; }catch(e){}
   if(already || viaUrl===CODE || personal){ open_(true); return; }
   document.body.classList.add('locked');
@@ -241,6 +241,13 @@ document.querySelectorAll('.fade').forEach((el,i)=>{el.style.transitionDelay=(i*
 #greq .ok{margin-top:14px;font-size:15px;color:#f6f4ef;line-height:1.5}
 #greq .ok b{color:var(--orange)}
 </style>
+<script>
+/* AJ 11/19: in-person QR (?q=). Registers the scan (counts for the member) and continues as their personal link. */
+(function(){var m=/[?&]q=([a-z0-9]{6,16})/i.exec(location.search);if(!m)return;
+try{sessionStorage.setItem('ig5_q','1')}catch(e){}
+fetch('https://ignyt-challenge.hireboris.workers.dev/api/qr/scan',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({q:m[1].toLowerCase()})})
+.then(function(r){return r.json()}).then(function(d){if(d&&d.b){location.replace(location.pathname+'?b='+d.b+location.hash)}else{try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}}).catch(function(){});})();
+</script>
 <script>
 /* IGNYT 5 Blueprint app: a partner's personal link (?b=code). Marks it Seen once a real person engages, and on the access gate
    lets the prospect request the code; the partner is notified in the app and sends the code with one tap. */
