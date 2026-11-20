@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order confirmed · The Blueprint to Wellness</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/drop.svg">
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1526968549479656');fbq('track','PageView');
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f6f1e9;color:#16120f;-webkit-font-smoothing:antialiased}
+.w{max-width:640px;margin:0 auto;padding:48px 20px 60px;text-align:center}
+.ok{width:84px;height:84px;border-radius:50%;background:#f05a1e;color:#fff;font-size:44px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 14px 30px rgba(240,90,30,.3)}
+h1{font-size:38px;font-weight:900;letter-spacing:-1px;line-height:1.05}p{margin-top:12px;font-size:17px;color:#4a423b}
+.card{background:#fff;border:1px solid #e6dccc;border-radius:18px;padding:22px;margin-top:26px;text-align:left}
+.card h3{font-size:18px;font-weight:900}.card li{margin:10px 0 0 18px;color:#4a423b}
+.btn{display:inline-block;margin-top:22px;background:#16120f;color:#fff;text-decoration:none;font-weight:900;padding:15px 24px;border-radius:14px}
+#sum{font-weight:800}
+</style></head><body><div class="w">
+<div class="ok">✓</div><h1>You're in. Order confirmed.</h1>
+<p id="sum">Thank you! Your receipt is on its way to your email.</p>
+<div class="card"><h3>What happens next</h3><ul>
+<li>You'll get an email with tracking as soon as your IGNYT ships.</li>
+<li>Watch for your Blueprint welcome text and email: your challenge app invite, community link and weekly call details (bundles of 2+ bags).</li>
+<li>Start with 2 sticks a day in water, about 30 minutes away from food.</li></ul></div>
+<a class="btn" href="/shop/">Back to the store</a>
+</div>
+<script>
+const API='https://blueprint-shop.hireboris.workers.dev';
+const sid=new URLSearchParams(location.search).get('session_id');
+if(sid){fetch(API+'/order?session_id='+encodeURIComponent(sid)).then(r=>r.ok?r.json():null).then(o=>{if(!o||!o.paid)return;
+ document.getElementById('sum').textContent='Order #'+o.number+' · $'+o.value.toFixed(2)+' · receipt sent to '+o.email;
+ const k='bp_purchase_'+sid; if(localStorage.getItem(k))return; localStorage.setItem(k,'1');
+ fbq('track','Purchase',{value:o.value,currency:o.currency,content_ids:o.contents.map(c=>c.id),contents:o.contents,content_type:'product',num_items:o.contents.reduce((a,c)=>a+c.quantity,0)},{eventID:'purchase_'+sid});
+ try{localStorage.removeItem('bp_cart')}catch(e){}}).catch(()=>{});}
+</script></body></html>
