@@ -222,6 +222,9 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <div id="rvDone" hidden><div class="rvok">✅ You&rsquo;re going! See you there.</div></div>
       <a class="btn" id="rvZoom" href="#" target="_blank" rel="noopener" hidden style="margin-top:10px;background:#2d8cff">🎥 Join on Zoom now</a>
       <div class="rvc" id="rvCount"></div><div class="rvn" id="rvNames" hidden></div></div>
+    <div class="card rsvp" id="btCard" hidden><div class="lbl">🧪 Beta test invite</div><h3>AJ picked you.</h3>
+      <div class="rvw" style="font-size:15px;line-height:1.45;margin-top:6px">Try 2 new ways to get your 5 before anyone else:<br>💬 <b>Send by DM</b>, using their Instagram, Messenger, Telegram or TikTok username.<br>📷 <b>In-person QR code</b>. It counts when their phone opens it.</div>
+      <button class="btn" id="btYes" type="button" style="margin-top:12px">Yes, I&rsquo;m in 🙌</button><button class="btn ghost" id="btNo" type="button" style="margin-top:8px;border:0">Not now</button></div>
     <div class="card gw" id="gwCard" hidden><div class="lbl">🙏 Gratitude Sunday</div><h3>The Gratitude <i>Wall.</i></h3>
       <div class="gs">What our family is grateful for today.</div>
       <button class="btn" id="gwShare" type="button" style="margin-top:12px">✍️ Share what you&rsquo;re grateful for</button>
@@ -246,11 +249,13 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <div id="progress"></div>
       <form id="fAdd">
         <div class="f"><input id="aName" placeholder="Their name" maxlength="60" autocomplete="off"></div>
-        <div class="f ph"><select id="aCc" aria-label="Country code"></select><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div><div class="cchint" id="aCcHint">Pick their country, then type their number. Or paste it with + and the country code.</div>
+        <div class="seg" id="aVia" hidden style="margin-bottom:10px"><button type="button" data-v="text" class="on">📱 Text</button><button type="button" data-v="dm">💬 DM (beta)</button></div>
+        <div class="f ph" id="aDm" hidden><select id="aCh" aria-label="App"><option value="instagram">Instagram</option><option value="messenger">Messenger</option><option value="telegram">Telegram</option><option value="tiktok">TikTok</option><option value="snapchat">Snapchat</option><option value="x">X</option><option value="line">LINE</option><option value="wechat">WeChat</option></select><input id="aHandle" placeholder="Their username" maxlength="80" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div class="f ph" id="aPhRow"><select id="aCc" aria-label="Country code"></select><input id="aPhone" type="tel" inputmode="tel" placeholder="Their mobile number" maxlength="20" autocomplete="off"><button type="button" id="aPick" hidden>📇 Contacts</button></div><div class="cchint" id="aCcHint">Pick their country, then type their number. Or paste it with + and the country code.</div>
         <div class="seg" id="aKind"><button type="button" data-k="customer">Product</button><button type="button" data-k="partner" class="p">Business</button></div>
         <button class="btn" id="aBtn" type="submit">Send the Blueprint</button>
-        <button class="btn ghost" id="qrBtn" type="button" style="margin-top:8px">📷 In person? Show my QR code</button>
-        <div class="hint">Counts the moment you send. One send per number for the whole team. In person? Show your QR and it counts when their phone opens it. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
+        <button class="btn ghost" id="qrBtn" type="button" hidden style="margin-top:8px">📷 In person? Show my QR code</button>
+        <div class="hint">Counts the moment you send. One send per number for the whole team. You'll get a 👀 alert here when they open the link. Links expire 1 hour after you send. You can reactivate them.</div>
         <div class="err" id="aErr"></div>
       </form>
       <div class="list" id="todayList" style="margin-top:8px"></div>
@@ -389,7 +394,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
 <div class="sheet" id="sendSheet" hidden><div class="bx">
   <h3 id="ssT"></h3><p id="ssS">Counted ✓ Now send it from your phone.</p>
   <div class="msg" id="ssM"></div>
-  <div class="via-l">Send it with</div>
+  <a class="btn" id="ssDm" href="#" target="_blank" rel="noopener" hidden style="display:block;text-align:center;margin-bottom:10px"></a>
+  <div class="via-l" id="ssViaL">Send it with</div>
   <div class="via" id="ssVia">
     <a class="sv" data-v="sms" id="ssGo" href="#"><span class="i">💬</span>Messages</a>
     <a class="sv" data-v="wa" id="ssWa" href="#" target="_blank" rel="noopener"><span class="i wa"><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>WhatsApp</a>
@@ -463,14 +469,15 @@ $('logout').onclick = async e => { e.preventDefault(); const t = tok; if (PUSH.s
 $('aKind').onclick = e => { const b = e.target.closest('button'); if (!b) return; kind = b.dataset.k; [...$('aKind').children].forEach(x => x.classList.toggle('on', x === b)); };
 $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = '';
   if (!$('aName').value.trim()) return $('aErr').textContent = 'Enter their name';
-  if (!$('aPhone').value.trim()) return $('aErr').textContent = 'Enter their mobile number';
+  const dm = !$('aVia').hidden && sendVia === 'dm';
+  if (dm ? !$('aHandle').value.trim() : !$('aPhone').value.trim()) return $('aErr').textContent = dm ? 'Enter their username' : 'Enter their mobile number';
   if (!kind) return $('aErr').textContent = 'Product or Business?';
   if (me.user.launchNeeded && me.total === 0) return openVideo('launch', () => $('fAdd').requestSubmit());   // AJ 11/13: launch video before the first send
   if (!me.user.fbJoined && me.total === 0 && !fbNudged) { fbNudged = true; $('fbSheet').hidden = false; return; }
   $('aBtn').disabled = true;
   try { const before = me.todayList.length, name = $('aName').value.trim();
-    me = await api('/exposure', { prospect: name, phone: fullPhone(), kind });
-    $('aName').value = ''; $('aPhone').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
+    me = await api('/exposure', dm ? { prospect: name, channel: $('aCh').value, handle: $('aHandle').value, kind } : { prospect: name, phone: fullPhone(), kind });
+    $('aName').value = ''; $('aPhone').value = ''; $('aHandle').value = ''; kind = null; [...$('aKind').children].forEach(x => x.classList.remove('on'));
     if (before === me.perDay - 1) { confetti(); board = null; }
     render(); openSend(name, me.sent, before === me.perDay - 1);
   } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
@@ -479,6 +486,12 @@ function openSend(name, sent, five, title, sub) {
   $('ssT').textContent = title || `Send to ${name.split(' ')[0]}`;
   $('ssS').textContent = sub || 'Counted ✓ Now send it from your phone.';
   $('ssM').textContent = sent.message;
+  const isDm = !!sent.channel; $('ssDm').hidden = !isDm; $('ssVia').hidden = isDm; $('ssViaL').hidden = isDm;
+  if (isDm) { const h = sent.handle, L = { instagram: 'https://ig.me/m/' + h, messenger: 'https://m.me/' + h, telegram: 'https://t.me/' + h, tiktok: 'https://www.tiktok.com/@' + h, snapchat: 'https://www.snapchat.com/add/' + h, x: 'https://x.com/' + h, line: 'https://line.me/R/ti/p/~' + h, wechat: '' }[sent.channel];
+    const nm = { instagram: 'Instagram', messenger: 'Messenger', telegram: 'Telegram', tiktok: 'TikTok', snapchat: 'Snapchat', x: 'X', line: 'LINE', wechat: 'WeChat' }[sent.channel];
+    $('ssS').textContent = `Counted ✓ Tap below: we copy the message, then open ${nm}. Paste it in their DM and send.`;
+    $('ssDm').textContent = L ? `📋 Copy message & open ${nm}` : '📋 Copy message (then open WeChat)';
+    $('ssDm').href = L || '#'; $('ssDm').onclick = async ev => { try { await navigator.clipboard.writeText(sent.message); toast('Message copied ✓ Paste it in the DM'); } catch { if (!L) ev.preventDefault(); prompt('Copy this message:', sent.message); } if (!L) ev.preventDefault(); }; }
   $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
   $('ssWa').href = `https://wa.me/${String(sent.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(sent.message)}`;
   markVia();
@@ -592,6 +605,16 @@ async function qrShow() { $('aErr').textContent = '';
   } catch (x) { $('aErr').textContent = x.message; } }
 $('qrBtn').onclick = qrShow; $('qrNew').onclick = qrShow;
 $('qrX').onclick = () => { $('qrSheet').hidden = true; clearInterval(qrPoll); };
+
+// AJ 11/19: beta (AJ + invited members): DM-by-username + in-person QR.
+let sendVia = 'text';
+function renderBeta() { const b = me && me.user.beta;
+  $('btCard').hidden = b !== 'invited'; $('qrBtn').hidden = b !== 'on'; $('aVia').hidden = b !== 'on';
+  if (b !== 'on') sendVia = 'text';
+  $('aDm').hidden = sendVia !== 'dm'; $('aPhRow').hidden = sendVia === 'dm'; }
+$('aVia').onclick = e => { const x = e.target.closest('button'); if (!x) return; sendVia = x.dataset.v; [...$('aVia').children].forEach(y => y.classList.toggle('on', y === x)); renderBeta(); };
+$('btYes').onclick = async () => { try { me = await api('/beta', { yes: true }); render(); toast('🧪 You’re in the beta! Look for DM and QR on Today'); } catch (x) { toast(x.message); } };
+$('btNo').onclick = async () => { try { me = await api('/beta', { yes: false }); render(); } catch (x) { toast(x.message); } };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -805,7 +828,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -879,9 +902,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19e';
+const APP_V = '2026-11-19f';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>In person? Show your QR 📷</b> Pick Product or Business, tap <b>Show my QR code</b>, and have them scan it with their camera. It counts toward your 5 the moment <b>their</b> phone opens it. No phone number needed."];
+const APP_NOTES = ["<b>Behind the scenes:</b> new tools being tested with a few team members. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
