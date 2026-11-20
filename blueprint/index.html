@@ -396,6 +396,19 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button class="btn" id="qrNew" type="button" hidden style="margin-top:8px">Show a new QR for the next person</button>
   <button class="btn ghost" id="qrX" type="button" style="border:0;margin-top:6px">Close</button>
 </div></div>
+<div class="sheet" id="nightSheet" hidden><div class="bx" style="text-align:center">
+  <div class="lbl" style="justify-content:center">🌙 Today&rsquo;s family tally</div>
+  <div style="font-size:84px;font-weight:900;letter-spacing:-3px;line-height:1;margin-top:10px;color:var(--orange)" id="nsTeam">0</div>
+  <div style="font-weight:800;margin-top:2px">Blueprints shared today · goal <b>100</b></div>
+  <div style="height:14px;background:#efe7da;border-radius:999px;overflow:hidden;margin:14px 0 6px"><div id="nsBar" style="height:100%;width:0;background:linear-gradient(90deg,#f05a1e,#ff9a62);border-radius:999px"></div></div>
+  <div style="font-size:13px;font-weight:700;color:var(--mut,#8b837b)" id="nsMix"></div>
+  <div style="margin-top:16px;background:#fff8f3;border:2px solid var(--orange);border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:800;letter-spacing:2px;color:var(--orange)">YOUR PART TODAY</div>
+    <div style="font-size:40px;font-weight:900;margin-top:2px" id="nsMine">0</div><div style="font-size:14px;font-weight:600" id="nsMineT"></div></div>
+  <div id="nsAsk"><label style="display:flex;gap:10px;align-items:flex-start;text-align:left;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer"><input type="checkbox" id="nsChk" style="width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:var(--orange)">Tomorrow I&rsquo;ll get my 5 done to help the family hit 100 a day.</label>
+    <button class="btn" id="nsGo" type="button" disabled style="margin-top:12px">I&rsquo;m committed ✊</button></div>
+  <div id="nsDone" hidden style="font-size:18px;font-weight:900;color:#2e7d32;margin-top:16px">✅ You&rsquo;re committed. See you tomorrow!</div>
+  <button class="btn ghost" id="nsX" type="button" style="border:0;margin-top:6px">Close</button>
+</div></div>
 <div class="sheet" id="sendSheet" hidden><div class="bx">
   <h3 id="ssT"></h3><p id="ssS">Counted ✓ Now send it from your phone.</p>
   <div class="msg" id="ssM"></div>
@@ -627,7 +640,7 @@ const rpCaption = t => `${t.product + t.business} Blueprints shared today 🔥 $
 function goReport() { const b = document.querySelector('nav button[data-v="Admin"]'); if (b && me && me.user.admin) { b.click(); setTimeout(() => $('rpCard').scrollIntoView({ behavior: 'smooth' }), 300); } }
 async function renderReport() {
   try { rpT = await api('/admin/tally'); } catch (x) { $('rpNums').textContent = x.message; return; }
-  const t = rpT; $('rpNums').innerHTML = `<b style="font-size:20px">${t.product + t.business}</b> shared today · <b>${t.product}</b> Product · <b>${t.business}</b> Business<br>${t.people} sharing · ${t.seen} opened · ${t.watched} watched half+ · ${t.five} hit 5/5`;
+  const t = rpT; $('rpNums').innerHTML = `<b style="font-size:20px">${t.product + t.business}</b> shared today · <b>${t.product}</b> Product · <b>${t.business}</b> Business<br>${t.people} sharing · ${t.seen} opened · ${t.watched} watched half+ · ${t.five} hit 5/5 · <b>${t.committed || 0}</b> committed for tomorrow`;
   if (!rpFaces) rpFaces = await Promise.all([...Array(8)].map((_, i) => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = `/blueprint/img/f0${i}.png`; })));
   const c = $('rpCv'), x = c.getContext('2d'), W = 1080, F = (w, z) => `${w} ${z}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
   const g = x.createRadialGradient(540, 270, 50, 540, 270, 1100); g.addColorStop(0, '#fffefb'); g.addColorStop(.55, '#f6f1e9'); g.addColorStop(1, '#ece2d2');
@@ -651,6 +664,19 @@ $('rpShare').onclick = () => { if (!rpT) return; $('rpCv').toBlob(async bl => { 
   try { await navigator.clipboard.writeText(rpCaption(rpT)); } catch (e) {}
   try { if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); toast('Caption is copied too. Paste it in Instagram'); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast('Saved ✓ Caption copied'); }, 'image/jpeg', 0.93); };
+
+// AJ 11/19: nightly family tally pop-up for every member (9 PM–4 AM local) + "tomorrow I'll get my 5" commitment. View only, no sharing.
+let nightForce = location.hash === '#night';
+function noticeNight(force) { const n = me && me.nightly; if (!n) return; let seen = ''; try { seen = localStorage.getItem('ig5_night') || ''; } catch {}
+  if (!force && (seen === n.day || n.committed)) return; if (!$('vg').hidden || me.user.trainNeeded) return;
+  $('nsTeam').textContent = n.team; $('nsBar').style.width = Math.min(100, n.team) + '%';
+  $('nsMix').textContent = `${n.product} Product · ${n.business} Business${n.team >= n.goal ? ' · 🎉 GOAL HIT!' : ` · ${n.goal - n.team} to go`}`;
+  $('nsMine').textContent = n.mine; $('nsMineT').textContent = n.mine >= 5 ? 'You did your 5. Thank you 🔥' : n.mine ? `${n.mine} of 5. Every one counts 🙌` : 'Tomorrow is a fresh start. Let’s go 💪';
+  $('nsAsk').hidden = n.committed; $('nsDone').hidden = !n.committed; $('nsChk').checked = false; $('nsGo').disabled = true; $('nightSheet').hidden = false;
+  try { localStorage.setItem('ig5_night', n.day); } catch {} }
+$('nsChk').onchange = () => { $('nsGo').disabled = !$('nsChk').checked; };
+$('nsGo').onclick = async () => { $('nsGo').disabled = true; try { me = await api('/commit', {}); $('nsAsk').hidden = true; $('nsDone').hidden = false; toast('✊ Committed for tomorrow'); } catch (x) { toast(x.message); $('nsGo').disabled = false; } };
+$('nsX').onclick = () => { $('nightSheet').hidden = true; };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -865,7 +891,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -939,9 +965,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19g';
+const APP_V = '2026-11-19h';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Behind the scenes:</b> new tools being tested with a few team members. Nothing changes in how you use the app."];
+const APP_NOTES = ["<b>Nightly family tally 🌙</b> Every night at 9 PM, see how many Blueprints the whole family shared toward our goal of <b>100 a day</b>, plus your part. Then commit to getting your 5 done tomorrow ✊"];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
@@ -1011,7 +1037,7 @@ $('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
   const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
   try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
   try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
