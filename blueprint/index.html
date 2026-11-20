@@ -37,6 +37,7 @@ h1{font-size:34px;line-height:1.02;font-weight:200;letter-spacing:-1px;margin-to
 .fl input[type=range]{padding:0;background:none;border:0;accent-color:var(--orange);margin:4px 0 10px} .fl .rl{font-size:13px;font-weight:700;color:var(--mut,#8b837b);margin-top:6px}
 .ph select{flex:0 0 auto;width:auto;max-width:112px;padding:14px 6px;font-size:15px} .cchint{font-size:12px;color:var(--mut,#8b837b);margin-top:6px}
 .rsvp{border:2px solid var(--orange);background:#fff8f3} .rsvp h3{font-size:22px;font-weight:900;margin-top:4px} .rvw{font-weight:700;color:var(--mut,#8b837b);margin-top:2px;font-size:14px} .rvq{font-weight:800;margin:12px 0 8px} .rvok{font-weight:900;font-size:17px;margin-top:12px;color:#2e7d32} .rvc{margin-top:10px;font-size:13px;font-weight:700;color:var(--mut,#8b837b)} .rvn{margin-top:6px;font-size:12px;color:var(--mut,#8b837b)} .rsvp .btn{display:block;width:100%;text-align:center}
+body.l2:not([data-view="Today"]) .l2foot{display:none!important}
 input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-size:16px;padding:14px;outline:none;font-family:inherit}
 input:focus,select:focus{border-color:var(--orange)}
 .f{margin-top:10px} .f label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 2px;font-weight:600}
@@ -687,10 +688,10 @@ $('nsX').onclick = () => { $('nightSheet').hidden = true; };
 const LAYOUT2_ALL = false; let layoutDone = false;
 function applyLayout() { if (!me || layoutDone || !(LAYOUT2_ALL || me.user.admin)) return; layoutDone = true;
   const after = $('vids'), month = $('month') && $('month').closest('.card');
-  if (month) after.after(month); after.after($('ntSet'));
+  if (month) { after.after(month); month.classList.add('l2foot'); } after.after($('ntSet')); $('ntSet').classList.add('l2foot');
   const nb = (v, e, t) => { const b = document.querySelector(`nav button[data-v="${v}"]`); if (b) b.innerHTML = `<span class="e">${e}</span>${t}` + (b.querySelector('.badge') ? b.querySelector('.badge').outerHTML : ''); };
-  nb('People', '📋', 'Follow-ups'); nb('Week', '💰', 'My Earnings');
-  $('ppH').innerHTML = '<b>Your</b> <span class="i">follow-ups.</span>'; $('wkH').innerHTML = '<b>Your</b> <span class="i">earnings.</span>';
+  nb('People', '📋', 'Follow-ups');   // AJ 11/19: My Tally stays as it was
+  $('ppH').innerHTML = '<b>Your</b> <span class="i">follow-ups.</span>';
   document.body.classList.add('l2'); }
 
 // AJ 11/19: profile photos (PREVIEW admin-only until approved → PHOTOS_ALL = true). Resized on the phone to a 320px square JPEG.
@@ -917,7 +918,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); renderPhoto(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); document.body.dataset.view = view; renderPhoto(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -991,7 +992,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19j';
+const APP_V = '2026-11-19k';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
