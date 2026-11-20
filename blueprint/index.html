@@ -312,6 +312,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <section id="vAdmin" hidden>
     <h1><b>App</b> <span class="i">admin.</span></h1>
     <p class="sub">Only you can see this tab.</p>
+    <div class="card" id="rpCard"><div class="lbl">📊 Today&rsquo;s team report</div><div id="rpNums" style="margin-top:6px;font-weight:700;font-size:14px;line-height:1.5"></div>
+      <canvas id="rpCv" width="1080" height="1350" style="width:100%;border-radius:12px;margin-top:10px;display:block;background:#f6f1e9"></canvas>
+      <button class="btn" id="rpShare" type="button" style="margin-top:10px;width:100%">📲 Share to Instagram</button>
+      <button class="btn ghost" id="rpCap" type="button" style="margin-top:8px;width:100%">Copy caption</button>
+      <p class="sub" style="font-size:12px;margin-top:8px">Team numbers only, no names and no dollar amounts. Updates every time you open it. Your 9 PM notification opens this card.</p></div>
     <div class="card"><div class="lbl">Send a notification</div>
       <p class="sub" style="font-size:13px;margin:6px 0 12px">Goes to everyone with notifications turned on. It comes from the app, not from you.</p>
       <input id="bTitle" maxlength="80" placeholder="Title" value="The Blueprint">
@@ -615,6 +620,37 @@ function renderBeta() { const b = me && me.user.beta;
 $('aVia').onclick = e => { const x = e.target.closest('button'); if (!x) return; sendVia = x.dataset.v; [...$('aVia').children].forEach(y => y.classList.toggle('on', y === x)); renderBeta(); };
 $('btYes').onclick = async () => { try { me = await api('/beta', { yes: true }); render(); toast('🧪 You’re in the beta! Look for DM and QR on Today'); } catch (x) { toast(x.message); } };
 $('btNo').onclick = async () => { try { me = await api('/beta', { yes: false }); render(); } catch (x) { toast(x.message); } };
+
+// AJ 11/19: nightly team report in the app (Admin) + Instagram-ready graphic drawn on the phone.
+let rpT = null, rpFaces = null, pendingReport = location.hash === '#report';
+const rpCaption = t => `${t.product + t.business} Blueprints shared today 🔥 ${t.product} Product · ${t.business} Business · ${t.seen} links opened. ${t.people} of our family showed up and shared. 5 a day. That's the Blueprint. 🧡 #IGNYT5 #TheBlueprint`;
+function goReport() { const b = document.querySelector('nav button[data-v="Admin"]'); if (b && me && me.user.admin) { b.click(); setTimeout(() => $('rpCard').scrollIntoView({ behavior: 'smooth' }), 300); } }
+async function renderReport() {
+  try { rpT = await api('/admin/tally'); } catch (x) { $('rpNums').textContent = x.message; return; }
+  const t = rpT; $('rpNums').innerHTML = `<b style="font-size:20px">${t.product + t.business}</b> shared today · <b>${t.product}</b> Product · <b>${t.business}</b> Business<br>${t.people} sharing · ${t.seen} opened · ${t.watched} watched half+ · ${t.five} hit 5/5`;
+  if (!rpFaces) rpFaces = await Promise.all([...Array(8)].map((_, i) => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = `/blueprint/img/f0${i}.png`; })));
+  const c = $('rpCv'), x = c.getContext('2d'), W = 1080, F = (w, z) => `${w} ${z}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+  const g = x.createRadialGradient(540, 270, 50, 540, 270, 1100); g.addColorStop(0, '#fffefb'); g.addColorStop(.55, '#f6f1e9'); g.addColorStop(1, '#ece2d2');
+  x.fillStyle = g; x.fillRect(0, 0, W, 1350); x.fillStyle = '#f05a1e'; x.fillRect(0, 0, W, 14);
+  const ctr = (txt, y, font, color, ls) => { x.font = font; x.fillStyle = color; x.textAlign = 'center'; if ('letterSpacing' in x) x.letterSpacing = (ls || 0) + 'px'; x.fillText(txt, 540, y); if ('letterSpacing' in x) x.letterSpacing = '0px'; };
+  const rr = (X, Y, w, h, r, fill, stroke) => { x.beginPath(); x.roundRect(X, Y, w, h, r); x.fillStyle = fill; x.fill(); if (stroke) { x.strokeStyle = stroke; x.lineWidth = 2; x.stroke(); } };
+  const day = new Date(t.day + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  ctr('THE BLUEPRINT FAMILY', 155, F(900, 24), '#f05a1e', 8); ctr(day, 210, F(700, 30), '#6f665d');
+  ctr(String(t.product + t.business), 445, F(900, 250), '#f05a1e', -12); ctr('BLUEPRINTS SHARED TODAY', 530, F(900, 56), '#16120f', -1.5);
+  rr(90, 585, 440, 196, 26, '#16120f'); rr(550, 585, 440, 196, 26, '#f05a1e');
+  x.textAlign = 'center'; x.font = F(900, 100); x.fillStyle = '#fff'; x.fillText(String(t.product), 310, 705); x.fillText(String(t.business), 770, 705);
+  x.font = F(900, 24); if ('letterSpacing' in x) x.letterSpacing = '5px'; x.fillStyle = '#ff9a62'; x.fillText('PRODUCT', 310, 752); x.fillStyle = '#16120f'; x.fillText('BUSINESS', 770, 752); if ('letterSpacing' in x) x.letterSpacing = '0px';
+  [[t.people, 'SHARING TODAY'], [t.seen, 'LINKS OPENED'], [t.five, 'HIT 5 OF 5']].forEach(([n, l], i) => { const X = 90 + i * 306; rr(X, 802, 288, 170, 26, '#fff', '#ece3d4');
+    x.font = F(900, 84); x.fillStyle = '#16120f'; x.fillText(String(n), X + 144, 905); x.font = F(800, 20); if ('letterSpacing' in x) x.letterSpacing = '3px'; x.fillStyle = '#8b837b'; x.fillText(l, X + 144, 945); if ('letterSpacing' in x) x.letterSpacing = '0px'; });
+  x.font = F(900, 40); const a = '5 A DAY. ', b2 = 'THAT\u2019S THE BLUEPRINT.', wa = x.measureText(a).width, wb = x.measureText(b2).width, sx = 540 - (wa + wb) / 2;
+  x.textAlign = 'left'; x.fillStyle = '#16120f'; x.fillText(a, sx, 1060); x.fillStyle = '#f05a1e'; x.fillText(b2, sx + wa, 1060); x.textAlign = 'center';
+  (rpFaces || []).forEach((im, i) => { if (!im) return; const cx = 540 - 7 * 35 + i * 70, cy = 1150; x.save(); x.beginPath(); x.arc(cx, cy, 46, 0, Math.PI * 2); x.fillStyle = '#fff'; x.fill(); x.beginPath(); x.arc(cx, cy, 42, 0, Math.PI * 2); x.clip(); x.drawImage(im, cx - 42, cy - 42, 84, 84); x.restore(); });
+}
+$('rpCap').onclick = () => rpT && copyTxt(rpCaption(rpT), $('rpCap'), 'Caption copied ✓');
+$('rpShare').onclick = () => { if (!rpT) return; $('rpCv').toBlob(async bl => { const f = new File([bl], `Blueprint-Tonight-${rpT.day}.jpg`, { type: 'image/jpeg' });
+  try { await navigator.clipboard.writeText(rpCaption(rpT)); } catch (e) {}
+  try { if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); toast('Caption is copied too. Paste it in Instagram'); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast('Saved ✓ Caption copied'); }, 'image/jpeg', 0.93); };
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const inApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|Telegram|; wv\)/i.test(navigator.userAgent);
@@ -743,6 +779,7 @@ function renderPeople() {
 // ---- admin tab
 let aRows = null;
 async function renderAdmin() {
+  renderReport();
   fDraw();
   if (!aRows) { $('aList').innerHTML = '<p class="sub">Loading…</p>'; try { aRows = await api('/admin'); } catch (x) { $('aList').innerHTML = `<p class="sub">${esc(x.message)}</p>`; return; } }
   const S = k => aRows.reduce((a, r) => a + (+r[k] || 0), 0);
@@ -828,7 +865,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); noticeGrat(); renderRsvp(); renderBeta(); if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -902,7 +939,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19f';
+const APP_V = '2026-11-19g';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> new tools being tested with a few team members. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
@@ -974,7 +1011,7 @@ $('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
   const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
   try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
   try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
