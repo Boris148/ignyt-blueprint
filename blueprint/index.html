@@ -314,6 +314,11 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <section id="vAdmin" hidden>
     <h1><b>App</b> <span class="i">admin.</span></h1>
     <p class="sub">Only you can see this tab.</p>
+    <div class="card" id="glCard"><div class="lbl">🎯 Daily family goal</div>
+      <div id="glNums" style="margin-top:6px;font-weight:700;font-size:14px;line-height:1.5"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px"><b style="width:86px">Today</b><input id="glT" type="number" inputmode="numeric" min="1" placeholder="100" style="flex:1"><button class="btn" id="glTS" type="button" style="width:auto;padding:10px 16px">Save</button></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><b style="width:86px">Tomorrow</b><input id="glN" type="number" inputmode="numeric" min="1" placeholder="100" style="flex:1"><button class="btn" id="glNS" type="button" style="width:auto;padding:10px 16px">Save</button></div>
+      <p class="sub" style="font-size:12px;margin-top:8px">Goes out at 9 AM (each member&rsquo;s time): &ldquo;🎯 Today&rsquo;s goal: X Blueprints. Are you in?&rdquo; If you don&rsquo;t set one, it&rsquo;s 100. Leave a box empty and tap Save to go back to 100.</p></div>
     <div class="card" id="rpCard"><div class="lbl">📊 Today&rsquo;s team report</div><div id="rpNums" style="margin-top:6px;font-weight:700;font-size:14px;line-height:1.5"></div>
       <canvas id="rpCv" width="1080" height="1350" style="width:100%;border-radius:12px;margin-top:10px;display:block;background:#f6f1e9"></canvas>
       <button class="btn" id="rpShare" type="button" style="margin-top:10px;width:100%">📲 Share to Instagram</button>
@@ -400,15 +405,28 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <button class="btn" id="qrNew" type="button" hidden style="margin-top:8px">Show a new QR for the next person</button>
   <button class="btn ghost" id="qrX" type="button" style="border:0;margin-top:6px">Close</button>
 </div></div>
+<div class="sheet" id="goalSheet" hidden><div class="bx" style="text-align:center">
+  <div class="lbl" style="justify-content:center">🎯 Today&rsquo;s family goal</div>
+  <div style="font-size:84px;font-weight:900;letter-spacing:-3px;line-height:1;margin-top:10px;color:var(--orange)" id="gsGoal">100</div>
+  <div style="font-weight:800;margin-top:2px">Blueprints shared today</div>
+  <div style="height:14px;background:#efe7da;border-radius:999px;overflow:hidden;margin:14px 0 6px"><div id="gsBar" style="height:100%;width:0;background:linear-gradient(90deg,#f05a1e,#ff9a62);border-radius:999px"></div></div>
+  <div style="font-size:13px;font-weight:700;color:var(--mut,#8b837b)" id="gsMix"></div>
+  <div style="margin-top:16px;background:#fff8f3;border:2px solid var(--orange);border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:800;letter-spacing:2px;color:var(--orange)">COMMITTED TODAY</div>
+    <div style="font-size:40px;font-weight:900;margin-top:2px" id="gsCnt">0</div><div style="font-size:14px;font-weight:600">family members are in ✊</div></div>
+  <div id="gsAsk"><label style="display:flex;gap:10px;align-items:flex-start;text-align:left;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer"><input type="checkbox" id="gsChk" style="width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:var(--orange)">Today I&rsquo;ll get my 5 done to help the family hit <span id="gsGoalT">100</span>.</label>
+    <button class="btn" id="gsGo" type="button" disabled style="margin-top:12px">I&rsquo;m in ✊</button></div>
+  <div id="gsDone" hidden style="font-size:18px;font-weight:900;color:#2e7d32;margin-top:16px">✅ You&rsquo;re in. Let&rsquo;s get your 5!</div>
+  <button class="btn ghost" id="gsX" type="button" style="border:0;margin-top:6px">Close</button>
+</div></div>
 <div class="sheet" id="nightSheet" hidden><div class="bx" style="text-align:center">
   <div class="lbl" style="justify-content:center">🌙 Today&rsquo;s family tally</div>
   <div style="font-size:84px;font-weight:900;letter-spacing:-3px;line-height:1;margin-top:10px;color:var(--orange)" id="nsTeam">0</div>
-  <div style="font-weight:800;margin-top:2px">Blueprints shared today · goal <b>100</b></div>
+  <div style="font-weight:800;margin-top:2px">Blueprints shared today · goal <b id="nsGoal">100</b></div>
   <div style="height:14px;background:#efe7da;border-radius:999px;overflow:hidden;margin:14px 0 6px"><div id="nsBar" style="height:100%;width:0;background:linear-gradient(90deg,#f05a1e,#ff9a62);border-radius:999px"></div></div>
   <div style="font-size:13px;font-weight:700;color:var(--mut,#8b837b)" id="nsMix"></div>
   <div style="margin-top:16px;background:#fff8f3;border:2px solid var(--orange);border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:800;letter-spacing:2px;color:var(--orange)">YOUR PART TODAY</div>
     <div style="font-size:40px;font-weight:900;margin-top:2px" id="nsMine">0</div><div style="font-size:14px;font-weight:600" id="nsMineT"></div></div>
-  <div id="nsAsk"><label style="display:flex;gap:10px;align-items:flex-start;text-align:left;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer"><input type="checkbox" id="nsChk" style="width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:var(--orange)">Tomorrow I&rsquo;ll get my 5 done to help the family hit 100 a day.</label>
+  <div id="nsAsk"><label style="display:flex;gap:10px;align-items:flex-start;text-align:left;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer"><input type="checkbox" id="nsChk" style="width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:var(--orange)">Tomorrow I&rsquo;ll get my 5 done to help the family hit <span id="nsGoalT">100</span>.</label>
     <button class="btn" id="nsGo" type="button" disabled style="margin-top:12px">I&rsquo;m committed ✊</button></div>
   <div id="nsDone" hidden style="font-size:18px;font-weight:900;color:#2e7d32;margin-top:16px">✅ You&rsquo;re committed. See you tomorrow!</div>
   <button class="btn ghost" id="nsX" type="button" style="border:0;margin-top:6px">Close</button>
@@ -645,7 +663,7 @@ const rpCaption = t => `${t.product + t.business} Blueprints shared today 🔥 $
 function goReport() { const b = document.querySelector('nav button[data-v="Admin"]'); if (b && me && me.user.admin) { b.click(); setTimeout(() => $('rpCard').scrollIntoView({ behavior: 'smooth' }), 300); } }
 async function renderReport() {
   try { rpT = await api('/admin/tally'); } catch (x) { $('rpNums').textContent = x.message; return; }
-  const t = rpT; $('rpNums').innerHTML = `<b style="font-size:20px">${t.product + t.business}</b> shared today · <b>${t.product}</b> Product · <b>${t.business}</b> Business<br>${t.people} sharing · ${t.seen} opened · ${t.watched} watched half+ · ${t.five} hit 5/5 · <b>${t.committed || 0}</b> committed for tomorrow`;
+  renderGoalAdmin(); const t = rpT; $('rpNums').innerHTML = `<b style="font-size:20px">${t.product + t.business}</b> shared today · <b>${t.product}</b> Product · <b>${t.business}</b> Business<br>${t.people} sharing · ${t.seen} opened · ${t.watched} watched half+ · ${t.five} hit 5/5 · <b>${t.committed || 0}</b> committed for tomorrow`;
   if (!rpFaces) rpFaces = await Promise.all([...Array(8)].map((_, i) => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = `/blueprint/img/f0${i}.png`; })));
   const c = $('rpCv'), x = c.getContext('2d'), W = 1080, F = (w, z) => `${w} ${z}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
   const g = x.createRadialGradient(540, 270, 50, 540, 270, 1100); g.addColorStop(0, '#fffefb'); g.addColorStop(.55, '#f6f1e9'); g.addColorStop(1, '#ece2d2');
@@ -671,10 +689,27 @@ $('rpShare').onclick = () => { if (!rpT) return; $('rpCv').toBlob(async bl => { 
   const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast('Saved ✓ Caption copied'); }, 'image/jpeg', 0.93); };
 
 // AJ 11/19: nightly family tally pop-up for every member (9 PM–4 AM local) + "tomorrow I'll get my 5" commitment. View only, no sharing.
+// AJ 11/20: daily family goal (set in Admin, default 100) + 9 AM "are you in?" commitment.
+function renderGoalAdmin() { const t = rpT; if (!t) return; const sent = t.product + t.business;
+  $('glNums').innerHTML = `<b style="font-size:20px">${sent}</b> of <b>${t.goal}</b> shared today${t.goalSet ? '' : ' (default)'} · <b>${t.committedToday || 0}</b> committed today<br>Tomorrow: goal <b>${t.goalTmrw}</b>${t.goalTmrwSet ? '' : ' (default)'} · <b>${t.committed || 0}</b> committed so far`;
+  if (document.activeElement !== $('glT')) $('glT').value = t.goalSet ? t.goal : ''; if (document.activeElement !== $('glN')) $('glN').value = t.goalTmrwSet ? t.goalTmrw : ''; }
+async function saveGoal(which) { const inp = $(which ? 'glN' : 'glT'), n = +inp.value || 0; if (n < 0) return toast('Use a number above 0');
+  try { const r = await api('/admin/goal', { day: which ? rpT && rpT.tomorrow : undefined, n }); toast(`🎯 ${which ? 'Tomorrow' : 'Today'}'s goal: ${r.goal}`); inp.blur(); renderReport(); } catch (x) { toast(x.message); } }
+$('glTS').onclick = () => saveGoal(0); $('glNS').onclick = () => saveGoal(1);
+let goalForce = location.hash === '#goal';
+function noticeGoal(force) { const g = me && me.goalToday; if (!g) return; let seen = ''; try { seen = localStorage.getItem('ig5_goal') || ''; } catch {}
+  if (!force && (seen === g.day || g.committed)) return; if (!$('vg').hidden || me.user.trainNeeded || !$('nightSheet').hidden) return;
+  $('gsGoal').textContent = g.goal; $('gsGoalT').textContent = g.goal; $('gsBar').style.width = Math.min(100, Math.round(g.team / Math.max(1, g.goal) * 100)) + '%';
+  $('gsMix').textContent = `${g.team} shared so far${g.team >= g.goal ? ' · 🎉 GOAL HIT!' : ` · ${g.goal - g.team} to go`}`; $('gsCnt').textContent = g.committedCount;
+  $('gsAsk').hidden = g.committed; $('gsDone').hidden = !g.committed; $('gsChk').checked = false; $('gsGo').disabled = true; $('goalSheet').hidden = false;
+  try { localStorage.setItem('ig5_goal', g.day); } catch {} }
+$('gsChk').onchange = () => { $('gsGo').disabled = !$('gsChk').checked; };
+$('gsGo').onclick = async () => { $('gsGo').disabled = true; try { me = await api('/commit', { today: 1 }); $('gsAsk').hidden = true; $('gsDone').hidden = false; $('gsCnt').textContent = me.goalToday ? me.goalToday.committedCount : +$('gsCnt').textContent + 1; toast('✊ You\'re in for today'); } catch (x) { toast(x.message); $('gsGo').disabled = false; } };
+$('gsX').onclick = () => { $('goalSheet').hidden = true; };
 let nightForce = location.hash === '#night';
 function noticeNight(force) { const n = me && me.nightly; if (!n) return; let seen = ''; try { seen = localStorage.getItem('ig5_night') || ''; } catch {}
   if (!force && (seen === n.day || n.committed)) return; if (!$('vg').hidden || me.user.trainNeeded) return;
-  $('nsTeam').textContent = n.team; $('nsBar').style.width = Math.min(100, n.team) + '%';
+  $('nsTeam').textContent = n.team; $('nsGoal').textContent = n.goal; $('nsGoalT').textContent = n.goalTmrw || n.goal; $('nsBar').style.width = Math.min(100, Math.round(n.team / Math.max(1, n.goal) * 100)) + '%';
   $('nsMix').textContent = `${n.product} Product · ${n.business} Business${n.team >= n.goal ? ' · 🎉 GOAL HIT!' : ` · ${n.goal - n.team} to go`}`;
   $('nsMine').textContent = n.mine; $('nsMineT').textContent = n.mine >= 5 ? 'You did your 5. Thank you 🔥' : n.mine ? `${n.mine} of 5. Every one counts 🙌` : 'Tomorrow is a fresh start. Let’s go 💪';
   $('nsAsk').hidden = n.committed; $('nsDone').hidden = !n.committed; $('nsChk').checked = false; $('nsGo').disabled = true; $('nightSheet').hidden = false;
@@ -919,7 +954,7 @@ function render() {
   if (me.user.trainNeeded && $('vg').hidden) openVideo('app');   // AJ 11/13: app training before anything else
   $('streak').hidden = false; $('streak').textContent = `🔥 ${me.streak}`; $('streak').classList.toggle('hot', me.streak > 0);
   const nb = me.due.length + (me.requests || []).length; $('fuBadge').hidden = !nb; $('fuBadge').textContent = nb;
-  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); document.body.dataset.view = view; renderPhoto(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
+  noticeRequests(); noticeAlerts(); noticeQod(); applyLayout(); document.body.dataset.view = view; renderPhoto(); noticeGrat(); renderRsvp(); renderBeta(); noticeNight(nightForce); nightForce = false; noticeGoal(goalForce); goalForce = false; if (pendingReport && me.user.admin) { pendingReport = false; setTimeout(goReport, 400); } renderGratitude(); renderPush(); if (typeof whatsNew === 'function') whatsNew();
   ccDefault();
   $('recCard').hidden = !!me.user.hasRecovery;
   $('tzNote').textContent = 'Time zone: ' + me.user.tz.replace(/_/g, ' '); $('acWho').textContent = 'Signed in as ' + me.user.name;
@@ -993,7 +1028,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-19l';
+const APP_V = '2026-11-20a';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
@@ -1065,7 +1100,7 @@ $('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
   const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
   try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
   try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#goal') && tok) api('/me').then(d => { me = d; render(); noticeGoal(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };
