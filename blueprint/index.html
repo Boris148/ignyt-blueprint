@@ -1085,7 +1085,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-21a';
+const APP_V = '2026-11-21b';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
@@ -1094,9 +1094,12 @@ function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || local
 $('wnOk').onclick = () => { localStorage.setItem('ig5_wn', APP_V); $('wnPop').hidden = true; };
 function freshReload() { location.replace('/blueprint/?u=' + Date.now() + location.hash); }
 // AJ 11/13: a new release pops up in the middle of the screen (banner stays as a backup). "Later" hides it for 10 min, then it comes back.
-let updLater = 0;
-async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); const nu = !!j.v && j.v !== APP_V; $('updNotes').innerHTML = notesHtml(j.notes);
+let updLater = 0, updNew = false;
+async function checkUpd() { try { const r = await fetch('/blueprint/version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); const nu = updNew = !!j.v && j.v !== APP_V; $('updNotes').innerHTML = notesHtml(j.notes);
   $('upd').hidden = !nu; $('updPop').hidden = !nu || Date.now() - updLater < 10 * 60 * 1000; } catch {} }
+// AJ 11/21: tapping a notification (or OK on its pop-up) installs a waiting update right away — no "Get latest update" tap needed.
+async function updIfNew(hash) { await checkUpd(); if (!updNew) return false; location.replace('/blueprint/?u=' + Date.now() + (hash == null ? location.hash : hash)); return true; }
+if (new URLSearchParams(location.search).has('n')) { try { history.replaceState(null, '', location.pathname + location.hash); } catch {} updIfNew(); }
 $('updGo').onclick = freshReload; $('updLater').onclick = () => { updLater = Date.now(); $('updPop').hidden = true; };
 $('upd').onclick = freshReload; $('acUpd').onclick = freshReload;
 $('rwApp').onclick = () => me && openVideo('app', null, true); $('rwLaunch').onclick = () => me && openVideo('launch', null, true);
@@ -1118,7 +1121,7 @@ function noticeAlerts() { const list = me.alerts || [], top = list.length ? list
   const go = kind === 'notify' ? '🔔 Turn on notifications' : kind === 'prospect' ? '👥 Follow up now' : kind === 'call' && a.url ? '🔴 Join on Zoom' : kind === 'daily' ? '🔥 Get my 5 in' : '';
   $('popGo').style.display = go ? '' : 'none'; $('popGo').textContent = go; $('popOk').textContent = go ? 'Got it' : 'OK';
   $('pop').hidden = false; try { navigator.vibrate && navigator.vibrate(180); } catch {} }
-$('popOk').onclick = () => { $('pop').hidden = true; };
+$('popOk').onclick = () => { $('pop').hidden = true; updIfNew(); };
 $('popGo').onclick = () => { $('pop').hidden = true; const k = (popA && popA.kind) || 'prospect';
   if (k === 'call' && popA.url) { window.open(popA.url, '_blank', 'noopener'); return; }
   if (k === 'notify') { const b = document.querySelector('nav button[data-v="Today"]'); if (b) b.click(); setTimeout(() => { const c = $('ntCard'); if (c && !c.hidden) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); else toast('Notifications on 🔔'); }, 300); return; }
@@ -1158,7 +1161,7 @@ $('qodShare').onclick = async () => { const q = me && me.qod; if (!q) return;
   const t = `“${q.text}”\n— ${q.who}\n\nThe Blueprint QOD`;
   try { if (navigator.share) return await navigator.share({ text: t }); } catch { return; }
   try { await navigator.clipboard.writeText(t); toast('Quote copied'); } catch { toast('Couldn\'t copy'); } };
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#goal') && tok) api('/me').then(d => { me = d; render(); noticeGoal(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#huddle') && tok) api('/me').then(d => { me = d; render(); noticeHuddle(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.t === 'open') updIfNew(String(e.data.url).includes('#') ? '#' + String(e.data.url).split('#')[1] : ''); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#report')) goReport(); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#goal') && tok) api('/me').then(d => { me = d; render(); noticeGoal(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#night') && tok) api('/me').then(d => { me = d; render(); noticeNight(true); }).catch(() => {}); if (e.data && e.data.t === 'open' && String(e.data.url).includes('#huddle') && tok) api('/me').then(d => { me = d; render(); noticeHuddle(true); }).catch(() => {}); if (e.data && e.data.t === 'push' && tok) api('/me').then(d => { me = d; render(); }).catch(() => {}); });
 
 // Admin: remove a prospect (AJ 11/9, testing)
 let aPt; $('aPq').oninput = () => { clearTimeout(aPt); aPt = setTimeout(aPsearch, 300); };

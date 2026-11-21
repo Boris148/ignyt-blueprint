@@ -15,6 +15,6 @@ self.addEventListener('notificationclick', e => {
   if (!url.startsWith(self.location.origin)) return e.waitUntil(self.clients.openWindow(url));
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
     for (const w of ws) if (w.url.startsWith(self.location.origin + '/blueprint')) { w.postMessage({ t: 'open', url }); return w.focus(); }
-    return self.clients.openWindow(url);
+    const u = new URL(url); u.searchParams.set('n', Date.now()); return self.clients.openWindow(u.href);   // ?n = opened from a notification → app updates itself if a new version is out (AJ 11/21)
   }));
 });
