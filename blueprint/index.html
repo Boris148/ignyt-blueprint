@@ -1087,7 +1087,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && to
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
 const APP_V = '2026-11-21b';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Behind the scenes:</b> small improvements. Nothing changes in how you use the app."];
+const APP_NOTES = ["<b>Updates install themselves:</b> when you tap a notification (or OK on its pop-up), the app grabs the newest version automatically. No more tapping \"Get latest update\".", "<b>Every country is in the picker:</b> text a prospect anywhere in the world. Tap the flag next to the number and pick their country."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
