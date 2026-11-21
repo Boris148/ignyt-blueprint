@@ -389,6 +389,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
   <div style="font-size:44px;margin-top:10px">✨</div><div class="ppt">A new update is ready</div>
   <div class="ppb">Tap to update. Takes 2 seconds and you stay signed in.</div><div class="ppm" id="updNotes"></div>
   <button class="btn" id="updGo" type="button">Tap to update</button><button class="btn ghost" id="updLater" type="button" style="border:0;margin-top:4px">Later</button></div></div>
+<div class="pop" id="ntPop" hidden style="z-index:84"><div class="ppc qod"><div class="ppk">Notifications</div>
+  <div style="font-size:44px;margin-top:10px">🔔</div><div class="ppt" id="ntpT">Turn on notifications?</div>
+  <div class="ppb" id="ntpB"></div><div class="ppm" id="ntpM"></div>
+  <button class="btn" id="ntpGo" type="button">🔔 Turn on notifications</button><button class="btn ghost" id="ntpNo" type="button" style="border:0;margin-top:4px">Not now</button></div></div>
 <div class="pop" id="wnPop" hidden style="z-index:85"><div class="ppc"><div class="ppk">What&rsquo;s new</div>
   <div style="font-size:44px;margin-top:10px">✨</div><div class="ppt">Your app just got an update</div>
   <div class="ppm" id="wnNotes"></div>
@@ -821,7 +825,32 @@ function renderPush() {
   else $('ntBody').innerHTML = `<h3>Never miss your 5</h3><p>A daily reminder at your time, a 👀 alert the moment someone opens your link, a heads-up at 7pm if you're under 5, and reminders before every Blueprint call, with a tap-to-join Zoom link 5 min before.</p>
     <div class="ntb"><select id="ntHour" aria-label="Reminder time">${hourOpts()}</select><button type="button" id="ntGo">Turn on</button></div>`;
   const go = $('ntGo'); if (go) go.onclick = pushOn;
+  noticeNotif();
 }
+// AJ 11/21: ask members right in the middle of the app to turn on notifications. Once they're on there is no in-app way to turn them off
+// (no Turn off button since 11/11; only Sign out unsubscribes that device). "Not now" asks again 4h later.
+const NT_POP_ALL = false;   // admin-only preview until AJ says go
+let ntT = null;
+function noticeNotif() {
+  if (ntT || !me || me.user.trainNeeded || !(NT_POP_ALL || me.user.admin) || !$('ntPop').hidden) return;
+  if (pushOK && !PUSH.ready) return;
+  if (PUSH.sub && Notification.permission === 'granted') return;
+  if (inApp || (!pushOK && !isIOS)) return;   // can't be done here, the Today card explains
+  if (Date.now() - +(localStorage.getItem('ig5_ntp') || 0) < 4 * 3600e3 && location.hash !== '#notify') return;
+  ntT = setTimeout(function show() {
+    if (!$('pop').hidden || !$('qod').hidden || !$('vg').hidden || !$('wnPop').hidden || !$('updPop').hidden || !$('grPop').hidden || !$('hpPop').hidden || hpT || !$('sendSheet').hidden || !$('sheet').hidden) { ntT = setTimeout(show, 4000); return; }
+    ntT = null; if (PUSH.sub && Notification.permission === 'granted') return;
+    const can = pushOK && Notification.permission === 'default' && (!isIOS || standalone);
+    if (can) { $('ntpT').textContent = 'Turn on notifications?'; $('ntpB').textContent = 'Never miss a prospect opening your link, your daily 5 reminder, or a Blueprint call.'; $('ntpM').innerHTML = '';
+      $('ntpGo').textContent = '🔔 Turn on notifications'; }
+    else if (isIOS && !standalone) { $('ntpT').textContent = 'Get notifications on your iPhone'; $('ntpB').textContent = 'On iPhone, notifications only work from the Home Screen app:';
+      $('ntpM').innerHTML = '1. Tap the <b>Share</b> button ⬆︎ in Safari<br>2. Tap <b>Add to Home Screen</b><br>3. Open <b>The Blueprint</b> from your Home Screen and tap <b>Turn on</b>'; $('ntpGo').textContent = 'Got it'; }
+    else { $('ntpT').textContent = 'Notifications are blocked'; $('ntpB').innerHTML = isIOS ? 'Open iPhone <b>Settings → Notifications → The Blueprint</b> and turn on Allow Notifications.' : 'Tap the lock icon next to the address bar → <b>Permissions → Notifications → Allow</b>.'; $('ntpM').innerHTML = ''; $('ntpGo').textContent = 'Got it'; }
+    $('ntpGo').dataset.can = can ? '1' : ''; $('ntpNo').hidden = !can; $('ntPop').hidden = false; }, 2500); }
+$('ntpNo').onclick = () => { localStorage.setItem('ig5_ntp', String(Date.now())); $('ntPop').hidden = true; };
+$('ntpGo').onclick = async () => { if (!$('ntpGo').dataset.can) { localStorage.setItem('ig5_ntp', String(Date.now())); $('ntPop').hidden = true; return; }
+  $('ntpGo').disabled = true; $('ntpGo').textContent = 'Turning on…'; await pushOn(); $('ntpGo').disabled = false;
+  $('ntPop').hidden = true; if (!(PUSH.sub && Notification.permission === 'granted')) localStorage.setItem('ig5_ntp', String(Date.now())); };
 async function pushOn() {
   const b = $('ntGo'); if (b) { b.disabled = true; b.textContent = 'Turning on…'; }
   try {
