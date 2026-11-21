@@ -237,7 +237,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
       <a class="btn" id="rvZoom" href="#" target="_blank" rel="noopener" hidden style="margin-top:10px;background:#2d8cff">🎥 Join on Zoom now</a>
       <div class="rvc" id="rvCount"></div><div class="rvn" id="rvNames" hidden></div></div>
     <div class="card rsvp" id="btCard" hidden><div class="lbl">🧪 Beta test invite</div><h3>AJ picked you.</h3>
-      <div class="rvw" style="font-size:15px;line-height:1.45;margin-top:6px">Try 2 new ways to get your 5 before anyone else:<br>💬 <b>Send by DM</b>, using their Instagram, Messenger, Telegram or TikTok username.<br>📷 <b>In-person QR code</b>. It counts when their phone opens it.</div>
+      <div class="rvw" style="font-size:15px;line-height:1.45;margin-top:6px">Try a new way to get your 5 before anyone else:<br>💬 <b>Send by DM</b> on Instagram, Telegram or TikTok with their username, or on Messenger with just their name.</div>
       <button class="btn" id="btYes" type="button" style="margin-top:12px">Yes, I&rsquo;m in 🙌</button><button class="btn ghost" id="btNo" type="button" style="margin-top:8px;border:0">Not now</button></div>
     <div class="card gw" id="gwCard" hidden><div class="lbl">🙏 Gratitude Sunday</div><h3>The Gratitude <i>Wall.</i></h3>
       <div class="gs">What our family is grateful for today.</div>
@@ -717,10 +717,12 @@ async function qrShow() { $('aErr').textContent = '';
 $('qrBtn').onclick = qrShow; $('qrNew').onclick = qrShow;
 $('qrX').onclick = () => { $('qrSheet').hidden = true; clearInterval(qrPoll); };
 
+// AJ 11/21: in-person QR send is OFF for everyone ("get people using it the regular way first"). Flip QR_ON to bring it back.
+const QR_ON = false;
 // AJ 11/19: beta (AJ + invited members): DM-by-username + in-person QR.
 let sendVia = 'text';
 function renderBeta() { const b = me && me.user.beta;
-  $('btCard').hidden = b !== 'invited'; $('qrBtn').hidden = b !== 'on'; $('aVia').hidden = b !== 'on';
+  $('btCard').hidden = b !== 'invited'; $('qrBtn').hidden = !QR_ON || b !== 'on'; $('aVia').hidden = b !== 'on';
   if (b !== 'on') sendVia = 'text';
   $('aDm').hidden = sendVia !== 'dm'; $('aPhRow').hidden = sendVia === 'dm'; $('aCcHint').hidden = sendVia === 'dm'; dmField(); }
 // AJ 11/21: Messenger only needs their Facebook name (a username or m.me link still works)
@@ -728,7 +730,7 @@ function dmField() { const fb = $('aCh').value === 'messenger', h = $('aHandle')
   h.placeholder = fb ? 'Their name on Facebook' : 'Their username'; h.setAttribute('autocapitalize', fb ? 'words' : 'off'); }
 $('aCh').addEventListener('change', dmField);
 $('aVia').onclick = e => { const x = e.target.closest('button'); if (!x) return; sendVia = x.dataset.v; [...$('aVia').children].forEach(y => y.classList.toggle('on', y === x)); renderBeta(); };
-$('btYes').onclick = async () => { try { me = await api('/beta', { yes: true }); render(); toast('🧪 You’re in the beta! Look for DM and QR on Today'); } catch (x) { toast(x.message); } };
+$('btYes').onclick = async () => { try { me = await api('/beta', { yes: true }); render(); toast('🧪 You’re in the beta! Look for DM on Today'); } catch (x) { toast(x.message); } };
 $('btNo').onclick = async () => { try { me = await api('/beta', { yes: false }); render(); } catch (x) { toast(x.message); } };
 
 // AJ 11/19: nightly team report in the app (Admin) + Instagram-ready graphic drawn on the phone.
@@ -1127,7 +1129,7 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-21d';
+const APP_V = '2026-11-21e';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
 const APP_NOTES = ["<b>Messenger opens the app (beta):</b> pick DM → Messenger, type their name the way it shows on Facebook, and the Messenger app opens. No username, no Facebook login.", "<b>Updates install themselves:</b> when you tap a notification (or OK on its pop-up), the app grabs the newest version automatically. No more tapping \"Get latest update\".", "<b>Every country is in the picker:</b> text a prospect anywhere in the world. Tap the flag next to the number and pick their country."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
