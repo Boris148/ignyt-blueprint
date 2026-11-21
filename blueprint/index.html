@@ -550,16 +550,25 @@ $('fAdd').onsubmit = async e => { e.preventDefault(); $('aErr').textContent = ''
     render(); openSend(name, me.sent, before === me.perDay - 1);
   } catch (x) { $('aErr').textContent = x.message; } finally { $('aBtn').disabled = false; } };
 const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// AJ 11/21: Messenger must open the APP, never m.me in a browser (that asks them to log in to Facebook).
+// iPhone: fb-messenger:// scheme. Android: intent to com.facebook.orca (Play Store if it's not installed). Numeric IDs open their chat.
+const ANDROID = /Android/i.test(navigator.userAgent);
+function fbApp(h) { const id = /^\d{5,20}$/.test(String(h || '')) ? h : '';
+  if (ANDROID) return `intent://${id ? 'user-thread/' + id : ''}#Intent;scheme=fb-messenger;package=com.facebook.orca;end`;
+  return 'fb-messenger://' + (id ? 'user-thread/' + id : ''); }
 function openSend(name, sent, five, title, sub) {
   $('ssT').textContent = title || `Send to ${name.split(' ')[0]}`;
   $('ssS').textContent = sub || 'Counted ✓ Now send it from your phone.';
   $('ssM').textContent = sent.message;
   const isDm = !!sent.channel; $('ssDm').hidden = !isDm; $('ssVia').hidden = isDm; $('ssViaL').hidden = isDm;
-  if (isDm) { const h = sent.handle, L = { instagram: 'https://ig.me/m/' + h, messenger: sent.fbName ? 'https://m.me/' : 'https://m.me/' + h, telegram: 'https://t.me/' + h, tiktok: 'https://www.tiktok.com/@' + h, snapchat: 'https://www.snapchat.com/add/' + h, x: 'https://x.com/' + h, line: 'https://line.me/R/ti/p/~' + h, wechat: '' }[sent.channel];
+  if (isDm) { const h = sent.handle, L = { instagram: 'https://ig.me/m/' + h, messenger: fbApp(h), telegram: 'https://t.me/' + h, tiktok: 'https://www.tiktok.com/@' + h, snapchat: 'https://www.snapchat.com/add/' + h, x: 'https://x.com/' + h, line: 'https://line.me/R/ti/p/~' + h, wechat: '' }[sent.channel];
     const nm = { instagram: 'Instagram', messenger: 'Messenger', telegram: 'Telegram', tiktok: 'TikTok', snapchat: 'Snapchat', x: 'X', line: 'LINE', wechat: 'WeChat' }[sent.channel];
-    $('ssS').textContent = sent.fbName ? `Counted ✓ Tap below: we copy the message and open Messenger. Search for ${sent.fbName}, paste it in the chat and send.` : `Counted ✓ Tap below: we copy the message, then open ${nm}. Paste it in their DM and send.`;
+    const fbWho = sent.channel === 'messenger' && !/^\d+$/.test(String(sent.handle || '')) ? (sent.fbName || sent.handle) : '';
+    $('ssS').textContent = fbWho ? `Counted ✓ Tap below: we copy the message and open the Messenger app. Search for ${fbWho}, paste it in the chat and send.` : `Counted ✓ Tap below: we copy the message, then open ${nm}. Paste it in their DM and send.`;
+    const app = sent.channel === 'messenger'; if (app) $('ssDm').removeAttribute('target'); else $('ssDm').setAttribute('target', '_blank');
     $('ssDm').textContent = L ? `📋 Copy message & open ${nm}` : '📋 Copy message (then open WeChat)';
-    $('ssDm').href = L || '#'; $('ssDm').onclick = async ev => { try { await navigator.clipboard.writeText(sent.message); toast('Message copied ✓ Paste it in the DM'); } catch { if (!L) ev.preventDefault(); prompt('Copy this message:', sent.message); } if (!L) ev.preventDefault(); }; }
+    $('ssDm').href = L || '#'; $('ssDm').onclick = async ev => { try { await navigator.clipboard.writeText(sent.message); toast('Message copied ✓ Paste it in the DM'); } catch { if (!L) ev.preventDefault(); prompt('Copy this message:', sent.message); } if (!L) ev.preventDefault();
+      if (app) setTimeout(() => { if (!document.hidden) toast(ANDROID ? 'Opening Messenger…' : 'Messenger didn’t open? Install the Messenger app, then tap again'); }, 2500); }; }
   $('ssGo').href = `sms:${sent.phone}${IOS ? '&' : '?'}body=${encodeURIComponent(sent.message)}`;
   $('ssWa').href = `https://wa.me/${String(sent.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(sent.message)}`;
   markVia();
@@ -1118,9 +1127,9 @@ if (tok) load(); else show();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && tok) load(); });
 
 // App updates (AJ 11/9): bump APP_V here AND in version.json on every release. Phones see the banner and reload fresh — no sign-out needed.
-const APP_V = '2026-11-21c';
+const APP_V = '2026-11-21d';
 // AJ 11/14: every release says what changed. Keep APP_NOTES in sync with "notes" in version.json.
-const APP_NOTES = ["<b>Messenger needs just their name (beta):</b> pick DM → Messenger and type their name the way it shows on Facebook. No username needed.", "<b>Updates install themselves:</b> when you tap a notification (or OK on its pop-up), the app grabs the newest version automatically. No more tapping \"Get latest update\".", "<b>Every country is in the picker:</b> text a prospect anywhere in the world. Tap the flag next to the number and pick their country."];
+const APP_NOTES = ["<b>Messenger opens the app (beta):</b> pick DM → Messenger, type their name the way it shows on Facebook, and the Messenger app opens. No username, no Facebook login.", "<b>Updates install themselves:</b> when you tap a notification (or OK on its pop-up), the app grabs the newest version automatically. No more tapping \"Get latest update\".", "<b>Every country is in the picker:</b> text a prospect anywhere in the world. Tap the flag next to the number and pick their country."];
 const notesHtml = n => n && n.length ? '<ul>' + n.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '';
 function whatsNew() { if (!me || me.user.trainNeeded || !$('vg').hidden || localStorage.getItem('ig5_wn') === APP_V) return;
   $('wnNotes').innerHTML = notesHtml(APP_NOTES); $('wnPop').hidden = false; }
